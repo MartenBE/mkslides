@@ -1,19 +1,25 @@
+<!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="{{ reveal_css }}" />
-        <link rel="stylesheet" href="{{ theme_css }}" />
+        <link rel="stylesheet" href="{{ revealjs_path }}/dist/reveal.css" />
+        <link rel="stylesheet" href="{{ revealjs_path }}/dist/theme/white.css" />
     </head>
     <body>
         <div class="reveal">
-            <section data-markdown>
-                <textarea data-template>
-                    {{ content }}
-                </textarea>
-            </section>
+            <div class="slides">
+                <section data-markdown>
+                    <textarea data-template>
+                        {{ markdown }}
+                    </textarea>
+                </section>
+            </div>
         </div>
-        <script src="{{ reveal_js }}"></script>
+        <script src="{{ revealjs_path }}/dist/reveal.js"></script>
+        <script src="{{ revealjs_path }}/plugin/markdown/markdown.js"></script>
         <script>
-            Reveal.initialize();
+            Reveal.initialize({
+                plugins: [RevealMarkdown],
+            });
         </script>
     </body>
 </html>

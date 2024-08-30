@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Index</h1>
+
+        <ul>
+        {% for url in index %}
+            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>
