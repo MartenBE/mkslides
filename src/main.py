@@ -143,7 +143,6 @@ for md_file in input_path.glob("**/*.md"):
 
 # Generate the index
 
-print(index)
 index_template = environment.get_template("index.html.jinja")
 index_path = output_directory / "index.html"
 index_path.write_text(index_template.render(index=index))
