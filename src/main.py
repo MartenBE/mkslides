@@ -141,10 +141,6 @@ for md_file in input_path.glob("**/*.md"):
 
     index.append(result_markup_path.relative_to(output_directory))
 
-    print()
-    print()
-    print()
-
 # Generate the index
 
 print(index)
