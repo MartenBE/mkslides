@@ -108,22 +108,20 @@ for md_file in input_path.glob("**/*.md"):
     # Generate the markup from markdown
 
     markdown = md_file.read_text()
-
-    print(md_file)
-    print(result_revealjs_path)
+    result_markup_path = output_directory / md_file.relative_to(input_path)
+    result_markup_path = result_markup_path.with_suffix(".html")
+    revealjs_path = result_revealjs_path.relative_to(
+        result_markup_path.parent, walk_up=True
+    )
 
     markup = slideshow_template.render(
-        revealjs_path=result_revealjs_path.relative_to(output_directory),
+        revealjs_path=revealjs_path,
         markdown=markdown,
     )
 
-    result_markup_path = output_directory / md_file.relative_to(input_path)
-    result_markup_path = result_markup_path.with_suffix(".html")
     result_markup_path.parent.mkdir(parents=True, exist_ok=True)
     result_markup_path.write_text(markup)
     print(f'Transformed "{md_file.absolute()}" into "{result_markup_path.absolute()}"')
-
-    # TODO: fix debug folder
 
     # Copy images
 
