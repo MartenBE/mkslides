@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ reveal_css }}" />
+        <link rel="stylesheet" href="{{ theme_css }}" />
+    </head>
+    <body>
+        <div class="reveal">
+            <section data-markdown>
+                <textarea data-template>
+                    {{ content }}
+                </textarea>
+            </section>
+        </div>
+        <script src="{{ reveal_js }}"></script>
+        <script>
+            Reveal.initialize();
+        </script>
+    </body>
+</html>
