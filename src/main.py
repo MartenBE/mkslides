@@ -1,60 +1,34 @@
 import argparse
-import datetime
-import frontmatter
 import jinja2
+import json
 import livereload
-import re
 import shutil
+import yaml
 
 from pathlib import Path
 
-################################################################################
-
-MD_IMAGE_REGEX = re.compile(
-    r"""
-    !                           # Start of the image
-    \[.*?\]                     # Alt text
-    \((?P<location>.*?)\)       # Image location
-    """,
-    re.VERBOSE,
-)
-HTML_IMAGE_REGEX = re.compile(
-    r"""
-    <img                        # Start of the image
-    .+?                         # Any attributes
-    src=                        # src attribute
-        (?P<delimiter>['\"])    # Delimiter
-        (?P<location>.+?)       # Image location
-        (?P=delimiter)          # Delimiter
-    .*?                         # Any attributes
-    >                           # End of the image
-    """,
-    re.VERBOSE,
-)
-
-HTML_BACKGROUND_IMAGE_REGEX = re.compile(
-    r"""
-    <!--                        # Start of the comment
-    .*?                         # Any content
-    data-background-image=      # data-background-image attribute
-        (?P<delimiter>['\"])    # Delimiter
-        (?P<location>.+?)       # Image location
-        (?P=delimiter)          # Delimiter
-    .*?                         # Any content
-    -->                         # End of the comment
-    """,
-    re.VERBOSE,
-)
+from markupgenerator import MarkupGenerator
 
 ################################################################################
 
 
-def assert_path_exists(path: Path):
-    assert path.exists(), f'"{path.absolute()}" does not exist'
+def create_output_directory(
+    output_directory: Path, revealjs_path: Path, output_revealjs_path: Path
+) -> None:
+    if output_directory.exists():
+        shutil.rmtree(output_directory)
+        print("Output directory already exists: deleted")
+
+    output_directory.mkdir()
+    print(f"Output directory created.")
+
+    shutil.copytree(revealjs_path, output_revealjs_path)
+    print(
+        f'\tCopied "{revealjs_path.absolute()}" to "{output_revealjs_path.absolute()}"'
+    )
 
 
 ################################################################################
-
 
 parser = argparse.ArgumentParser(description="reveal-py")
 parser.add_argument(
@@ -78,100 +52,56 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-# Input path
+# Configuring paths
 
-input_path = Path(args.files)
+input_path = Path(args.files).resolve(strict=True)
 print(f'Input path: "{input_path.absolute()}"')
-assert_path_exists(input_path)
 
-# Output directory
-
-output_directory = Path(args.output)
+output_directory = Path(args.output).resolve(strict=True)
 print(f'Output directory: "{output_directory.absolute()}"')
 
-if output_directory.exists():
-    shutil.rmtree(output_directory)
-    print("Output directory already exists: deleted")
+assets_path = Path("assets").resolve(strict=True)
+output_assets_path = output_directory / "assets"
 
-output_directory.mkdir()
-print(f"Output directory created.")
+revealjs_path = assets_path / "reveal.js-master"
+output_revealjs_path = output_assets_path / "reveal-js"
 
-# Reveal.js
+# Reading configuration
 
-revealjs_path = Path("assets/reveal.js-master")
-result_revealjs_path = output_directory / "assets" / "reveal-js"
-shutil.copytree(revealjs_path, result_revealjs_path)
-print(f'\tCopied "{revealjs_path.absolute()}" to "{result_revealjs_path.absolute()}"')
+config_path = Path(args.config).resolve()
 
-# Jinja2
+config = None
+if config_path.exists():
+    print(f'Config path: "{config_path.absolute()}"')
+    with config_path.open() as f:
+        config = yaml.safe_load(f)
+else:
+    print(f'Config path: "{config_path.absolute()}" does not exist, using default values')
+
+print(json.dumps(config, indent=4))
+
+# Configuring templates
 
 environment = jinja2.Environment()
-environment.loader = jinja2.FileSystemLoader("assets/templates")
-slideshow_template = environment.get_template("slideshow.html.jinja")
+environment.loader = jinja2.FileSystemLoader(assets_path / "templates")
 
 # Process markdown files
 
-slideshows = []
+mg = MarkupGenerator(environment, input_path, output_directory, output_revealjs_path)
 
-for md_file in input_path.glob("**/*.md"):
-
-    # Retrieve the frontmatter metadata and the markdown content
-
-    content = md_file.read_text()
-    metadata, markdown = frontmatter.parse(content)
-
-    # Generate the markup from markdown
-
-    result_markup_path = output_directory / md_file.relative_to(input_path)
-    result_markup_path = result_markup_path.with_suffix(".html")
-    revealjs_path = result_revealjs_path.relative_to(
-        result_markup_path.parent, walk_up=True
-    )
-
-    markup = slideshow_template.render(
-        revealjs_path=revealjs_path,
-        markdown=markdown,
-    )
-
-    result_markup_path.parent.mkdir(parents=True, exist_ok=True)
-    result_markup_path.write_text(markup)
-    print(f'Transformed "{md_file.absolute()}" into "{result_markup_path.absolute()}"')
-
-    # Copy images
-
-    for regex in [MD_IMAGE_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
-        for m in regex.finditer(markdown):
-            image = Path(md_file.parent, m.group("location"))
-            assert_path_exists(image)
-
-            result_image_path = output_directory / image.relative_to(input_path)
-            result_image_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy(image, result_image_path)
-            print(
-                f'\t\tCopied "{image.absolute()}" to "{result_image_path.absolute()}"'
-            )
-
-    # Index
-
-    slideshows.append(
-        {
-            "title": metadata.get("title", md_file.stem),
-            "location": result_markup_path.relative_to(output_directory),
-        }
-    )
-
-# Generate the index
-
-index_template = environment.get_template("index.html.jinja")
-index_path = output_directory / "index.html"
-index_path.write_text(
-    index_template.render(slideshows=slideshows, build_datetime=datetime.datetime.now())
-)
-print(f'Generated index: "{index_path.absolute()}"')
+create_output_directory(output_directory, revealjs_path, output_revealjs_path)
+mg.create_markup()
 
 # Livereload if requested
 
 if args.watch:
+
+    def reload():
+        print("Reloading...")
+
+        create_output_directory(output_directory, revealjs_path, output_revealjs_path)
+        mg.create_markup()
+
     server = livereload.Server()
-    server.watch(input_path, lambda: print(args))
+    server.watch(filepath=input_path, func=reload, delay=1)
     server.serve(root=output_directory)

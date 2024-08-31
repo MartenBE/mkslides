@@ -1,0 +1,13 @@
+reveal-py:
+    separator: \n\s*---\s*\n
+    vertical-separator: \n\s*-v-\s*\n
+    theme: <theme>
+    highlight-theme: <theme>
+    css: <files>
+    scripts: <files>
+    template: <filename>
+    listing-template: <filename>
+    host: <host>
+    port: <port>
+    featured-slide: <num>
+reveal.js:
