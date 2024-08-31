@@ -1,5 +1,8 @@
 import argparse
+import datetime
+import frontmatter
 import jinja2
+import livereload
 import re
 import shutil
 
@@ -58,14 +61,21 @@ parser.add_argument(
     "files",
     metavar="FILE(S)/DIR",
     type=str,
-    help="Path to the markdown file(s), or the directory containing markdown files",
+    help="Path to the markdown file(s), or the directory containing markdown files.",
 )
 parser.add_argument(
-    "-o", "--output", type=str, help="The output directory", default="html"
+    "-c", "--config", type=str, help="Path to the config file.", default=".revealpy.yml"
 )
 parser.add_argument(
-    "-c", "--config", type=str, help="Path to the config file", default=".revealpy.yml"
+    "-o", "--output", type=str, help="The output directory.", default="html"
 )
+parser.add_argument(
+    "-w",
+    "--watch",
+    action="store_true",
+    help="Watch FILE(S)/DIR and show a preview that automatically reloads on change.",
+)
+
 args = parser.parse_args()
 
 # Input path
@@ -101,13 +111,17 @@ slideshow_template = environment.get_template("slideshow.html.jinja")
 
 # Process markdown files
 
-index = []
+slideshows = []
 
 for md_file in input_path.glob("**/*.md"):
 
+    # Retrieve the frontmatter metadata and the markdown content
+
+    content = md_file.read_text()
+    metadata, markdown = frontmatter.parse(content)
+
     # Generate the markup from markdown
 
-    markdown = md_file.read_text()
     result_markup_path = output_directory / md_file.relative_to(input_path)
     result_markup_path = result_markup_path.with_suffix(".html")
     revealjs_path = result_revealjs_path.relative_to(
@@ -139,11 +153,25 @@ for md_file in input_path.glob("**/*.md"):
 
     # Index
 
-    index.append(result_markup_path.relative_to(output_directory))
+    slideshows.append(
+        {
+            "title": metadata.get("title", md_file.stem),
+            "location": result_markup_path.relative_to(output_directory),
+        }
+    )
 
 # Generate the index
 
 index_template = environment.get_template("index.html.jinja")
 index_path = output_directory / "index.html"
-index_path.write_text(index_template.render(index=index))
+index_path.write_text(
+    index_template.render(slideshows=slideshows, build_datetime=datetime.datetime.now())
+)
 print(f'Generated index: "{index_path.absolute()}"')
+
+# Livereload if requested
+
+if args.watch:
+    server = livereload.Server()
+    server.watch(input_path, lambda: print(args))
+    server.serve(root=output_directory)

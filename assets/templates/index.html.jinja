@@ -6,9 +6,11 @@
         <h1>Index</h1>
 
         <ul>
-        {% for url in index %}
-            <li><a href="{{ url }}">{{ url }}</a></li>
+        {% for s in slideshows %}
+            <li><a href="{{ s.location }}" target="_blank">{{ s.title }}</a></li>
         {% endfor %}
         </ul>
+
+        <p>Slides last build at {{ build_datetime }}.</p>
     </body>
 </html>
