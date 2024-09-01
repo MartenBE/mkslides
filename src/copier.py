@@ -7,6 +7,15 @@ logger = logging.getLogger(__name__)
 
 
 class Copier:
+    """
+    The Copier class is responsible for creating and copying files and directories into the output folder.
+
+    It is also responsible for (recreating) the output directory and copying the reveal.js assets to the output directory.
+
+    What comes from the markdown root directory is copied to the output directory using the same folder structure.
+    Thus, the output directory will have the same structure as the markdown root directory.
+    """
+
     def __init__(self, input_path: Path, output_directory_path: Path):
         input_path = input_path.resolve(strict=True)
         if input_path.is_dir():
