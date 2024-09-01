@@ -27,16 +27,7 @@ class MarkupGenerator:
         self.config = config
         self.copier = copier
 
-    def create_markup(self) -> None:
-        if self.input_path.is_file():
-            logger.info("Processing a single file")
-            md_file = self.input_path
-            self.__process_markdown_file(md_file)
-        else:
-            logger.info("Processing a directory")
-            self.__process_markdown_directory()
-
-    def __process_markdown_file(
+    def process_markdown_file(
         self,
         md_file: Path,
     ) -> tuple[dict, Path]:
@@ -118,12 +109,10 @@ class MarkupGenerator:
 
         return metadata, output_markup_path
 
-    def __process_markdown_directory(self) -> None:
+    def process_markdown_directory(self) -> None:
         slideshows = []
-        for md_file in self.copier.md_root_directory.glob("**/*.md"):
-            (metadata, output_markup_path) = self.__process_markdown_file(
-                md_file, self.copier.md_root_directory
-            )
+        for md_file in self.copier.md_root_path.glob("**/*.md"):
+            (metadata, output_markup_path) = self.process_markdown_file(md_file)
 
             slideshows.append(
                 {
@@ -146,6 +135,7 @@ class MarkupGenerator:
         logger.info(f'Using theme "{theme_path}" for the index')
 
         output_theme_path = self.output_assets_path / theme_path.name
+
         shutil.copy(theme_path, output_theme_path)
         logger.info(
             f'Copied "{theme_path.absolute()}" to "{output_theme_path.absolute()}"'

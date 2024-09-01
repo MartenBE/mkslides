@@ -16,12 +16,8 @@ class Copier:
     Thus, the output directory will have the same structure as the markdown root directory.
     """
 
-    def __init__(self, input_path: Path, output_directory_path: Path):
-        input_path = input_path.resolve(strict=True)
-        if input_path.is_dir():
-            self.md_root_path = input_path
-        else:
-            self.md_root_path = input_path.parent
+    def __init__(self, md_root_path: Path, output_directory_path: Path):
+        self.md_root_path = md_root_path.resolve(strict=True)
         logger.info(f'Markdown root directory: "{self.md_root_path.absolute()}"')
 
         self.output_directory_path = output_directory_path.resolve(strict=True)

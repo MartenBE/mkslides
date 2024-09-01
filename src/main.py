@@ -55,11 +55,32 @@ args = parser.parse_args()
 
 ################################################################################
 
+def generate_markup():
+    logger.info("Generating markup")
+
+    copier.create_output_directory()
+
+    if md_file:
+        markup_generator.process_markdown_file(md_file)
+    else:
+        markup_generator.process_markdown_directory()
+
+################################################################################
+
 # Configuring paths
 
 input_path = Path(args.files).resolve(strict=True)
+
+md_file = None
+md_root_path = None
+if input_path.is_dir():
+    md_root_path = input_path
+else:
+    md_file = input_path
+    md_root_path = input_path.parent
+
 output_directory = Path(args.output).resolve(strict=True)
-copier = Copier(input_path, output_directory)
+copier = Copier(md_root_path, output_directory)
 
 # Reading configuration
 
@@ -78,8 +99,7 @@ environment.loader = jinja2.FileSystemLoader(copier.assets_path / "templates")
 
 markup_generator = MarkupGenerator(environment, config, copier)
 
-copier.create_output_directory()
-markup_generator.create_markup()
+generate_markup()
 
 # Livereload if requested
 
@@ -88,8 +108,7 @@ if args.watch:
     def reload():
         logger.info("Reloading...")
 
-        copier.create_output_directory()
-        markup_generator.create_markup()
+        generate_markup()
 
     server = livereload.Server()
 
