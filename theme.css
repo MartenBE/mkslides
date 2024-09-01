@@ -49,17 +49,11 @@
      background-repeat: no-repeat;
      font-family: var(--hogent-font-family);
      font-weight: 400;
-     font-size: 4rem;
+     font-size: 3.2rem;
  }
 
  section {
      text-align: var(--content-align);
- }
-
- /* For the index page */
- body.landing {
-     font-size: 1.5rem;
-     margin: 20px;
  }
 
  h1,
@@ -169,7 +163,6 @@
      font-size: var(--smaller-font-size);
      border-collapse: collapse;
      margin-bottom: var(--content-padding-bottom);
-     text-align: var(--math-align) !important;
  }
 
  th {

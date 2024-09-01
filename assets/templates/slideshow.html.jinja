@@ -2,7 +2,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="{{ revealjs_path }}/dist/reveal.css" />
-        <link rel="stylesheet" href="{{ revealjs_path }}/dist/theme/white.css" />
+        <link rel="stylesheet" href="{{ theme }}">
         <link rel="stylesheet" href="{{ revealjs_path }}/plugin/highlight/monokai.css" />
     </head>
     <body>
@@ -19,7 +19,7 @@
         <script src="{{ revealjs_path }}/plugin/markdown/markdown.js"></script>
         <script src="{{ revealjs_path }}/plugin/highlight/highlight.js"></script>
         <script src="{{ revealjs_path }}/plugin/zoom/zoom.js"></script>
-        <!-- <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script> -->
+        <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
         <script>
             Reveal.initialize({
@@ -30,7 +30,7 @@
                     RevealMarkdown,
                     RevealHighlight,
                     RevealZoom,
-                    // RevealNotes,
+                    RevealNotes,
                     RevealMath
                 ],
             });

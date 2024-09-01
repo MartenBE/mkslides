@@ -1,34 +1,33 @@
 import argparse
 import jinja2
-import json
 import livereload
-import shutil
-import yaml
+import logging
 
 from pathlib import Path
 
+from config import Config
+from copier import Copier
 from markupgenerator import MarkupGenerator
+from rich.logging import RichHandler
+
 
 ################################################################################
 
+# https://realpython.com/python-logging/
+logger = logging.getLogger()
+logger.setLevel("DEBUG")
+# formatter = logging.Formatter(
+#     "{asctime} - {levelname} - {message}",
+#     style="{",
+#     datefmt="%Y-%m-%d %H:%M:%S",
+# )
 
-def create_output_directory(paths: dict[str, dict[str, Path]]) -> None:
-    revealjs_path = paths["in"]["revealjs_path"]
-    output_directory = paths["out"]["output_directory"]
-    output_revealjs_path = paths["out"]["output_revealjs_path"]
+# console_handler = logging.StreamHandler()
+# console_handler.setLevel("INFO")
+# console_handler.setFormatter(formatter)
+# logger.addHandler(console_handler)
 
-    if output_directory.exists():
-        shutil.rmtree(output_directory)
-        print("Output directory already exists: deleted")
-
-    output_directory.mkdir()
-    print(f"Output directory created.")
-
-    shutil.copytree(revealjs_path, output_revealjs_path)
-    print(
-        f'\tCopied "{revealjs_path.absolute()}" to "{output_revealjs_path.absolute()}"'
-    )
-
+logger.addHandler(RichHandler())
 
 ################################################################################
 
@@ -54,79 +53,59 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+################################################################################
+
 # Configuring paths
 
 input_path = Path(args.files).resolve(strict=True)
-print(f'Input path: "{input_path.absolute()}"')
-
 output_directory = Path(args.output).resolve(strict=True)
-print(f'Output directory: "{output_directory.absolute()}"')
-
-assets_path = Path("assets").resolve(strict=True)
-output_assets_path = output_directory / "assets"
-
-revealjs_path = assets_path / "reveal.js-master"
-output_revealjs_path = output_assets_path / "reveal-js"
-
-paths = {
-    "in": {
-        "input_path": input_path,
-        "assets_path": assets_path,
-        "revealjs_path": revealjs_path,
-    },
-    "out": {
-        "output_directory": output_directory,
-        "output_assets_path": output_assets_path,
-        "output_revealjs_path": output_revealjs_path,
-    },
-}
+copier = Copier(input_path, output_directory)
 
 # Reading configuration
 
+config = Config()
 config_path = Path(args.config).resolve()
-
-config = None
 if config_path.exists():
-    print(f'Config path: "{config_path.absolute()}"')
-    with config_path.open() as f:
-        config = yaml.safe_load(f)
-else:
-    print(
-        f'Config path: "{config_path.absolute()}" does not exist, using default values'
-    )
-
-print(json.dumps(config, indent=4))
+    logger.info(f'Config file found: "{config_path.absolute()}"')
+    config.merge_config_from_file(config_path)
 
 # Configuring templates
 
 environment = jinja2.Environment()
-environment.loader = jinja2.FileSystemLoader(assets_path / "templates")
+environment.loader = jinja2.FileSystemLoader(copier.assets_path / "templates")
 
 # Process markdown files
 
-mg = MarkupGenerator(environment, config, paths)
+markup_generator = MarkupGenerator(environment, config, copier)
 
-create_output_directory(paths)
-mg.create_markup()
+copier.create_output_directory()
+markup_generator.create_markup()
 
 # Livereload if requested
 
 if args.watch:
 
     def reload():
-        print("Reloading...")
+        logger.info("Reloading...")
 
-        create_output_directory(paths)
-        mg.create_markup()
+        copier.create_output_directory()
+        markup_generator.create_markup()
 
     server = livereload.Server()
 
     paths_to_watch = [input_path]
-    config_path = config.get("reveal-py", {}).get("index", {}).get("theme")
-    if config_path:
-        paths_to_watch.append(config_path)
+    for path in [
+        config.get("reveal-py", "slides", "theme"),
+        config.get("reveal-py", "slides", "template"),
+        config.get("reveal-py", "index", "theme"),
+        config.get("reveal-py", "index", "template"),
+    ]:
+        if path:
+            paths_to_watch.append(path)
 
     for path in paths_to_watch:
         server.watch(filepath=path, func=reload, delay=1)
 
     server.serve(root=output_directory)
+
+logger.info("Done")

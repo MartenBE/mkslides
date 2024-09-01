@@ -9,3 +9,7 @@ TODO
 ## Usage
 
 TODO
+
+## Configs
+
+Defaults, overwritten by config file, overwritten by frontmatter, overwritten by cli

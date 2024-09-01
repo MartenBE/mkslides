@@ -1,19 +1,18 @@
 reveal-py:
-    per-slide:
+    slides:
         separator: ^\s*---\s*$
         verticalSeparator: ^\s*-v-\s*$
         # notes: "^Notes+:"
         # charset: iso-8859-15
-    index:
-        title: "Index"
-        theme: assets/styles/index.css
-    global:
         theme: theme.css
         highlight-theme: vs
+        # template
+    index:
+        title: "Reveal-py"
+        theme: assets/styles/index.css
+        # template
     # css: <files>
     # scripts: <files>
-    # template: <filename>
-    # listing-template: <filename>
     # host: <host>
     # port: <port>
     # featured-slide: <num>
