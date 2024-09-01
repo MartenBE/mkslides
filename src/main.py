@@ -12,9 +12,11 @@ from markupgenerator import MarkupGenerator
 ################################################################################
 
 
-def create_output_directory(
-    output_directory: Path, revealjs_path: Path, output_revealjs_path: Path
-) -> None:
+def create_output_directory(paths: dict[str, dict[str, Path]]) -> None:
+    revealjs_path = paths["in"]["revealjs_path"]
+    output_directory = paths["out"]["output_directory"]
+    output_revealjs_path = paths["out"]["output_revealjs_path"]
+
     if output_directory.exists():
         shutil.rmtree(output_directory)
         print("Output directory already exists: deleted")
@@ -66,6 +68,19 @@ output_assets_path = output_directory / "assets"
 revealjs_path = assets_path / "reveal.js-master"
 output_revealjs_path = output_assets_path / "reveal-js"
 
+paths = {
+    "in": {
+        "input_path": input_path,
+        "assets_path": assets_path,
+        "revealjs_path": revealjs_path,
+    },
+    "out": {
+        "output_directory": output_directory,
+        "output_assets_path": output_assets_path,
+        "output_revealjs_path": output_revealjs_path,
+    },
+}
+
 # Reading configuration
 
 config_path = Path(args.config).resolve()
@@ -76,7 +91,9 @@ if config_path.exists():
     with config_path.open() as f:
         config = yaml.safe_load(f)
 else:
-    print(f'Config path: "{config_path.absolute()}" does not exist, using default values')
+    print(
+        f'Config path: "{config_path.absolute()}" does not exist, using default values'
+    )
 
 print(json.dumps(config, indent=4))
 
@@ -87,9 +104,9 @@ environment.loader = jinja2.FileSystemLoader(assets_path / "templates")
 
 # Process markdown files
 
-mg = MarkupGenerator(environment, input_path, output_directory, output_revealjs_path)
+mg = MarkupGenerator(environment, config, paths)
 
-create_output_directory(output_directory, revealjs_path, output_revealjs_path)
+create_output_directory(paths)
 mg.create_markup()
 
 # Livereload if requested
@@ -99,9 +116,17 @@ if args.watch:
     def reload():
         print("Reloading...")
 
-        create_output_directory(output_directory, revealjs_path, output_revealjs_path)
+        create_output_directory(paths)
         mg.create_markup()
 
     server = livereload.Server()
-    server.watch(filepath=input_path, func=reload, delay=1)
+
+    paths_to_watch = [input_path]
+    config_path = config.get("reveal-py", {}).get("index", {}).get("theme")
+    if config_path:
+        paths_to_watch.append(config_path)
+
+    for path in paths_to_watch:
+        server.watch(filepath=path, func=reload, delay=1)
+
     server.serve(root=output_directory)

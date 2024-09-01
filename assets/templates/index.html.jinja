@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" href="{{ css }}">
     </head>
     <body>
         <h1>Index</h1>
 
         <ul>
-        {% for s in slideshows %}
+        {%+ for s in slideshows -%}
             <li><a href="{{ s.location }}" target="_blank">{{ s.title }}</a></li>
-        {% endfor %}
+        {% endfor -%}
         </ul>
 
-        <p>Slides last build at {{ build_datetime }}.</p>
+        <p>Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.</p>
     </body>
 </html>

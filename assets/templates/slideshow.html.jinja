@@ -23,6 +23,9 @@
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
         <script>
             Reveal.initialize({
+                {% for key, value in revealjs_config.items() -%}
+                    {{ key }}: {% if value is number %}{{ value }}{% else %}"{{ value }}"{% endif %},
+                {% endfor -%}
                 plugins: [
                     RevealMarkdown,
                     RevealHighlight,

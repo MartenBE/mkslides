@@ -1,13 +1,23 @@
 reveal-py:
-    separator: \n\s*---\s*\n
-    vertical-separator: \n\s*-v-\s*\n
-    theme: <theme>
-    highlight-theme: <theme>
-    css: <files>
-    scripts: <files>
-    template: <filename>
-    listing-template: <filename>
-    host: <host>
-    port: <port>
-    featured-slide: <num>
+    per-slide:
+        separator: ^\s*---\s*$
+        verticalSeparator: ^\s*-v-\s*$
+        # notes: "^Notes+:"
+        # charset: iso-8859-15
+    index:
+        title: "Index"
+        theme: assets/styles/index.css
+    global:
+        theme: theme.css
+        highlight-theme: vs
+    # css: <files>
+    # scripts: <files>
+    # template: <filename>
+    # listing-template: <filename>
+    # host: <host>
+    # port: <port>
+    # featured-slide: <num>
 reveal.js:
+    width: 1920
+    height: 1080
+    transition: fade
