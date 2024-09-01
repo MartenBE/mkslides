@@ -1,6 +1,6 @@
 # Reveal-py
 
-Use `reveal-py` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
+Use `mdslides-reveal` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
 
 ## Installation
 
