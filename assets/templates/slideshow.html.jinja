@@ -2,7 +2,9 @@
 <html>
     <head>
         <link rel="stylesheet" href="{{ revealjs_path }}/dist/reveal.css" />
-        <link rel="stylesheet" href="{{ theme }}">
+        {% if theme %}
+            <link rel="stylesheet" href="{{ theme }}">
+        {% endif %}
         <link rel="stylesheet" href="{{ revealjs_path }}/plugin/highlight/monokai.css" />
     </head>
     <body>
@@ -23,9 +25,11 @@
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
         <script>
             Reveal.initialize({
-                {% for key, value in revealjs_config.items() -%}
-                    {{ key }}: {% if value is number %}{{ value }}{% else %}"{{ value }}"{% endif %},
-                {% endfor -%}
+                {% if revealjs_config %}
+                    {% for key, value in revealjs_config.items() %}
+                        {{ key }}: {% if value is number %}{{ value }}{% else %}"{{ value }}"{% endif %},
+                    {% endfor %}
+                {% endif %}
                 plugins: [
                     RevealMarkdown,
                     RevealHighlight,

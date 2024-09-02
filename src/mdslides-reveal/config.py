@@ -43,9 +43,11 @@ class Config:
         return current_value
 
     def __recursive_merge(self, current, new):
-        for key, value in new.items():
-            if isinstance(value, dict):
-                current[key] = self.__recursive_merge(current.get(key, {}), value)
-            else:
-                current[key] = value
+        if new:
+            for key, value in new.items():
+                if isinstance(value, dict):
+                    current[key] = self.__recursive_merge(current.get(key, {}), value)
+                else:
+                    current[key] = value
+
         return current

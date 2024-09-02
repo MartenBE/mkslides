@@ -38,11 +38,11 @@ class MarkupGenerator:
 
         # Get the relative path of reveal.js
 
-        output_markup_path = self.output_directory / md_file.relative_to(
-            self.copier.md_root_directory
+        output_markup_path = self.copier.output_directory_path / md_file.relative_to(
+            self.copier.md_root_path
         )
         output_markup_path = output_markup_path.with_suffix(".html")
-        relative_revealjs_path = self.output_revealjs_path.relative_to(
+        relative_revealjs_path = self.copier.output_revealjs_path.relative_to(
             output_markup_path.parent, walk_up=True
         )
 
@@ -53,24 +53,7 @@ class MarkupGenerator:
 
         # TODO: What if it is an url?
 
-        theme_path = Path(self.config.get("reveal-py", "slides", "theme")).resolve(
-            strict=True
-        )
-        logger.info(f'Using theme "{theme_path}" for the slide')
-
-        output_theme_path = self.output_assets_path / theme_path.name
-        if not output_theme_path.exists():
-            shutil.copy(theme_path, output_theme_path)
-            logger.info(
-                f'Copied "{theme_path.absolute()}" to "{output_theme_path.absolute()}"'
-            )
-        else:
-            logger.warning(
-                f'"{output_theme_path.absolute()}" already exists, skipped!"'
-            )
-        relative_theme_path = output_theme_path.relative_to(
-            output_markup_path.parent, walk_up=True
-        )
+        relative_theme_path = self.__copy_theme(output_markup_path)
 
         # Generate the markup from markdown
 
@@ -93,13 +76,14 @@ class MarkupGenerator:
             for m in regex.finditer(markdown):
                 image = Path(md_file.parent, m.group("location")).resolve(strict=True)
 
-                if not image.is_relative_to(self.copier.md_root_directory):
+                if not image.is_relative_to(self.copier.md_root_path):
                     logger.warning(
                         f'"{image.absolute()}" is outside the markdown directory, skipped!"'
                     )
                 else:
-                    output_image_path = self.output_directory / image.relative_to(
-                        self.copier.md_root_directory
+                    output_image_path = (
+                        self.copier.output_directory_path
+                        / image.relative_to(self.copier.md_root_path)
                     )
                     output_image_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copy(image, output_image_path)
@@ -117,24 +101,49 @@ class MarkupGenerator:
             slideshows.append(
                 {
                     "title": metadata.get("title", md_file.stem),
-                    "location": output_markup_path.relative_to(self.output_directory),
+                    "location": output_markup_path.relative_to(
+                        self.copier.output_directory_path
+                    ),
                 }
             )
 
         self.__generate_index(slideshows)
 
-    def __generate_index(self, slideshows: dict[dict]) -> None:
+    def __copy_theme(self, output_markup_path: Path) -> Path | None:
+        theme = self.config.get("reveal-py", "slides", "theme")
 
-        index_path = self.output_directory / "index.html"
+        if not theme:
+            return None
 
-        # Copy the index theme CSS
+        theme_path = Path(theme).resolve(strict=True)
+        logger.info(f'Using theme "{theme_path}" for the slide')
 
-        theme_path = Path(self.config.get("reveal-py", "index", "theme")).resolve(
-            strict=True
+        output_theme_path = self.copier.output_assets_path / theme_path.name
+        if not output_theme_path.exists():
+            shutil.copy(theme_path, output_theme_path)
+            logger.info(
+                f'Copied "{theme_path.absolute()}" to "{output_theme_path.absolute()}"'
+            )
+        else:
+            logger.warning(
+                f'"{output_theme_path.absolute()}" already exists, skipped!"'
+            )
+        relative_theme_path = output_theme_path.relative_to(
+            output_markup_path.parent, walk_up=True
         )
+
+        return relative_theme_path
+
+    def __copy_index_theme(self, index_path) -> None:
+        theme = self.config.get("reveal-py", "slides", "theme")
+
+        if not theme:
+            return None
+
+        theme_path = Path(theme).resolve(strict=True)
         logger.info(f'Using theme "{theme_path}" for the index')
 
-        output_theme_path = self.output_assets_path / theme_path.name
+        output_theme_path = self.copier.output_assets_path / theme_path.name
 
         shutil.copy(theme_path, output_theme_path)
         logger.info(
@@ -143,6 +152,16 @@ class MarkupGenerator:
         relative_theme_path = output_theme_path.relative_to(
             index_path.parent, walk_up=True
         )
+
+        return relative_theme_path
+
+    def __generate_index(self, slideshows: dict[dict]) -> None:
+
+        index_path = self.copier.output_directory_path / "index.html"
+
+        # Copy the index theme CSS
+
+        relative_theme_path = self.__copy_index_theme(index_path)
 
         # Generate the index
 

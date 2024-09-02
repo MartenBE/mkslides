@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" href="{{ theme }}">
+        {% if theme %}
+            <link rel="stylesheet" href="{{ theme }}">
+        {% endif %}
 
         <title>{{ title }}</title>
     </head>
@@ -9,9 +11,9 @@
         <h1>{{ title }}</h1>
 
         <ul>
-        {%+ for s in slideshows -%}
+        {%+ for s in slideshows %}
             <li><a href="{{ s.location }}" target="_blank">{{ s.title }}</a></li>
-        {% endfor -%}
+        {% endfor %}
         </ul>
 
         <p>Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.</p>
