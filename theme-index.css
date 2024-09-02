@@ -1,0 +1,35 @@
+/*
+ *  https://www.hogent.be/dit-is-hogent/huisstijl/huisstijl-kleuren/
+ *  https://fonts.google.com/specimen/Montserrat
+ *  https://fonts.google.com/specimen/Inconsolata
+ */
+
+ @import url("https://fonts.googleapis.com/css2?family=Inconsolata&family=Montserrat:ital,wght@0,400;0,600;0,800;1,400;1,600;1,800&display=swap");
+ @import url("https://fonts.googleapis.com/css2?family=Inconsolata&display=swap");
+
+:root {
+    --hogent-blue: #4ca2d5;
+    --hogent-gray: #c3bbaf;
+    --hogent-red: #ef8767;
+    --hogent-white: #ffffff;
+    --hogent-black: #000000;
+    --hogent-font-family: "Montserrat", "Arial", sans-serif;
+
+    --wikipedia-a-color: #3366cc;
+    --wikipedia-code-bg-color: #f8f8f8;
+    --wikipedia-code-border-color: #eaecf0;
+
+    --github-font-family: font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Noto Sans, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+
+    --a-color: var(--wikipedia-a-color);
+}
+
+body {
+    background: url("https://www.hogent.be/themes/hogent/assets/images/HOGENT_Logo.png");
+    background-position: right 2ch bottom 2ch;
+    background-repeat: no-repeat;
+    font-family: var(--hogent-font-family);
+    font-weight: 400;
+    font-size: 2rem;
+    margin: 2ch;
+}

@@ -27,12 +27,6 @@ class Config:
         logger.info(f'Config merged from: "{config_path}"')
         logger.info(f"Config: {self.config}")
 
-    def merge_config_from_dict(self, config_dict: dict):
-        self.config = self.__recursive_merge(self.config, config_dict)
-
-        logger.info(f"Config merged from dict")
-        logger.info(f'Config: "{self.config}"')
-
     def get(self, *keys):
         current_value = self.config
         for key in keys:
