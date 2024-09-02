@@ -4,6 +4,9 @@ mdslides-reveal:
         theme: theme-index.css
     slides:
         theme: theme-slides.css
+        separator-vertical: ^-v-\n
+        separator-notes: "^Notes?:"
+
 reveal.js:
     height: 1080
     width: 1920

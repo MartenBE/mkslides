@@ -3,14 +3,18 @@
     <head>
         <link rel="stylesheet" href="{{ revealjs_path }}/dist/reveal.css" />
         {% if theme %}
-            <link rel="stylesheet" href="{{ theme }}">
+            <link rel="stylesheet" href="{{ theme }}" />
         {% endif %}
         <link rel="stylesheet" href="{{ revealjs_path }}/plugin/highlight/monokai.css" />
     </head>
     <body>
         <div class="reveal">
             <div class="slides">
-                <section data-markdown>
+                <section data-markdown
+                {% for key, value in markdown_data_options.items() %}
+                    data-{{ key }}="{{ value }}"
+                {% endfor %}
+                >
                     <textarea data-template>
                         {{ markdown }}
                     </textarea>
@@ -27,7 +31,7 @@
             Reveal.initialize({
                 {% if revealjs_config %}
                     {% for key, value in revealjs_config.items() %}
-                        {{ key }}: {% if value is number %}{{ value }}{% else %}"{{ value }}"{% endif %},
+                        {{ key }}: {{ value | tojson | safe }},
                     {% endfor %}
                 {% endif %}
                 plugins: [

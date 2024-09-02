@@ -48,25 +48,25 @@ class MarkupGenerator:
         self.jinja2_environment = jinja2.Environment()
         self.jinja2_environment.loader = jinja2.FileSystemLoader(".")
 
-    def create_output_directory(self) -> None:
-        if self.output_directory_path.exists():
+    def create_output_directory(self, clear: bool = False) -> None:
+        if clear and self.output_directory_path.exists():
             shutil.rmtree(self.output_directory_path)
             logger.info("Output directory already exists: deleted")
 
-        self.output_directory_path.mkdir()
+        self.output_directory_path.mkdir(parents=True, exist_ok=True)
         logger.info(f"Output directory created")
 
         self.__copy(self.revealjs_path, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
-        logger.info(f">>>>>> Processing markdown >>>>>>")
+        logger.info(f"Processing markdown")
 
         if input_path.is_dir():
             self.__process_markdown_directory()
         else:
             self.__process_markdown_file(input_path)
 
-        logger.info(f"<<<<<< Finished processing markdown <<<<<<")
+        logger.info(f"Finished processing markdown")
 
     ################################################################################
 
@@ -93,8 +93,6 @@ class MarkupGenerator:
 
         revealjs_config = self.config.get("reveal.js")
 
-        # TODO: inject data attributes
-
         # Copy the theme CSS
 
         relative_theme_path = None
@@ -108,9 +106,21 @@ class MarkupGenerator:
             self.config.get("mdslides-reveal", "slides", "template")
         )
 
+        # https://revealjs.com/markdown/#external-markdown
+        markdown_data_options = {}
+        for option in [
+            "separator",
+            "separator-vertical",
+            "separator-notes",
+            "charset",
+        ]:
+            if value := self.config.get("mdslides-reveal", "slides", option):
+                markdown_data_options[option] = value
+
         markup = slideshow_template.render(
             theme=relative_theme_path,
             revealjs_path=relative_revealjs_path,
+            markdown_data_options=markdown_data_options,
             markdown=markdown,
             revealjs_config=revealjs_config,
         )
@@ -218,23 +228,23 @@ class MarkupGenerator:
             self.__copy_file(source_path, destination_path)
 
     def __copy_tree(self, source_path, destination_path) -> None:
+        overwrite = destination_path.exists()
         destination_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_path, destination_path)
+        shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
+
+        action = "Overwritten" if overwrite else "Copied"
         logger.info(
-            f'Copied directory "{source_path.absolute()}" to "{destination_path.absolute()}"'
+            f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"'
         )
 
     def __copy_file(self, source_path, destination_path) -> None:
-        if destination_path.exists():
-            logger.warning(
-                f'Copying file skipped: "{destination_path.absolute()}" already exists'
-            )
-            return
-
+        overwrite = destination_path.exists()
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source_path, destination_path)
+
+        action = "Overwritten" if overwrite else "Copied"
         logger.info(
-            f'Copied file "{source_path.absolute()}" to "{destination_path.absolute()}"'
+            f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"'
         )
 
     def __is_absolute_url(self, url: str) -> bool:

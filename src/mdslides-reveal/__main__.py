@@ -53,6 +53,11 @@ def main():
         action="store_true",
         help="Watch FILE(S)/DIR and show a preview that automatically reloads on change.",
     )
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Clear the output directory to start fresh.",
+    )
 
     args = parser.parse_args()
 
@@ -73,7 +78,7 @@ def main():
 
     # Process markdown files
 
-    markup_generator.create_output_directory()
+    markup_generator.create_output_directory(args.clear)
     markup_generator.process_markdown(input_path)
 
     # Livereload if requested
@@ -82,7 +87,6 @@ def main():
 
         def reload():
             logger.info("Reloading...")
-            markup_generator.create_output_directory()
             markup_generator.process_markdown(input_path)
 
         server = livereload.Server()
@@ -90,7 +94,7 @@ def main():
 
         for path in [
             args.files,
-            args.config,
+            args.config, # TODO reload config
             config.get("mdslides-reveal", "index", "theme"),
             config.get("mdslides-reveal", "index", "template"),
             config.get("mdslides-reveal", "slides", "theme"),
@@ -99,7 +103,7 @@ def main():
             if path:
                 path = Path(path).resolve(strict=True)
                 logger.info(f"Watching: \"{path.absolute()}\"")
-                server.watch(filepath=path.absolute().as_posix(), func=reload, delay=2)
+                server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
 
         server.serve(root=output_directory)
 
