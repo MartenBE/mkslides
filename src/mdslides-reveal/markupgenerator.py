@@ -5,6 +5,7 @@ import logging
 import shutil
 
 from pathlib import Path
+from urllib.parse import urlparse
 
 from config import Config
 from constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX
@@ -75,7 +76,7 @@ class MarkupGenerator:
         self,
         md_file: Path,
     ) -> tuple[dict, Path]:
-        logger.info(f"Processing markdown file: \"{md_file}\"")
+        logger.info(f'Processing markdown file: "{md_file}"')
 
         # Retrieve the frontmatter metadata and the markdown content
 
@@ -93,6 +94,8 @@ class MarkupGenerator:
         )
 
         revealjs_config = self.config.get("reveal.js")
+
+        # TODO: inject data attributes
 
         # Copy the theme CSS
 
@@ -152,8 +155,10 @@ class MarkupGenerator:
                 image = Path(md_file.parent, m.group("location")).resolve(strict=True)
                 self.__copy_to_output_relative_to_md_root(image)
 
-    def __copy_theme(self, file_using_theme_path: Path, theme: Path) -> Path | None:
-        # TODO: What if it is an url?
+    def __copy_theme(self, file_using_theme_path: Path, theme: str) -> Path | str:
+        if self.__is_absolute_url(theme):
+            logger.info(f'Using theme "{theme}" is an absolute URL, no copy necessary')
+            return theme
 
         theme_path = Path(theme).resolve(strict=True)
         logger.info(f'Using theme "{theme_path}"')
@@ -223,3 +228,6 @@ class MarkupGenerator:
         logger.info(
             f'Copied file "{source_path.absolute()}" to "{destination_path.absolute()}"'
         )
+
+    def __is_absolute_url(self, url: str) -> bool:
+        return bool(urlparse(url).scheme)

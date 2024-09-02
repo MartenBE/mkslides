@@ -149,8 +149,8 @@ img,
 video,
 iframe,
 pre code {
-    max-width: 95vw;
-    max-height: 95vh;
+    max-width: 90vw;
+    max-height: 90vh;
     margin-bottom: var(--content-padding-bottom);
 }
 

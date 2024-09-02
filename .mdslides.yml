@@ -2,4 +2,10 @@ mdslides-reveal:
     index:
         title: TRIAL
         theme: theme-index.css
+    slides:
+        theme: theme-slides.css
+reveal.js:
+    height: 1080
+    width: 1920
+    # transition: slide
 
