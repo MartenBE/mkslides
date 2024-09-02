@@ -1,4 +1,6 @@
 mdslides-reveal:
     index:
         title: Index
+    slides:
+        theme:
 

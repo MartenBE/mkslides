@@ -75,7 +75,7 @@ class MarkupGenerator:
         self,
         md_file: Path,
     ) -> tuple[dict, Path]:
-        logger.info(f"Processing markdown file: {md_file}")
+        logger.info(f"Processing markdown file: \"{md_file}\"")
 
         # Retrieve the frontmatter metadata and the markdown content
 
@@ -214,7 +214,7 @@ class MarkupGenerator:
     def __copy_file(self, source_path, destination_path) -> None:
         if destination_path.exists():
             logger.warning(
-                f'Copying file: "{destination_path.absolute()}" already exists, skipped!"'
+                f'Copying file skipped: "{destination_path.absolute()}" already exists'
             )
             return
 
