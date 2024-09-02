@@ -1,6 +1,8 @@
 mdslides-reveal:
     index:
         title: Index
+        template: assets/templates/index.html.jinja
     slides:
         theme:
+        template: assets/templates/slideshow.html.jinja
 

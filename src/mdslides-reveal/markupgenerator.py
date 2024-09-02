@@ -45,14 +45,8 @@ class MarkupGenerator:
 
         # Templates
 
-        jinja2_environment = jinja2.Environment()
-        jinja2_environment.loader = jinja2.FileSystemLoader(
-            self.assets_path / "templates"
-        )
-        self.slideshow_template = jinja2_environment.get_template(
-            "slideshow.html.jinja"
-        )
-        self.index_template = jinja2_environment.get_template("index.html.jinja")
+        self.jinja2_environment = jinja2.Environment()
+        self.jinja2_environment.loader = jinja2.FileSystemLoader(".")
 
     def create_output_directory(self) -> None:
         if self.output_directory_path.exists():
@@ -65,10 +59,14 @@ class MarkupGenerator:
         self.__copy(self.revealjs_path, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
+        logger.info(f">>>>>> Processing markdown >>>>>>")
+
         if input_path.is_dir():
             self.__process_markdown_directory()
         else:
             self.__process_markdown_file(input_path)
+
+        logger.info(f"<<<<<< Finished processing markdown <<<<<<")
 
     ################################################################################
 
@@ -105,7 +103,12 @@ class MarkupGenerator:
 
         # Generate the markup from markdown
 
-        markup = self.slideshow_template.render(
+        # Refresh the templates here, so they have effect when live reloading
+        slideshow_template = self.jinja2_environment.get_template(
+            self.config.get("mdslides-reveal", "slides", "template")
+        )
+
+        markup = slideshow_template.render(
             theme=relative_theme_path,
             revealjs_path=relative_revealjs_path,
             markdown=markdown,
@@ -141,7 +144,12 @@ class MarkupGenerator:
         if theme := self.config.get("mdslides-reveal", "index", "theme"):
             relative_theme_path = self.__copy_theme(index_path, theme)
 
-        content = self.index_template.render(
+        # Refresh the templates here, so they have effect when live reloading
+        index_template = self.jinja2_environment.get_template(
+            self.config.get("mdslides-reveal", "index", "template")
+        )
+
+        content = index_template.render(
             title=self.config.get("mdslides-reveal", "index", "title"),
             theme=relative_theme_path,
             slideshows=slideshows,

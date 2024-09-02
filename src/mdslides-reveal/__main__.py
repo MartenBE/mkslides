@@ -14,7 +14,8 @@ from rich.logging import RichHandler
 
 logger = logging.getLogger()
 logger.setLevel("DEBUG")
-logger.addHandler(RichHandler())
+logger.addHandler(RichHandler(show_path=False))
+
 
 ################################################################################
 
@@ -66,13 +67,7 @@ def main():
     # Configuring paths
 
     input_path = Path(args.files).resolve(strict=True)
-
-    md_root_path = None
-    if input_path.is_dir():
-        md_root_path = input_path
-    else:
-        md_root_path = input_path.parent
-
+    md_root_path = input_path if input_path.is_dir() else input_path.parent
     output_directory = Path(args.output).resolve(strict=False)
     markup_generator = MarkupGenerator(config, md_root_path, output_directory)
 
@@ -91,19 +86,20 @@ def main():
             markup_generator.process_markdown(input_path)
 
         server = livereload.Server()
+        server._setup_logging = lambda: None # https://github.com/lepture/python-livereload/issues/232
 
-        paths_to_watch = [input_path]
         for path in [
-            config.get("mdslides-reveal", "slides", "theme"),
-            config.get("mdslides-reveal", "slides", "template"),
+            args.files,
+            args.config,
             config.get("mdslides-reveal", "index", "theme"),
             config.get("mdslides-reveal", "index", "template"),
+            config.get("mdslides-reveal", "slides", "theme"),
+            config.get("mdslides-reveal", "slides", "template"),
         ]:
             if path:
-                paths_to_watch.append(path)
-
-        for path in paths_to_watch:
-            server.watch(filepath=path, func=reload)
+                path = Path(path).resolve(strict=True)
+                logger.info(f"Watching: \"{path.absolute()}\"")
+                server.watch(filepath=path.absolute().as_posix(), func=reload, delay=2)
 
         server.serve(root=output_directory)
 
