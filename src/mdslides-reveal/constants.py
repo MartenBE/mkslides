@@ -35,3 +35,7 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
     """,
     re.VERBOSE,
 )
+
+CONFIG_LOCATION = ".mdslides.yml"
+DEFAULT_CONFIG_LOCATION = "./assets/default.mdslides.yml"
+DEFAULT_OUTPUT_DIR = "html"

@@ -20,7 +20,7 @@ class Copier:
         self.md_root_path = md_root_path.resolve(strict=True)
         logger.info(f'Markdown root directory: "{self.md_root_path.absolute()}"')
 
-        self.output_directory_path = output_directory_path.resolve(strict=True)
+        self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
             f'Requested output directory: "{self.output_directory_path.absolute()}"'
         )

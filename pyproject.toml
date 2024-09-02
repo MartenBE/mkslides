@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "mdslides-reveal"
+version = "0.1.0"
+description = "Test"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "mdslides-reveal", from = "src" }]
+
+
+[tool.poetry.dependencies]
+python = "^3.12"
+Jinja2 = "^3.1.4"
+livereload = "^2.7.0"
+python-frontmatter = "^1.1.0"
+PyYAML = "^6.0.2"
+rich = "^13.8.0"
+
+[tool.poetry.group.dev.dependencies]
+bumpver = "^2023.1129"
+black = "^24.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -3,17 +3,19 @@ import yaml
 
 from pathlib import Path
 
+from constants import DEFAULT_CONFIG_LOCATION
+
 
 logger = logging.getLogger(__name__)
 
 
 class Config:
     def __init__(self):
-        default_config_path = Path("./assets/default.revealpy.yml").resolve(strict=True)
+        default_config_path = Path(DEFAULT_CONFIG_LOCATION).resolve(strict=True)
         with default_config_path.open() as f:
             self.config = yaml.safe_load(f)
 
-        logger.info(f"Default config loaded from: \"{default_config_path}\"")
+        logger.info(f'Default config loaded from: "{default_config_path}"')
         logger.info(f"Default config: {self.config}")
 
     def merge_config_from_file(self, config_path: Path):
@@ -22,14 +24,14 @@ class Config:
 
         self.config = self.__recursive_merge(self.config, new_config)
 
-        logger.info(f"Config merged from: \"{config_path}\"")
+        logger.info(f'Config merged from: "{config_path}"')
         logger.info(f"Config: {self.config}")
 
     def merge_config_from_dict(self, config_dict: dict):
         self.config = self.__recursive_merge(self.config, config_dict)
 
         logger.info(f"Config merged from dict")
-        logger.info(f"Config: \"{self.config}\"")
+        logger.info(f'Config: "{self.config}"')
 
     def get(self, *keys):
         current_value = self.config
