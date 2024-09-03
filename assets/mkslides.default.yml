@@ -1,0 +1,8 @@
+index:
+    title: Index
+    template: assets/templates/index.html.jinja
+slides:
+    theme:
+    template: assets/templates/slideshow.html.jinja
+reveal.js:
+    history: true # Necessary for back/forward buttons and livereload

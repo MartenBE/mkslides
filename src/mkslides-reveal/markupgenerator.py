@@ -1,4 +1,5 @@
 import datetime
+import time
 import frontmatter
 import jinja2
 import logging
@@ -48,11 +49,12 @@ class MarkupGenerator:
         self.jinja2_environment = jinja2.Environment()
         self.jinja2_environment.loader = jinja2.FileSystemLoader(".")
 
-    def create_output_directory(self, clear: bool = False) -> None:
-        if clear and self.output_directory_path.exists():
+    def clear_output_directory(self) -> None:
+        if self.output_directory_path.exists():
             shutil.rmtree(self.output_directory_path)
             logger.info("Output directory already exists: deleted")
 
+    def create_output_directory(self) -> None:
         self.output_directory_path.mkdir(parents=True, exist_ok=True)
         logger.info(f"Output directory created")
 
@@ -60,13 +62,15 @@ class MarkupGenerator:
 
     def process_markdown(self, input_path: Path) -> None:
         logger.info(f"Processing markdown")
+        start_time = time.perf_counter()
 
         if input_path.is_dir():
             self.__process_markdown_directory()
         else:
             self.__process_markdown_file(input_path)
 
-        logger.info(f"Finished processing markdown")
+        end_time = time.perf_counter()
+        logger.info(f"Finished processing markdown in {end_time - start_time:.2f} seconds")
 
     ################################################################################
 
@@ -96,14 +100,14 @@ class MarkupGenerator:
         # Copy the theme CSS
 
         relative_theme_path = None
-        if theme := self.config.get("mdslides-reveal", "slides", "theme"):
+        if theme := self.config.get("slides", "theme"):
             relative_theme_path = self.__copy_theme(output_markup_path, theme)
 
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
         slideshow_template = self.jinja2_environment.get_template(
-            self.config.get("mdslides-reveal", "slides", "template")
+            self.config.get("slides", "template")
         )
 
         # https://revealjs.com/markdown/#external-markdown
@@ -114,7 +118,7 @@ class MarkupGenerator:
             "separator-notes",
             "charset",
         ]:
-            if value := self.config.get("mdslides-reveal", "slides", option):
+            if value := self.config.get("slides", option):
                 markdown_data_options[option] = value
 
         markup = slideshow_template.render(
@@ -151,16 +155,16 @@ class MarkupGenerator:
         index_path = self.output_directory_path / "index.html"
 
         relative_theme_path = None
-        if theme := self.config.get("mdslides-reveal", "index", "theme"):
+        if theme := self.config.get("index", "theme"):
             relative_theme_path = self.__copy_theme(index_path, theme)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = self.jinja2_environment.get_template(
-            self.config.get("mdslides-reveal", "index", "template")
+            self.config.get("index", "template")
         )
 
         content = index_template.render(
-            title=self.config.get("mdslides-reveal", "index", "title"),
+            title=self.config.get("index", "title"),
             theme=relative_theme_path,
             slideshows=slideshows,
             build_datetime=datetime.datetime.now(),

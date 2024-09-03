@@ -1,12 +1,11 @@
 [tool.poetry]
-name = "mdslides-reveal"
+name = "MkSlides-Reveal"
 version = "0.1.0"
-description = "Test"
-authors = ["Your Name <you@example.com>"]
+description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
+authors = ["MartenBE <https://github.com/MartenBE>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "mdslides-reveal", from = "src" }]
-
+packages = [{ include = "mkslides-reveal", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
