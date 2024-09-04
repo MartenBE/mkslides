@@ -21,7 +21,36 @@ logger.addHandler(RichHandler(show_path=False))
 
 def main() -> argparse.Namespace:
 
-    # Parsing arguments
+    # Common arguments
+
+    help_argument_data = {
+        "action": "help",
+        "help": "Show this message and exit.",
+    }
+
+    files_argument_data = {
+        "metavar": "FILENAME|PATH",
+        "help": "Path to the Markdown file, or the directory containing Markdown files.",
+    }
+
+    clean_argument_data = {
+        "action": "store_true",
+        "help": "Remove old files before building.",
+    }
+
+    config_file_argument_data = {
+        "metavar": "FILENAME",
+        "default": EXPECTED_CONFIG_LOCATION,
+        "help": "Provide a specific MkSlides-Reveal config file.",
+    }
+
+    site_dir_argument_data = {
+        "metavar": "PATH",
+        "default": DEFAULT_OUTPUT_DIR,
+        "help": "The directory to output the result of the slides build.",
+    }
+
+    # Global arguments
 
     parser = argparse.ArgumentParser(
         prog="mkslides-reveal",
@@ -37,11 +66,11 @@ def main() -> argparse.Namespace:
         version="%(prog)s TODO",
         help="Show the version and exit.",
     )
-    parser.add_argument(
-        "-h", "--help", action="help", help="Show this message and exit."
-    )
+    parser.add_argument("-h", "--help", **help_argument_data)
 
     subparsers = parser.add_subparsers(title="Commands", dest="command")
+
+    # Build arguments
 
     build_parser = subparsers.add_parser(
         "build",
@@ -49,32 +78,14 @@ def main() -> argparse.Namespace:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         add_help=False,
     )
-    build_parser.add_argument(
-        "files",
-        metavar="FILENAME|PATH",
-        help="Path to the Markdown file, or the directory containing Markdown files.",
-    )
-    build_parser.add_argument(
-        "-c", "--clean", action="store_true", help="Remove old files before building."
-    )
-    build_parser.add_argument(
-        "-f",
-        "--config-file",
-        metavar="FILENAME",
-        default=EXPECTED_CONFIG_LOCATION,
-        help="Provide a specific MkSlides-Reveal config file.",
-    )
-    build_parser.add_argument(
-        "-d",
-        "--site-dir",
-        metavar="PATH",
-        default=DEFAULT_OUTPUT_DIR,
-        help="The directory to output the result of the documentation build.",
-    )
-    build_parser.add_argument(
-        "-h", "--help", action="help", help="Show this message and exit."
-    )
+    build_parser.add_argument("files", **files_argument_data)
+    build_parser.add_argument("-c", "--clean", **clean_argument_data)
+    build_parser.add_argument("-f", "--config-file", **config_file_argument_data)
+    build_parser.add_argument("-d", "--site-dir", **site_dir_argument_data)
+    build_parser.add_argument("-h", "--help", **help_argument_data)
     build_parser.set_defaults(func=build)
+
+    # Serve arguments
 
     serve_parser = subparsers.add_parser(
         "serve",
@@ -84,8 +95,7 @@ def main() -> argparse.Namespace:
     )
     serve_parser.add_argument(
         "files",
-        metavar="FILENAME|PATH",
-        help="Path to the Markdown file, or the directory containing Markdown files.",
+        **files_argument_data,
     )
     serve_parser.add_argument(
         "-a",
@@ -103,9 +113,7 @@ def main() -> argparse.Namespace:
     serve_parser.add_argument(
         "--dirty", action="store_true", help="Only re-build files that have changed."
     )
-    serve_parser.add_argument(
-        "-c", "--clean", action="store_true", help="Remove old files before building."
-    )
+    serve_parser.add_argument("-c", "--clean", **clean_argument_data)
     serve_parser.add_argument(
         "--watch-index-theme",
         action="store_true",
@@ -126,24 +134,12 @@ def main() -> argparse.Namespace:
         action="store_true",
         help="Include the slides template in list of files to watch for live reloading.",
     )
-    serve_parser.add_argument(
-        "-f",
-        "--config-file",
-        metavar="FILENAME",
-        default=EXPECTED_CONFIG_LOCATION,
-        help="Provide a specific MkSlides-Reveal config file.",
-    )
-    serve_parser.add_argument(
-        "-d",
-        "--site-dir",
-        metavar="PATH",
-        default=DEFAULT_OUTPUT_DIR,
-        help="The directory to output the result of the documentation build.",
-    )
-    serve_parser.add_argument(
-        "-h", "--help", action="help", help="Show this message and exit."
-    )
+    serve_parser.add_argument("-f", "--config-file", **config_file_argument_data)
+    serve_parser.add_argument("-d", "--site-dir", **site_dir_argument_data)
+    serve_parser.add_argument("-h", "--help", **help_argument_data)
     serve_parser.set_defaults(func=serve)
+
+    # Execute the command
 
     args = parser.parse_args()
 
