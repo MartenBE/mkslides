@@ -1,14 +1,13 @@
 index:
-    title: TRIAL
-    theme: https://hogenttin.github.io/cdn/styles/reveal-js/index.css
+  title: TRIAL
+  theme: https://hogenttin.github.io/cdn/styles/reveal-js/index.css
 slides:
-    theme: https://hogenttin.github.io/cdn/styles/reveal-js/slides.css
-    highlight-theme: https://unpkg.com/highlight.js/styles/vs.css
-    separator: ^\s*---\s*$
-    separator-vertical: ^\s*-v-\s*$
-    separator-notes: "^Notes?:"
+  theme: https://hogenttin.github.io/cdn/styles/reveal-js/slides.css
+  highlight-theme: https://unpkg.com/highlight.js/styles/vs.css
+  separator: ^\s*---\s*$
+  separator-vertical: ^\s*-v-\s*$
+  separator-notes: "^Notes?:"
 reveal.js:
-    height: 1080
-    width: 1920
-    transition: fade
-
+  height: 1080
+  width: 1920
+  transition: fade
