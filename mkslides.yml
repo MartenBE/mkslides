@@ -1,13 +1,21 @@
 index:
   title: TRIAL
+  favicon: https://hogenttin.github.io/cdn/favicon/favicon.ico
   theme: https://hogenttin.github.io/cdn/styles/reveal-js/index.css
 slides:
+  favicon: https://hogenttin.github.io/cdn/favicon/favicon.ico
   theme: https://hogenttin.github.io/cdn/styles/reveal-js/slides.css
-  highlight-theme: https://unpkg.com/highlight.js/styles/vs.css
+  highlight_theme: https://unpkg.com/highlight.js/styles/vs.css
   separator: ^\s*---\s*$
-  separator-vertical: ^\s*-v-\s*$
-  separator-notes: "^Notes?:"
+  separator_vertical: ^\s*-v-\s*$
+  separator_notes: "^Notes?:"
 reveal.js:
   height: 1080
   width: 1920
   transition: fade
+plugins:
+  - name: RevealMermaid
+    extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
+  - extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js

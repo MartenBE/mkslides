@@ -33,6 +33,13 @@
             <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
         -->
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
+
+        {% for plugin in plugins %}
+            {% for javascript in plugin.extra_javascript %}
+                <script src="{{ javascript }}"></script>
+            {% endfor %}
+        {% endfor %}
+
         <script>
             Reveal.initialize({
                 {% if revealjs_config %}
@@ -45,7 +52,13 @@
                     RevealHighlight,
                     RevealZoom,
                     // RevealNotes, // https://github.com/hakimel/reveal.js/issues/3659
-                    RevealMath
+                    RevealMath,
+
+                    {% for plugin in plugins %}
+                        {% if plugin.name %}
+                            {{ plugin.name }},
+                        {% endif %}
+                    {% endfor %}
                 ],
             });
         </script>

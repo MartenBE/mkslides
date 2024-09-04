@@ -106,8 +106,12 @@ class MarkupGenerator:
         # Copy the highlight CSS
 
         relative_highlight_theme_path = None
-        if theme := self.config.get("slides", "highlight-theme"):
+        if theme := self.config.get("slides", "highlight_theme"):
             relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
+
+        # Retrieve the 3rd party plugins
+
+        plugins = self.config.get("plugins")
 
         # Generate the markup from markdown
 
@@ -120,8 +124,8 @@ class MarkupGenerator:
         markdown_data_options = {}
         for option in [
             "separator",
-            "separator-vertical",
-            "separator-notes",
+            "separator_vertical",
+            "separator_notes",
             "charset",
         ]:
             if value := self.config.get("slides", option):
@@ -134,6 +138,7 @@ class MarkupGenerator:
             markdown_data_options=markdown_data_options,
             markdown=markdown,
             revealjs_config=revealjs_config,
+            plugins=plugins,
         )
         self.__create_file(output_markup_path, markup)
 
