@@ -1,15 +1,15 @@
 import datetime
-import time
 import frontmatter
 import jinja2
 import logging
 import shutil
+import time
 
 from pathlib import Path
 from urllib.parse import urlparse
 
-from config import Config
-from constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX
+from .config import Config
+from .constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,9 @@ class MarkupGenerator:
             self.__process_markdown_file(input_path)
 
         end_time = time.perf_counter()
-        logger.info(f"Finished processing markdown in {end_time - start_time:.2f} seconds")
+        logger.info(
+            f"Finished processing markdown in {end_time - start_time:.2f} seconds"
+        )
 
     ################################################################################
 

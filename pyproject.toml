@@ -19,6 +19,9 @@ rich = "^13.8.0"
 bumpver = "^2023.1129"
 black = "^24.8.0"
 
+[tool.poetry.scripts]
+mkslides-reveal = "mkslides-reveal.__main__:main"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

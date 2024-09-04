@@ -3,7 +3,7 @@ import yaml
 
 from pathlib import Path
 
-from constants import DEFAULT_CONFIG_LOCATION
+from .constants import DEFAULT_CONFIG_LOCATION
 
 
 logger = logging.getLogger(__name__)

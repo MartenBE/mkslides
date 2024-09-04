@@ -2,18 +2,14 @@ import argparse
 import livereload
 import logging
 
-from constants import (
-    EXPECTED_CONFIG_LOCATION,
-    DEFAULT_OUTPUT_DIR,
-)
 from pathlib import Path
-
-from config import Config
-from markupgenerator import MarkupGenerator
 from rich.logging import RichHandler
 from urllib.parse import urlparse
 
-################################################################################
+from .config import Config
+from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR
+from .markupgenerator import MarkupGenerator
+
 
 logger = logging.getLogger()
 logger.setLevel("DEBUG")
