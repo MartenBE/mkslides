@@ -38,5 +38,4 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
 
 EXPECTED_CONFIG_LOCATION = "mkslides.yml"
 DEFAULT_CONFIG_LOCATION = "./assets/mkslides.default.yml"
-EXPECTED_MARKDOWN_LOCATION = "./docs"
 DEFAULT_OUTPUT_DIR = "./site"

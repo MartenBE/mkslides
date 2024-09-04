@@ -5,14 +5,13 @@ import logging
 from constants import (
     EXPECTED_CONFIG_LOCATION,
     DEFAULT_OUTPUT_DIR,
-    EXPECTED_MARKDOWN_LOCATION,
 )
 from pathlib import Path
 
 from config import Config
 from markupgenerator import MarkupGenerator
 from rich.logging import RichHandler
-
+from urllib.parse import urlparse
 
 ################################################################################
 
@@ -169,6 +168,17 @@ def read_config(config_location: str) -> Config:
     return config
 
 
+def parse_ip_port(
+    ip_port_str: str,
+) -> tuple[str, int]:
+    urlparse_result = urlparse(f"//{ip_port_str}")
+    print(urlparse_result)
+    ip = urlparse_result.hostname
+    port = urlparse_result.port
+
+    return ip, port
+
+
 def build(args):
 
     logger.info("Command: build")
@@ -245,10 +255,13 @@ def serve(args):
             logger.info(f'Watching: "{path.absolute()}"')
             server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
 
-    # TODO host
-    # TODO port
-
-    server.serve(root=output_directory, open_url_delay=0 if args.open else None)
+    ip, port = parse_ip_port(args.dev_addr)
+    server.serve(
+        host=ip,
+        port=port,
+        root=output_directory,
+        open_url_delay=0 if args.open else None,
+    )
 
     logger.info("Done")
 
