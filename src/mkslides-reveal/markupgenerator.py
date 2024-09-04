@@ -132,6 +132,7 @@ class MarkupGenerator:
                 markdown_data_options[option] = value
 
         markup = slideshow_template.render(
+            favicon=self.config.get("slides", "favicon"),
             theme=relative_theme_path,
             highlight_theme=relative_highlight_theme_path,
             revealjs_path=relative_revealjs_path,
@@ -176,6 +177,7 @@ class MarkupGenerator:
         )
 
         content = index_template.render(
+            favicon=self.config.get("index", "favicon"),
             title=self.config.get("index", "title"),
             theme=relative_theme_path,
             slideshows=slideshows,
