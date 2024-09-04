@@ -172,7 +172,6 @@ def parse_ip_port(
     ip_port_str: str,
 ) -> tuple[str, int]:
     urlparse_result = urlparse(f"//{ip_port_str}")
-    print(urlparse_result)
     ip = urlparse_result.hostname
     port = urlparse_result.port
 

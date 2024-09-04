@@ -103,6 +103,12 @@ class MarkupGenerator:
         if theme := self.config.get("slides", "theme"):
             relative_theme_path = self.__copy_theme(output_markup_path, theme)
 
+        # Copy the highlight CSS
+
+        relative_highlight_theme_path = None
+        if theme := self.config.get("slides", "highlight-theme"):
+            relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
+
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
@@ -123,6 +129,7 @@ class MarkupGenerator:
 
         markup = slideshow_template.render(
             theme=relative_theme_path,
+            highlight_theme=relative_highlight_theme_path,
             revealjs_path=relative_revealjs_path,
             markdown_data_options=markdown_data_options,
             markdown=markdown,
