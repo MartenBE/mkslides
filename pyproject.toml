@@ -27,8 +27,8 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.bumpver]
-current_version = "2024.1001-alpha"
-version_pattern = "YYYY.BUILD[-TAG]"
+current_version = "0.1.0"
+version_pattern = "MAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
 tag_scope = "default"
@@ -39,11 +39,6 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
-"pyproject.toml" = [
-    'current_version = "{version}"',
-]
-"README.md" = [
-    "{version}",
-    "{pep440_version}",
-]
-
+"pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
+"src/mkslides-reveal/__init__.py" = ['^__version__ = "{version}"']
+"README.md" = ["{version}", "{pep440_version}"]

@@ -1,1 +1,1 @@
-current_version = "2024.1001-alpha"
+__version__ = "0.1.0"

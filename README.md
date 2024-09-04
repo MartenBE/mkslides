@@ -1,4 +1,4 @@
-# MkSlides-Reveal
+# MkSlides-Reveal 0.1.0
 
 Use `mkslides-reveal` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
 
