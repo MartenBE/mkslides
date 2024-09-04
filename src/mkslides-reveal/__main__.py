@@ -55,8 +55,8 @@ def main() -> argparse.Namespace:
     )
     build_parser.add_argument(
         "files",
-        metavar="FILE(S)/DIR",
-        help="Path to the Markdown file(s), or the directory containing Markdown files.",
+        metavar="FILENAME|PATH",
+        help="Path to the Markdown file, or the directory containing Markdown files.",
     )
     build_parser.add_argument(
         "-c", "--clean", action="store_true", help="Remove old files before building."
@@ -88,8 +88,8 @@ def main() -> argparse.Namespace:
     )
     serve_parser.add_argument(
         "files",
-        metavar="FILE(S)/DIR",
-        help="Path to the Markdown file(s), or the directory containing Markdown files.",
+        metavar="FILENAME|PATH",
+        help="Path to the Markdown file, or the directory containing Markdown files.",
     )
     serve_parser.add_argument(
         "-a",
