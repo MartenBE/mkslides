@@ -60,10 +60,9 @@ class MarkupGenerator:
     def create_output_directory(self) -> None:
         if self.output_directory_path.exists():
             self.clear_output_directory()
-            return
-
-        self.output_directory_path.mkdir(parents=True, exist_ok=True)
-        logger.info(f"Output directory created")
+        else:
+            self.output_directory_path.mkdir(parents=True, exist_ok=True)
+            logger.info(f"Output directory created")
 
         self.__copy(self.revealjs_path, self.output_revealjs_path)
 

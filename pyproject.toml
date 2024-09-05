@@ -3,9 +3,11 @@ name = "mkslides-reveal"
 version = "0.1.2"
 description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
 authors = ["MartenBE"]
+repository = "https://github.com/MartenBE/mkslides-reveal"
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "mkslides-reveal", from = "src" }]
+include = ["assets/templates", "assets/mkslides.default.yml"]
 
 [tool.poetry.dependencies]
 python = "^3.12"

@@ -197,7 +197,7 @@ def serve(args):
 
     input_path = Path(args.files).resolve(strict=True)
     md_root_path = input_path if input_path.is_dir() else input_path.parent
-    site_dir = tempfile.mkdtemp(prefix='mkslides_')
+    site_dir = tempfile.mkdtemp(prefix="mkslides_")
     output_directory = Path(site_dir).resolve(strict=False)
     markup_generator = MarkupGenerator(config, md_root_path, output_directory)
 
@@ -249,16 +249,14 @@ def serve(args):
                 open_url_delay=0 if args.open else None,
             )
         except KeyboardInterrupt:
-            logger.info("Shutting down...")
-        finally:
-            server.shutdown()
+            logger.info("Shutting down ...")
 
         logger.info("Done")
 
     finally:
-        config.plugins.on_shutdown()
         if output_directory.exists():
             shutil.rmtree(output_directory)
+            logger.info(f"Removed \"{output_directory}\"")
 
 
 if __name__ == "__main__":
