@@ -3,7 +3,7 @@ import yaml
 
 from pathlib import Path
 
-from .constants import DEFAULT_CONFIG_LOCATION
+from .constants import DEFAULT_CONFIG_PATH
 
 
 logger = logging.getLogger(__name__)
@@ -11,11 +11,10 @@ logger = logging.getLogger(__name__)
 
 class Config:
     def __init__(self):
-        default_config_path = Path(DEFAULT_CONFIG_LOCATION).resolve(strict=True)
-        with default_config_path.open() as f:
+        with DEFAULT_CONFIG_PATH.open() as f:
             self.config = yaml.safe_load(f)
 
-        logger.info(f'Default config loaded from: "{default_config_path}"')
+        logger.info(f'Default config loaded from: "{DEFAULT_CONFIG_PATH}"')
         logger.info(f"Default config: {self.config}")
 
     def merge_config_from_file(self, config_path: Path):

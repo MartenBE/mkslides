@@ -9,7 +9,12 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .config import Config
-from .constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX, ASSETS_PATH, REVEALJS_PATH
+from .constants import (
+    HTML_BACKGROUND_IMAGE_REGEX,
+    HTML_IMAGE_REGEX,
+    MD_IMAGE_REGEX,
+    REVEALJS_PATH,
+)
 
 logger = logging.getLogger(__name__)
 
