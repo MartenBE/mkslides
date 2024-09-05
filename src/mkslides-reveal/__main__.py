@@ -2,6 +2,7 @@
 
 import argparse
 import importlib
+import json
 import shutil
 import livereload
 import logging
@@ -12,7 +13,7 @@ from rich.logging import RichHandler
 from urllib.parse import urlparse
 
 from .config import Config
-from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR
+from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR, REVEALJS_PATH
 from .markupgenerator import MarkupGenerator
 
 
@@ -29,6 +30,9 @@ def main() -> argparse.Namespace:
     # Common arguments
 
     version = importlib.metadata.version("mkslides-reveal")
+    revealjs_version = None
+    with (REVEALJS_PATH / "package.json").open() as f:
+        revealjs_version = json.load(f)["version"]
 
     help_argument_data = {
         "action": "help",
@@ -65,7 +69,7 @@ def main() -> argparse.Namespace:
         "-V",
         "--version",
         action="version",
-        version=f"%(prog)s {version}",
+        version=f"MkSlides-Reveal: {version}, Reveal.js version: {revealjs_version}",
         help="Show the version and exit.",
     )
     parser.add_argument("-h", "--help", **help_argument_data)
@@ -258,7 +262,7 @@ def serve(args):
     finally:
         if output_directory.exists():
             shutil.rmtree(output_directory)
-            logger.info(f"Removed \"{output_directory}\"")
+            logger.info(f'Removed "{output_directory}"')
 
 
 if __name__ == "__main__":

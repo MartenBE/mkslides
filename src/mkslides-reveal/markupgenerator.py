@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from .config import Config
-from .constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX
+from .constants import HTML_BACKGROUND_IMAGE_REGEX, HTML_IMAGE_REGEX, MD_IMAGE_REGEX, ASSETS_PATH, REVEALJS_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +36,6 @@ class MarkupGenerator:
             f'Requested output directory: "{self.output_directory_path.absolute()}"'
         )
 
-        self.assets_path = Path("assets").resolve(strict=True)
-        self.revealjs_path = Path(self.assets_path / "reveal.js-master").resolve(
-            strict=True
-        )
-
         self.output_assets_path = self.output_directory_path / "assets"
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
 
@@ -64,7 +59,7 @@ class MarkupGenerator:
             self.output_directory_path.mkdir(parents=True, exist_ok=True)
             logger.info(f"Output directory created")
 
-        self.__copy(self.revealjs_path, self.output_revealjs_path)
+        self.__copy(REVEALJS_PATH, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
         logger.info(f"Processing markdown")
