@@ -260,9 +260,7 @@ def serve(args):
                 open_url_delay=0 if args.open else None,
             )
         except KeyboardInterrupt:
-            logger.info("Shutting down ...")
-
-        logger.info("Done")
+            logger.info("Server shut down")
 
     finally:
         if output_directory.exists():
@@ -272,3 +270,4 @@ def serve(args):
 
 if __name__ == "__main__":
     main()
+    logger.info("Done")
