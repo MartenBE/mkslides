@@ -13,7 +13,7 @@ from rich.logging import RichHandler
 from urllib.parse import urlparse
 
 from .config import Config
-from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR, REVEALJS_PATH
+from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR, REVEALJS_PATH, HIGHLIGHTJS_THEMES_PATH
 from .markupgenerator import MarkupGenerator
 
 
@@ -30,9 +30,14 @@ def main() -> argparse.Namespace:
     # Common arguments
 
     version = importlib.metadata.version("mkslides-reveal")
+
     revealjs_version = None
     with (REVEALJS_PATH / "package.json").open() as f:
         revealjs_version = json.load(f)["version"]
+
+    highlightjs_themes_version = None
+    with (HIGHLIGHTJS_THEMES_PATH / "package.json").open() as f:
+        highlightjs_themes_version = json.load(f)["version"]
 
     help_argument_data = {
         "action": "help",
@@ -69,7 +74,7 @@ def main() -> argparse.Namespace:
         "-V",
         "--version",
         action="version",
-        version=f"MkSlides-Reveal: {version}, Reveal.js version: {revealjs_version}",
+        version=f"MkSlides-Reveal: {version}, Reveal.js version: {revealjs_version}, Highlight.js themes version: {highlightjs_themes_version}",
         help="Show the version and exit.",
     )
     parser.add_argument("-h", "--help", **help_argument_data)

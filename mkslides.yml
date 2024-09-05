@@ -5,7 +5,7 @@ index:
 slides:
   favicon: https://hogenttin.github.io/cdn/favicon/favicon.ico
   theme: https://hogenttin.github.io/cdn/styles/reveal-js/slides.css
-  highlight_theme: https://unpkg.com/highlight.js/styles/vs.css
+  highlight_theme: vs
   separator: ^\s*---\s*$
   separator_vertical: ^\s*-v-\s*$
   separator_notes: "^Notes?:"

@@ -43,3 +43,4 @@ DEFAULT_OUTPUT_DIR = "./site"
 
 ASSETS_PATH = Path("assets").resolve(strict=True)
 REVEALJS_PATH = Path(ASSETS_PATH / "reveal.js").resolve(strict=True)
+HIGHLIGHTJS_THEMES_PATH = Path(ASSETS_PATH / "highlight.js" / "build").resolve(strict=True)

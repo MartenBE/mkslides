@@ -14,6 +14,7 @@ from .constants import (
     HTML_IMAGE_REGEX,
     MD_IMAGE_REGEX,
     REVEALJS_PATH,
+    HIGHLIGHTJS_THEMES_PATH,
 )
 
 logger = logging.getLogger(__name__)
@@ -115,6 +116,15 @@ class MarkupGenerator:
 
         relative_highlight_theme_path = None
         if theme := self.config.get("slides", "highlight_theme"):
+            if not theme.endswith(".css"):
+                logger.info(f'Selected highlight.js theme "{theme}"')
+                theme = (HIGHLIGHTJS_THEMES_PATH / "styles" / theme).with_suffix(".css")
+                logger.info(
+                    f'Looking for selected highlight.js theme at "{theme.absolute()}"'
+                )
+                theme = theme.resolve(strict=True)
+                theme = str(theme)
+
             relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
 
         # Retrieve the 3rd party plugins
@@ -137,7 +147,7 @@ class MarkupGenerator:
             "charset",
         ]:
             if value := self.config.get("slides", option):
-                markdown_data_options[option] = value
+                markdown_data_options[option.replace("_", "-")] = value
 
         markup = slideshow_template.render(
             favicon=self.config.get("slides", "favicon"),
