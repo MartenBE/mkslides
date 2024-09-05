@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mkslides-reveal"
-version = "0.1.2"
+version = "0.1.0"
 description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
 authors = ["MartenBE"]
 repository = "https://github.com/MartenBE/mkslides-reveal"
