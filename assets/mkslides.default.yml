@@ -2,7 +2,7 @@ index:
   title: Index
   template: assets/templates/index.html.jinja
 slides:
-  highlight_theme: assets/reveal.js-master/plugin/highlight/monokai.css
+  highlight_theme: assets/reveal.js/plugin/highlight/monokai.css
   template: assets/templates/slideshow.html.jinja
 reveal.js:
   history: true # Necessary for back/forward buttons and livereload

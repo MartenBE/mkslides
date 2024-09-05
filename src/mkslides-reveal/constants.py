@@ -42,4 +42,4 @@ DEFAULT_CONFIG_PATH = Path("./assets/mkslides.default.yml").resolve(strict=True)
 DEFAULT_OUTPUT_DIR = "./site"
 
 ASSETS_PATH = Path("assets").resolve(strict=True)
-REVEALJS_PATH = Path(ASSETS_PATH / "reveal.js-master").resolve(strict=True)
+REVEALJS_PATH = Path(ASSETS_PATH / "reveal.js").resolve(strict=True)
