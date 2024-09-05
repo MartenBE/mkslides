@@ -1,6 +1,9 @@
 import argparse
+import importlib
+import shutil
 import livereload
 import logging
+import tempfile
 
 from pathlib import Path
 from rich.logging import RichHandler
@@ -23,6 +26,8 @@ def main() -> argparse.Namespace:
 
     # Common arguments
 
+    version = importlib.metadata.version("mkslides-reveal")
+
     help_argument_data = {
         "action": "help",
         "help": "Show this message and exit.",
@@ -31,11 +36,6 @@ def main() -> argparse.Namespace:
     files_argument_data = {
         "metavar": "FILENAME|PATH",
         "help": "Path to the Markdown file, or the directory containing Markdown files.",
-    }
-
-    clean_argument_data = {
-        "action": "store_true",
-        "help": "Remove old files before building.",
     }
 
     config_file_argument_data = {
@@ -63,7 +63,7 @@ def main() -> argparse.Namespace:
         "-V",
         "--version",
         action="version",
-        version="%(prog)s TODO",
+        version=f"%(prog)s {version}",
         help="Show the version and exit.",
     )
     parser.add_argument("-h", "--help", **help_argument_data)
@@ -79,7 +79,6 @@ def main() -> argparse.Namespace:
         add_help=False,
     )
     build_parser.add_argument("files", **files_argument_data)
-    build_parser.add_argument("-c", "--clean", **clean_argument_data)
     build_parser.add_argument("-f", "--config-file", **config_file_argument_data)
     build_parser.add_argument("-d", "--site-dir", **site_dir_argument_data)
     build_parser.add_argument("-h", "--help", **help_argument_data)
@@ -111,10 +110,6 @@ def main() -> argparse.Namespace:
         help="Open the website in a Web browser after the initial build finishes.",
     )
     serve_parser.add_argument(
-        "--dirty", action="store_true", help="Only re-build files that have changed."
-    )
-    serve_parser.add_argument("-c", "--clean", **clean_argument_data)
-    serve_parser.add_argument(
         "--watch-index-theme",
         action="store_true",
         help="Include the index theme in list of files to watch for live reloading.",
@@ -135,7 +130,6 @@ def main() -> argparse.Namespace:
         help="Include the slides template in list of files to watch for live reloading.",
     )
     serve_parser.add_argument("-f", "--config-file", **config_file_argument_data)
-    serve_parser.add_argument("-d", "--site-dir", **site_dir_argument_data)
     serve_parser.add_argument("-h", "--help", **help_argument_data)
     serve_parser.set_defaults(func=serve)
 
@@ -187,8 +181,6 @@ def build(args):
 
     # Process markdown files
 
-    if args.clean:
-        markup_generator.clear_output_directory()
     markup_generator.create_output_directory()
     markup_generator.process_markdown(input_path)
 
@@ -205,13 +197,12 @@ def serve(args):
 
     input_path = Path(args.files).resolve(strict=True)
     md_root_path = input_path if input_path.is_dir() else input_path.parent
-    output_directory = Path(args.site_dir).resolve(strict=False)
+    site_dir = tempfile.mkdtemp(prefix='mkslides_')
+    output_directory = Path(site_dir).resolve(strict=False)
     markup_generator = MarkupGenerator(config, md_root_path, output_directory)
 
     # Process markdown files
 
-    if args.clean:
-        markup_generator.clear_output_directory()
     markup_generator.create_output_directory()
     markup_generator.process_markdown(input_path)
 
@@ -219,42 +210,55 @@ def serve(args):
 
     def reload():
         logger.info("Reloading...")
+        markup_generator.create_output_directory()
         markup_generator.process_markdown(input_path)
 
-    server = livereload.Server()
-    server._setup_logging = (
-        lambda: None
-    )  # https://github.com/lepture/python-livereload/issues/232
+    try:
+        server = livereload.Server()
+        server._setup_logging = (
+            lambda: None
+        )  # https://github.com/lepture/python-livereload/issues/232
 
-    watched_paths = [
-        args.files,
-        args.config_file,  # TODO reload config
-    ]
+        watched_paths = [
+            args.files,
+            args.config_file,  # TODO reload config
+        ]
 
-    if args.watch_index_theme:
-        watched_paths.append(config.get("index", "theme"))
-    if args.watch_index_template:
-        watched_paths.append(config.get("index", "template"))
-    if args.watch_slides_theme:
-        watched_paths.append(config.get("slides", "theme"))
-    if args.watch_slides_template:
-        watched_paths.append(config.get("slides", "template"))
+        if args.watch_index_theme:
+            watched_paths.append(config.get("index", "theme"))
+        if args.watch_index_template:
+            watched_paths.append(config.get("index", "template"))
+        if args.watch_slides_theme:
+            watched_paths.append(config.get("slides", "theme"))
+        if args.watch_slides_template:
+            watched_paths.append(config.get("slides", "template"))
 
-    for path in watched_paths:
-        if path:
-            path = Path(path).resolve(strict=True)
-            logger.info(f'Watching: "{path.absolute()}"')
-            server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
+        for path in watched_paths:
+            if path:
+                path = Path(path).resolve(strict=True)
+                logger.info(f'Watching: "{path.absolute()}"')
+                server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
 
-    ip, port = parse_ip_port(args.dev_addr)
-    server.serve(
-        host=ip,
-        port=port,
-        root=output_directory,
-        open_url_delay=0 if args.open else None,
-    )
+        ip, port = parse_ip_port(args.dev_addr)
 
-    logger.info("Done")
+        try:
+            server.serve(
+                host=ip,
+                port=port,
+                root=output_directory,
+                open_url_delay=0 if args.open else None,
+            )
+        except KeyboardInterrupt:
+            logger.info("Shutting down...")
+        finally:
+            server.shutdown()
+
+        logger.info("Done")
+
+    finally:
+        config.plugins.on_shutdown()
+        if output_directory.exists():
+            shutil.rmtree(output_directory)
 
 
 if __name__ == "__main__":

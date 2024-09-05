@@ -50,11 +50,18 @@ class MarkupGenerator:
         self.jinja2_environment.loader = jinja2.FileSystemLoader(".")
 
     def clear_output_directory(self) -> None:
-        if self.output_directory_path.exists():
-            shutil.rmtree(self.output_directory_path)
-            logger.info("Output directory already exists: deleted")
+        for item in self.output_directory_path.iterdir():
+            if item.is_file():
+                item.unlink()
+            elif item.is_dir():
+                shutil.rmtree(item)
+        logger.info("Output directory cleared")
 
     def create_output_directory(self) -> None:
+        if self.output_directory_path.exists():
+            self.clear_output_directory()
+            return
+
         self.output_directory_path.mkdir(parents=True, exist_ok=True)
         logger.info(f"Output directory created")
 

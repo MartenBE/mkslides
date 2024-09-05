@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "MkSlides-Reveal"
-version = "0.1.0"
+name = "mkslides-reveal"
+version = "0.1.2"
 description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
-authors = ["MartenBE <https://github.com/MartenBE>"]
+authors = ["MartenBE"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "mkslides-reveal", from = "src" }]
@@ -40,5 +40,3 @@ push = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
-"src/mkslides-reveal/__init__.py" = ['^__version__ = "{version}"']
-"README.md" = ["{version}", "{pep440_version}"]
