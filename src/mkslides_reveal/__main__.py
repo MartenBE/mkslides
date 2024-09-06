@@ -29,7 +29,7 @@ def main() -> argparse.Namespace:
 
     # Common arguments
 
-    version = importlib.metadata.version("mkslides-reveal")
+    version = importlib.metadata.version("mkslides_reveal")
 
     revealjs_version = None
     with (REVEALJS_PATH / "package.json").open() as f:

@@ -6,7 +6,7 @@ authors = ["MartenBE"]
 repository = "https://github.com/MartenBE/mkslides-reveal"
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "mkslides-reveal", from = "src" }]
+packages = [{ include = "mkslides_reveal", from = "src" }]
 include = ["assets"]
 
 [tool.poetry.dependencies]
@@ -22,7 +22,7 @@ bumpver = "^2023.1129"
 black = "^24.8.0"
 
 [tool.poetry.scripts]
-mkslides-reveal = "mkslides-reveal.__main__:main"
+mkslides-reveal = "mkslides_reveal.__main__:main"
 
 [build-system]
 requires = ["poetry-core"]
@@ -41,4 +41,5 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
+"src/mkslides_reveal/__init__.py" = ['^__version__ = "{version}"']
 "pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
