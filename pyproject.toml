@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mkslides-reveal"
-version = "0.1.1"
+version = "0.1.2"
 description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
 authors = ["MartenBE"]
 repository = "https://github.com/MartenBE/mkslides-reveal"
@@ -29,7 +29,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.bumpver]
-current_version = "0.1.1"
+current_version = "0.1.2"
 version_pattern = "MAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
