@@ -7,7 +7,7 @@ repository = "https://github.com/MartenBE/mkslides-reveal"
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "mkslides_reveal", from = "src" }]
-include = ["assets"]
+include = [{ path = "assets", format = ["sdist", "wheel"] }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
