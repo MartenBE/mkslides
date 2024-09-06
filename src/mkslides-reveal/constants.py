@@ -39,7 +39,7 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
 
 EXPECTED_CONFIG_LOCATION = "mkslides.yml"
 DEFAULT_CONFIG_PATH = Path("./assets/mkslides.default.yml").resolve(strict=True)
-DEFAULT_OUTPUT_DIR = "./site"
+DEFAULT_OUTPUT_DIR = "site"
 
 ASSETS_PATH = Path("assets").resolve(strict=True)
 REVEALJS_PATH = Path(ASSETS_PATH / "reveal.js").resolve(strict=True)
