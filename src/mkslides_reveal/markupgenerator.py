@@ -1,6 +1,5 @@
 import datetime
 import frontmatter
-import jinja2
 import logging
 import shutil
 import time
@@ -16,6 +15,9 @@ from .constants import (
     MD_IMAGE_REGEX,
     REVEALJS_RESOURCE,
     HIGHLIGHTJS_THEMES_RESOURCE,
+    DEFAULT_INDEX_TEMPLATE,
+    DEFAULT_SLIDESHOW_TEMPLATE,
+    LOCAL_JINJA2_ENVIRONMENT,
 )
 
 logger = logging.getLogger(__name__)
@@ -45,11 +47,6 @@ class MarkupGenerator:
 
         self.output_assets_path = self.output_directory_path / "assets"
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
-
-        # Templates
-
-        self.jinja2_environment = jinja2.Environment()
-        self.jinja2_environment.loader = jinja2.FileSystemLoader(".")
 
     def clear_output_directory(self) -> None:
         for item in self.output_directory_path.iterdir():
@@ -143,9 +140,11 @@ class MarkupGenerator:
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
-        slideshow_template = self.jinja2_environment.get_template(
-            self.config.get("slides", "template")
-        )
+        slideshow_template = None
+        if template_config := self.config.get("slides", "template"):
+            slideshow_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
+        else:
+            slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
         # https://revealjs.com/markdown/#external-markdown
         markdown_data_options = {}
@@ -199,9 +198,11 @@ class MarkupGenerator:
             relative_theme_path = self.__copy_theme(index_path, theme)
 
         # Refresh the templates here, so they have effect when live reloading
-        index_template = self.jinja2_environment.get_template(
-            self.config.get("index", "template")
-        )
+        index_template = None
+        if template_config := self.config.get("index", "template"):
+            index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
+        else:
+            index_template = DEFAULT_INDEX_TEMPLATE
 
         content = index_template.render(
             favicon=self.config.get("index", "favicon"),

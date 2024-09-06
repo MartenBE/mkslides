@@ -1,6 +1,7 @@
 import re
 
 from importlib import resources
+from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
 
 MD_IMAGE_REGEX = re.compile(
     r"""
@@ -45,3 +46,13 @@ ASSETS_RESOURCE = resources.files("assets")
 DEFAULT_CONFIG_RESOURCE = ASSETS_RESOURCE.joinpath("mkslides.default.yml")
 REVEALJS_RESOURCE = ASSETS_RESOURCE.joinpath("reveal.js")
 HIGHLIGHTJS_THEMES_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js", "build")
+
+DEFAULT_JINJA2_ENVIRONMENT = Environment(
+    loader=PackageLoader("assets"),
+    autoescape=select_autoescape()
+)
+
+DEFAULT_INDEX_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("index.html.jinja")
+DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("slideshow.html.jinja")
+
+LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader('.'))
