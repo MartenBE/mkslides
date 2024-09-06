@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import importlib
 import json
 import shutil
 import livereload
 import logging
 import tempfile
 
+from importlib import metadata
 from pathlib import Path
 from rich.logging import RichHandler
 from urllib.parse import urlparse
@@ -34,7 +34,7 @@ def main() -> argparse.Namespace:
 
     # Common arguments
 
-    version = importlib.metadata.version("mkslides_reveal")
+    version = metadata.version("mkslides_reveal")
 
     revealjs_version = None
     with REVEALJS_RESOURCE.joinpath("package.json").open() as f:
