@@ -1,5 +1,7 @@
 import datetime
+import importlib.resources
 import frontmatter
+import importlib
 import jinja2
 import logging
 import shutil
@@ -13,8 +15,8 @@ from .constants import (
     HTML_BACKGROUND_IMAGE_REGEX,
     HTML_IMAGE_REGEX,
     MD_IMAGE_REGEX,
-    REVEALJS_PATH,
-    HIGHLIGHTJS_THEMES_PATH,
+    REVEALJS_RESOURCE,
+    HIGHLIGHTJS_THEMES_RESOURCE,
 )
 
 logger = logging.getLogger(__name__)
@@ -65,7 +67,8 @@ class MarkupGenerator:
             self.output_directory_path.mkdir(parents=True, exist_ok=True)
             logger.info(f"Output directory created")
 
-        self.__copy(REVEALJS_PATH, self.output_revealjs_path)
+        with importlib.resources.as_file(REVEALJS_RESOURCE) as REVEALJS_PATH:
+            self.__copy(REVEALJS_PATH, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
         logger.info(f"Processing markdown")
@@ -118,14 +121,17 @@ class MarkupGenerator:
         if theme := self.config.get("slides", "highlight_theme"):
             if not theme.endswith(".css"):
                 logger.info(f'Selected highlight.js theme "{theme}"')
-                theme = (HIGHLIGHTJS_THEMES_PATH / "styles" / theme).with_suffix(".css")
-                logger.info(
-                    f'Looking for selected highlight.js theme at "{theme.absolute()}"'
-                )
-                theme = theme.resolve(strict=True)
-                theme = str(theme)
-
-            relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
+                with importlib.resources.as_file(
+                    HIGHLIGHTJS_THEMES_RESOURCE.joinpath("styles").joinpath(theme)
+                ) as theme_path:
+                    theme_path = theme_path.with_suffix(".css")
+                    logger.info(
+                        f'Looking for selected highlight.js theme at "{theme_path.absolute()}"'
+                    )
+                    theme_path = theme_path.resolve(strict=True)
+                    relative_highlight_theme_path = self.__copy_theme(output_markup_path, str(theme_path))
+            else:
+                relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
 
         # Retrieve the 3rd party plugins
 

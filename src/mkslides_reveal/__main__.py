@@ -13,7 +13,12 @@ from rich.logging import RichHandler
 from urllib.parse import urlparse
 
 from .config import Config
-from .constants import EXPECTED_CONFIG_LOCATION, DEFAULT_OUTPUT_DIR, REVEALJS_PATH, HIGHLIGHTJS_THEMES_PATH
+from .constants import (
+    EXPECTED_CONFIG_LOCATION,
+    DEFAULT_OUTPUT_DIR,
+    REVEALJS_RESOURCE,
+    HIGHLIGHTJS_THEMES_RESOURCE,
+)
 from .markupgenerator import MarkupGenerator
 
 
@@ -32,11 +37,11 @@ def main() -> argparse.Namespace:
     version = importlib.metadata.version("mkslides_reveal")
 
     revealjs_version = None
-    with (REVEALJS_PATH / "package.json").open() as f:
+    with REVEALJS_RESOURCE.joinpath("package.json").open() as f:
         revealjs_version = json.load(f)["version"]
 
     highlightjs_themes_version = None
-    with (HIGHLIGHTJS_THEMES_PATH / "package.json").open() as f:
+    with HIGHLIGHTJS_THEMES_RESOURCE.joinpath("package.json").open() as f:
         highlightjs_themes_version = json.load(f)["version"]
 
     help_argument_data = {

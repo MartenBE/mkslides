@@ -1,9 +1,10 @@
+import importlib
 import logging
 import yaml
 
 from pathlib import Path
 
-from .constants import DEFAULT_CONFIG_PATH
+from .constants import DEFAULT_CONFIG_RESOURCE
 
 
 logger = logging.getLogger(__name__)
@@ -11,10 +12,10 @@ logger = logging.getLogger(__name__)
 
 class Config:
     def __init__(self):
-        with DEFAULT_CONFIG_PATH.open() as f:
+        with DEFAULT_CONFIG_RESOURCE.open() as f:
             self.config = yaml.safe_load(f)
 
-        logger.info(f'Default config loaded from: "{DEFAULT_CONFIG_PATH}"')
+        logger.info(f'Default config loaded from: "{DEFAULT_CONFIG_RESOURCE}"')
         logger.info(f"Default config: {self.config}")
 
     def merge_config_from_file(self, config_path: Path):
