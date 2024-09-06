@@ -1,8 +1,6 @@
-import importlib
 import re
 
-from pathlib import Path
-
+from importlib import resources
 
 MD_IMAGE_REGEX = re.compile(
     r"""
@@ -43,7 +41,7 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
 EXPECTED_CONFIG_LOCATION = "mkslides.yml"
 DEFAULT_OUTPUT_DIR = "site"
 
-ASSETS_RESOURCE = importlib.resources.files("assets")
+ASSETS_RESOURCE = resources.files("assets")
 DEFAULT_CONFIG_RESOURCE = ASSETS_RESOURCE.joinpath("mkslides.default.yml")
 REVEALJS_RESOURCE = ASSETS_RESOURCE.joinpath("reveal.js")
 HIGHLIGHTJS_THEMES_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js", "build")

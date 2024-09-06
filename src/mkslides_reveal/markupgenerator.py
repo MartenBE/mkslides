@@ -1,12 +1,11 @@
 import datetime
-import importlib.resources
 import frontmatter
-import importlib
 import jinja2
 import logging
 import shutil
 import time
 
+from importlib import resources
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -67,7 +66,7 @@ class MarkupGenerator:
             self.output_directory_path.mkdir(parents=True, exist_ok=True)
             logger.info(f"Output directory created")
 
-        with importlib.resources.as_file(REVEALJS_RESOURCE) as REVEALJS_PATH:
+        with resources.as_file(REVEALJS_RESOURCE) as REVEALJS_PATH:
             self.__copy(REVEALJS_PATH, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
@@ -121,7 +120,7 @@ class MarkupGenerator:
         if theme := self.config.get("slides", "highlight_theme"):
             if not theme.endswith(".css"):
                 logger.info(f'Selected highlight.js theme "{theme}"')
-                with importlib.resources.as_file(
+                with resources.as_file(
                     HIGHLIGHTJS_THEMES_RESOURCE.joinpath("styles").joinpath(theme)
                 ) as theme_path:
                     theme_path = theme_path.with_suffix(".css")
@@ -129,9 +128,13 @@ class MarkupGenerator:
                         f'Looking for selected highlight.js theme at "{theme_path.absolute()}"'
                     )
                     theme_path = theme_path.resolve(strict=True)
-                    relative_highlight_theme_path = self.__copy_theme(output_markup_path, str(theme_path))
+                    relative_highlight_theme_path = self.__copy_theme(
+                        output_markup_path, str(theme_path)
+                    )
             else:
-                relative_highlight_theme_path = self.__copy_theme(output_markup_path, theme)
+                relative_highlight_theme_path = self.__copy_theme(
+                    output_markup_path, theme
+                )
 
         # Retrieve the 3rd party plugins
 
