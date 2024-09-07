@@ -15,7 +15,7 @@ class Config:
         with DEFAULT_CONFIG_RESOURCE.open() as f:
             self.config = yaml.safe_load(f)
 
-        logger.info(f'Default config loaded from: "{DEFAULT_CONFIG_RESOURCE}"')
+        logger.info(f'Default config loaded from "{DEFAULT_CONFIG_RESOURCE}"')
         logger.info(f"Default config: {self.config}")
 
     def merge_config_from_file(self, config_path: Path):
@@ -24,7 +24,7 @@ class Config:
 
         self.config = self.__recursive_merge(self.config, new_config)
 
-        logger.info(f'Config merged from: "{config_path}"')
+        logger.info(f'Config merged from "{config_path}"')
         logger.info(f"Config: {self.config}")
 
     def get(self, *keys):

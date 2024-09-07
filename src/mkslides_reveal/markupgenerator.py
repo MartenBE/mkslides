@@ -1,4 +1,5 @@
 import datetime
+from importlib.abc import Traversable
 import frontmatter
 import logging
 import shutil
@@ -14,6 +15,7 @@ from .constants import (
     HTML_IMAGE_REGEX,
     MD_IMAGE_REGEX,
     REVEALJS_RESOURCE,
+    REVEALJS_THEMES_RESOURCE,
     HIGHLIGHTJS_THEMES_RESOURCE,
     DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
@@ -86,7 +88,7 @@ class MarkupGenerator:
         self,
         md_file: Path,
     ) -> tuple[dict, Path]:
-        logger.info(f'Processing markdown file: "{md_file}"')
+        logger.info(f'Processing markdown file at "{md_file}"')
 
         # Retrieve the frontmatter metadata and the markdown content
 
@@ -109,29 +111,17 @@ class MarkupGenerator:
 
         relative_theme_path = None
         if theme := self.config.get("slides", "theme"):
-            relative_theme_path = self.__copy_theme(output_markup_path, theme)
+            relative_theme_path = self.__copy_theme(
+                output_markup_path, theme, REVEALJS_THEMES_RESOURCE
+            )
 
         # Copy the highlight CSS
 
         relative_highlight_theme_path = None
         if theme := self.config.get("slides", "highlight_theme"):
-            if not theme.endswith(".css"):
-                logger.info(f'Selected highlight.js theme "{theme}"')
-                with resources.as_file(
-                    HIGHLIGHTJS_THEMES_RESOURCE.joinpath("styles").joinpath(theme)
-                ) as theme_path:
-                    theme_path = theme_path.with_suffix(".css")
-                    logger.info(
-                        f'Looking for selected highlight.js theme at "{theme_path.absolute()}"'
-                    )
-                    theme_path = theme_path.resolve(strict=True)
-                    relative_highlight_theme_path = self.__copy_theme(
-                        output_markup_path, str(theme_path)
-                    )
-            else:
-                relative_highlight_theme_path = self.__copy_theme(
-                    output_markup_path, theme
-                )
+            relative_highlight_theme_path = self.__copy_theme(
+                output_markup_path, theme, HIGHLIGHTJS_THEMES_RESOURCE
+            )
 
         # Retrieve the 3rd party plugins
 
@@ -219,13 +209,29 @@ class MarkupGenerator:
                 image = Path(md_file.parent, m.group("location")).resolve(strict=True)
                 self.__copy_to_output_relative_to_md_root(image)
 
-    def __copy_theme(self, file_using_theme_path: Path, theme: str) -> Path | str:
+    def __copy_theme(
+        self,
+        file_using_theme_path: Path,
+        theme: str,
+        default_theme_resource: Traversable = None,
+    ) -> Path | str:
         if self.__is_absolute_url(theme):
-            logger.info(f'Using theme "{theme}" is an absolute URL, no copy necessary')
+            logger.info(f'Using theme "{theme}" from an absolute URL, no copy necessary')
             return theme
 
-        theme_path = Path(theme).resolve(strict=True)
-        logger.info(f'Using theme "{theme_path}"')
+        theme_path = None
+        if not theme.endswith(".css"):
+            assert default_theme_resource is not None
+            with resources.as_file(
+                default_theme_resource.joinpath(theme)
+            ) as theme_path:
+                theme_path = theme_path.with_suffix(".css").resolve(strict=True)
+                logger.info(
+                    f'Using built-in theme "{theme}" from "{theme_path.absolute()}"'
+                )
+        else:
+            theme_path = Path(theme).resolve(strict=True)
+            logger.info(f'Using theme "{theme_path.absolute()}"')
 
         theme_output_path = self.output_assets_path / theme_path.name
         self.__copy_to_output(theme_path, theme_output_path)
@@ -245,7 +251,7 @@ class MarkupGenerator:
         else:
             destination_path.parent.mkdir(parents=True, exist_ok=True)
             destination_path.write_text(content)
-            logger.info(f'Created: "{destination_path}"')
+            logger.info(f'Created file "{destination_path}"')
 
     def __copy_to_output(self, source_path: Path, destination_path: Path) -> Path:
         self.__copy(source_path, destination_path)

@@ -17,7 +17,7 @@ from .constants import (
     EXPECTED_CONFIG_LOCATION,
     DEFAULT_OUTPUT_DIR,
     REVEALJS_RESOURCE,
-    HIGHLIGHTJS_THEMES_RESOURCE,
+    HIGHLIGHTJS_RESOURCE,
 )
 from .markupgenerator import MarkupGenerator
 
@@ -41,7 +41,7 @@ def main() -> argparse.Namespace:
         revealjs_version = json.load(f)["version"]
 
     highlightjs_themes_version = None
-    with HIGHLIGHTJS_THEMES_RESOURCE.joinpath("package.json").open() as f:
+    with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open() as f:
         highlightjs_themes_version = json.load(f)["version"]
 
     help_argument_data = {
@@ -164,7 +164,7 @@ def read_config(config_location: str) -> Config:
     config = Config()
 
     if config_path.exists():
-        logger.info(f'Config file found: "{config_path.absolute()}"')
+        logger.info(f'Config file found at "{config_path.absolute()}"')
         config.merge_config_from_file(config_path)
 
     return config

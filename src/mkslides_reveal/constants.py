@@ -45,14 +45,14 @@ DEFAULT_OUTPUT_DIR = "site"
 ASSETS_RESOURCE = resources.files("assets")
 DEFAULT_CONFIG_RESOURCE = ASSETS_RESOURCE.joinpath("mkslides.default.yml")
 REVEALJS_RESOURCE = ASSETS_RESOURCE.joinpath("reveal.js")
-HIGHLIGHTJS_THEMES_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js", "build")
+REVEALJS_THEMES_RESOURCE = REVEALJS_RESOURCE.joinpath("dist", "theme")
+HIGHLIGHTJS_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js")
+HIGHLIGHTJS_THEMES_RESOURCE = HIGHLIGHTJS_RESOURCE.joinpath("build", "styles")
 
 DEFAULT_JINJA2_ENVIRONMENT = Environment(
     loader=PackageLoader("assets"),
     autoescape=select_autoescape()
 )
-
 DEFAULT_INDEX_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("index.html.jinja")
 DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("slideshow.html.jinja")
-
 LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader('.'))
