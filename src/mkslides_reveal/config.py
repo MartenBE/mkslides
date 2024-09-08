@@ -22,9 +22,15 @@ class Config:
         with config_path.open() as f:
             new_config = yaml.safe_load(f)
 
+            self.config = self.__recursive_merge(self.config, new_config)
+
+            logger.info(f'Config merged from "{config_path}"')
+            logger.info(f"Config: {self.config}")
+
+    def merge_config_from_dict(self, new_config: dict):
         self.config = self.__recursive_merge(self.config, new_config)
 
-        logger.info(f'Config merged from "{config_path}"')
+        logger.info(f"Config merged from dict")
         logger.info(f"Config: {self.config}")
 
     def get(self, *keys):
