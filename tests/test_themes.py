@@ -120,3 +120,45 @@ def test_builtin_slideshow_theme_path(setup_markup_generator):
             '<link rel="stylesheet" href="../assets/vs.css" />',
         ],
     )
+
+
+def test_local_index_theme_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "index": {
+                "theme": "tests/test_styles/theme.css",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "index.html",
+        [
+            '<link rel="stylesheet" href="assets/theme.css" />',
+        ],
+    )
+
+
+def test_absolute_url_index_theme_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "index": {
+                "theme": "https://example.org/theme.css",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "index.html",
+        [
+            '<link rel="stylesheet" href="https://example.org/theme.css" />',
+        ],
+    )
