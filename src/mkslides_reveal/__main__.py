@@ -3,6 +3,7 @@
 import argparse
 import json
 import shutil
+import click
 import livereload
 import logging
 import tempfile
@@ -18,6 +19,9 @@ from .constants import (
     DEFAULT_OUTPUT_DIR,
     REVEALJS_RESOURCE,
     HIGHLIGHTJS_RESOURCE,
+    VERSION,
+    REVEALJS_VERSION,
+    HIGHLIGHTJS_THEMES_VERSION,
 )
 from .markupgenerator import MarkupGenerator
 
@@ -29,134 +33,31 @@ logger.addHandler(RichHandler(show_path=False))
 
 ################################################################################
 
+context_settings = {"help_option_names": ["-h", "--help"], "max_content_width": 120}
 
-def main() -> argparse.Namespace:
+files_argument_data = {
+    "metavar": "FILENAME|PATH",
+    # "help": "Path to the Markdown file, or the directory containing Markdown files.",
+}
 
-    # Common arguments
+config_file_argument_data = {
+    "metavar": "FILENAME",
+    "default": EXPECTED_CONFIG_LOCATION,
+    "help": "Provide a specific MkSlides-Reveal config file.",
+}
 
-    version = metadata.version("mkslides_reveal")
 
-    revealjs_version = None
-    with REVEALJS_RESOURCE.joinpath("package.json").open() as f:
-        revealjs_version = json.load(f)["version"]
-
-    highlightjs_themes_version = None
-    with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open() as f:
-        highlightjs_themes_version = json.load(f)["version"]
-
-    help_argument_data = {
-        "action": "help",
-        "help": "Show this message and exit.",
-    }
-
-    files_argument_data = {
-        "metavar": "FILENAME|PATH",
-        "help": "Path to the Markdown file, or the directory containing Markdown files.",
-    }
-
-    config_file_argument_data = {
-        "metavar": "FILENAME",
-        "default": EXPECTED_CONFIG_LOCATION,
-        "help": "Provide a specific MkSlides-Reveal config file.",
-    }
-
-    site_dir_argument_data = {
-        "metavar": "PATH",
-        "default": DEFAULT_OUTPUT_DIR,
-        "help": "The directory to output the result of the slides build.",
-    }
-
-    # Global arguments
-
-    parser = argparse.ArgumentParser(
-        prog="mkslides-reveal",
-        description="MkSlides-Reveal - Slides with Markdown using the power of Reveal.js.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        add_help=False,
-    )
-
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version=f"MkSlides-Reveal: {version}, Reveal.js version: {revealjs_version}, Highlight.js themes version: {highlightjs_themes_version}",
-        help="Show the version and exit.",
-    )
-    parser.add_argument("-h", "--help", **help_argument_data)
-
-    subparsers = parser.add_subparsers(title="Commands", dest="command")
-
-    # Build arguments
-
-    build_parser = subparsers.add_parser(
-        "build",
-        help="Build the MkDocs documentation.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        add_help=False,
-    )
-    build_parser.add_argument("files", **files_argument_data)
-    build_parser.add_argument("-f", "--config-file", **config_file_argument_data)
-    build_parser.add_argument("-d", "--site-dir", **site_dir_argument_data)
-    build_parser.add_argument("-h", "--help", **help_argument_data)
-    build_parser.set_defaults(func=build)
-
-    # Serve arguments
-
-    serve_parser = subparsers.add_parser(
-        "serve",
-        help="Run the builtin development server.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        add_help=False,
-    )
-    serve_parser.add_argument(
-        "files",
-        **files_argument_data,
-    )
-    serve_parser.add_argument(
-        "-a",
-        "--dev-addr",
-        metavar="<IP:PORT>",
-        default="localhost:8000",
-        help="IP address and port to serve slides locally",
-    )
-    serve_parser.add_argument(
-        "-o",
-        "--open",
-        action="store_true",
-        help="Open the website in a Web browser after the initial build finishes.",
-    )
-    serve_parser.add_argument(
-        "--watch-index-theme",
-        action="store_true",
-        help="Include the index theme in list of files to watch for live reloading.",
-    )
-    serve_parser.add_argument(
-        "--watch-index-template",
-        action="store_true",
-        help="Include the index template in list of files to watch for live reloading.",
-    )
-    serve_parser.add_argument(
-        "--watch-slides-theme",
-        action="store_true",
-        help="Include the slides theme in list of files to watch for live reloading.",
-    )
-    serve_parser.add_argument(
-        "--watch-slides-template",
-        action="store_true",
-        help="Include the slides template in list of files to watch for live reloading.",
-    )
-    serve_parser.add_argument("-f", "--config-file", **config_file_argument_data)
-    serve_parser.add_argument("-h", "--help", **help_argument_data)
-    serve_parser.set_defaults(func=serve)
-
-    # Execute the command
-
-    args = parser.parse_args()
-
-    if hasattr(args, "func"):
-        args.func(args)
-    else:
-        parser.print_help()
+@click.group(context_settings=context_settings)
+@click.version_option(
+    VERSION,
+    "-V",
+    "--version",
+    message=f"mkslides-reveal, version {VERSION}\nreveal.js, version {REVEALJS_VERSION}\nhighlight.js themes, version {HIGHLIGHTJS_THEMES_VERSION}"
+    "",
+)
+def cli():
+    "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
+    pass
 
 
 def read_config(config_location: str) -> Config:
@@ -180,20 +81,35 @@ def parse_ip_port(
     return ip, port
 
 
-def build(args):
+@cli.command()
+@click.argument("files", **files_argument_data)
+@click.option("-f", "--config-file", **config_file_argument_data)
+@click.option(
+    "-d",
+    "--site-dir",
+    help="The directory to output the result of the slides build.",
+    metavar="PATH",
+    default=DEFAULT_OUTPUT_DIR,
+)
+def build(files, config_file, site_dir):
+    """
+    Build the MkDocs documentation.
+
+    FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
+    """
 
     logger.info("Command: build")
 
     # Reading configuration
 
-    config = read_config(args.config_file)
+    config = read_config(config_file)
 
     # Configuring paths
 
-    input_path = Path(args.files).resolve(strict=True)
+    input_path = Path(files).resolve(strict=True)
     md_root_path = input_path if input_path.is_dir() else input_path.parent
-    output_directory = Path(args.site_dir).resolve(strict=False)
-    markup_generator = MarkupGenerator(config, md_root_path, output_directory)
+    output_directory = Path(site_dir).resolve(strict=False)
+    markup_generator = MarkupGenerator(config, output_directory)
 
     # Process markdown files
 
@@ -201,21 +117,71 @@ def build(args):
     markup_generator.process_markdown(input_path)
 
 
-def serve(args):
+@cli.command()
+@click.argument("files", **files_argument_data)
+@click.option(
+    "-a",
+    "--dev-addr",
+    help="IP address and port to serve slides locally.",
+    metavar="<IP:PORT>",
+)
+@click.option(
+    "-o",
+    "--open",
+    "open_in_browser",
+    help="Open the website in a Web browser after the initial build finishes.",
+    is_flag=True,
+)
+@click.option(
+    "--watch-index-theme",
+    help="Include the index theme in list of files to watch for live reloading.",
+    is_flag=True,
+)
+@click.option(
+    "--watch-index-template",
+    help="Include the index template in list of files to watch for live reloading.",
+    is_flag=True,
+)
+@click.option(
+    "--watch-slides-theme",
+    help="Include the slides theme in list of files to watch for live reloading.",
+    is_flag=True,
+)
+@click.option(
+    "--watch-slides-template",
+    help="Include the slides template in list of files to watch for live reloading.",
+    is_flag=True,
+)
+@click.option("-f", "--config-file", **config_file_argument_data)
+def serve(
+    files,
+    dev_addr,
+    open_in_browser,
+    watch_index_theme,
+    watch_index_template,
+    watch_slides_theme,
+    watch_slides_template,
+    config_file,
+):
+    """
+    Run the builtin development server.
+
+    FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
+    """
 
     logger.info("Command: serve")
 
     # Reading configuration
 
-    config = read_config(args.config_file)
+    config = read_config(config_file)
 
     # Configuring paths
 
-    input_path = Path(args.files).resolve(strict=True)
+    input_path = Path(files).resolve(strict=True)
     md_root_path = input_path if input_path.is_dir() else input_path.parent
     site_dir = tempfile.mkdtemp(prefix="mkslides_")
     output_directory = Path(site_dir).resolve(strict=False)
-    markup_generator = MarkupGenerator(config, md_root_path, output_directory)
+    markup_generator = MarkupGenerator(config, output_directory)
 
     # Process markdown files
 
@@ -236,17 +202,17 @@ def serve(args):
         )  # https://github.com/lepture/python-livereload/issues/232
 
         watched_paths = [
-            args.files,
-            args.config_file,  # TODO reload config
+            files,
+            config_file,  # TODO reload config
         ]
 
-        if args.watch_index_theme:
+        if watch_index_theme:
             watched_paths.append(config.get("index", "theme"))
-        if args.watch_index_template:
+        if watch_index_template:
             watched_paths.append(config.get("index", "template"))
-        if args.watch_slides_theme:
+        if watch_slides_theme:
             watched_paths.append(config.get("slides", "theme"))
-        if args.watch_slides_template:
+        if watch_slides_template:
             watched_paths.append(config.get("slides", "template"))
 
         for path in watched_paths:
@@ -255,13 +221,13 @@ def serve(args):
                 logger.info(f'Watching: "{path.absolute()}"')
                 server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
 
-        ip, port = parse_ip_port(args.dev_addr)
+        ip, port = parse_ip_port(dev_addr)
 
         server.serve(
             host=ip,
             port=port,
             root=output_directory,
-            open_url_delay=0 if args.open else None,
+            open_url_delay=0 if open else None,
         )
 
     finally:
@@ -271,4 +237,4 @@ def serve(args):
 
 
 if __name__ == "__main__":
-    main()
+    cli()

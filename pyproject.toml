@@ -24,7 +24,7 @@ black = "^24.8.0"
 pytest = "^8.3.2"
 
 [tool.poetry.scripts]
-mkslides-reveal = "mkslides_reveal.__main__:main"
+mkslides-reveal = "mkslides_reveal.__main__:cli"
 
 [build-system]
 requires = ["poetry-core"]

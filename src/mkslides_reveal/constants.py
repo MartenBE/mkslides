@@ -1,6 +1,7 @@
+import json
 import re
 
-from importlib import resources
+from importlib import resources, metadata
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
 
 MD_IMAGE_REGEX = re.compile(
@@ -50,9 +51,20 @@ HIGHLIGHTJS_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js")
 HIGHLIGHTJS_THEMES_RESOURCE = HIGHLIGHTJS_RESOURCE.joinpath("build", "styles")
 
 DEFAULT_JINJA2_ENVIRONMENT = Environment(
-    loader=PackageLoader("assets"),
-    autoescape=select_autoescape()
+    loader=PackageLoader("assets"), autoescape=select_autoescape()
 )
 DEFAULT_INDEX_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("index.html.jinja")
-DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("slideshow.html.jinja")
-LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader('.'))
+DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template(
+    "slideshow.html.jinja"
+)
+LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."))
+
+VERSION = metadata.version("mkslides_reveal")
+
+REVEALJS_VERSION = None
+with REVEALJS_RESOURCE.joinpath("package.json").open() as f:
+    REVEALJS_VERSION = json.load(f)["version"]
+
+HIGHLIGHTJS_THEMES_VERSION = None
+with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open() as f:
+    HIGHLIGHTJS_THEMES_VERSION = json.load(f)["version"]
