@@ -206,8 +206,11 @@ class MarkupGenerator:
     def __copy_images(self, md_file: Path, markdown: str) -> None:
         for regex in [MD_IMAGE_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
             for m in regex.finditer(markdown):
-                image = Path(md_file.parent, m.group("location")).resolve(strict=True)
-                self.__copy_to_output_relative_to_md_root(image)
+                location = m.group("location")
+
+                if not self.__is_absolute_url(location):
+                    image = Path(md_file.parent, location).resolve(strict=True)
+                    self.__copy_to_output_relative_to_md_root(image)
 
     def __copy_theme(
         self,
