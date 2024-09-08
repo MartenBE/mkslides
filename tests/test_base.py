@@ -1,19 +1,6 @@
-import pytest
-
 from pathlib import Path
 
-from mkslides_reveal.config import Config
-from mkslides_reveal.markupgenerator import MarkupGenerator
 from tests.utils import assert_files_exist, assert_html_contains
-
-
-@pytest.fixture
-def setup_markup_generator() -> None:
-    config = Config()
-    output_path = Path("tests/site")
-    markup_generator = MarkupGenerator(config, output_path)
-    markup_generator.create_output_directory()
-    return markup_generator, output_path
 
 
 def test_process_directory_without_config(setup_markup_generator):
