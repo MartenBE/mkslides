@@ -124,6 +124,7 @@ def build(files, config_file, site_dir):
     "--dev-addr",
     help="IP address and port to serve slides locally.",
     metavar="<IP:PORT>",
+    default="localhost:8000",
 )
 @click.option(
     "-o",
@@ -227,7 +228,7 @@ def serve(
             host=ip,
             port=port,
             root=output_directory,
-            open_url_delay=0 if open else None,
+            open_url_delay=0 if open_in_browser else None,
         )
 
     finally:
