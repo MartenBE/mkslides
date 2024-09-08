@@ -1,18 +1,12 @@
-index:
-  title: TRIAL
-  favicon: https://hogenttin.github.io/cdn/favicon/favicon.ico
-  theme: https://hogenttin.github.io/cdn/styles/reveal-js/index.css
-slides:
-  favicon: https://hogenttin.github.io/cdn/favicon/favicon.ico
-  theme: https://hogenttin.github.io/cdn/styles/reveal-js/slides.css
-  highlight_theme: vs
-  separator: ^\s*---\s*$
-  separator_vertical: ^\s*-v-\s*$
-  separator_notes: "^Notes?:"
-reveal.js:
-  height: 1080
-  width: 1920
-  transition: fade
+# index:
+#   title: MkSlides-Reveal index
+#   theme: https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css
+# slides:
+#   theme: black
+# reveal.js:
+#   height: 1080
+#   width: 1920
+#   transition: fade
 plugins:
   - name: RevealMermaid
     extra_javascript:

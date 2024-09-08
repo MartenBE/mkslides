@@ -1,5 +1,5 @@
 import datetime
-from importlib.abc import Traversable
+from importlib.resources.abc import Traversable
 import frontmatter
 import logging
 import shutil
@@ -29,7 +29,6 @@ class MarkupGenerator:
     def __init__(
         self,
         config: Config,
-        md_root_path: Path,
         output_directory_path: Path,
     ):
 
@@ -38,9 +37,6 @@ class MarkupGenerator:
         self.config = config
 
         # Paths
-
-        self.md_root_path = md_root_path.resolve(strict=True)
-        logger.info(f'Markdown root directory: "{self.md_root_path.absolute()}"')
 
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
@@ -73,9 +69,9 @@ class MarkupGenerator:
         start_time = time.perf_counter()
 
         if input_path.is_dir():
-            self.__process_markdown_directory()
+            self.__process_markdown_directory(input_path)
         else:
-            self.__process_markdown_file(input_path)
+            self.__process_markdown_file(input_path, input_path.parent)
 
         end_time = time.perf_counter()
         logger.info(
@@ -87,8 +83,12 @@ class MarkupGenerator:
     def __process_markdown_file(
         self,
         md_file: Path,
+        md_root_path: Path,
     ) -> tuple[dict, Path]:
-        logger.info(f'Processing markdown file at "{md_file}"')
+        md_file = md_file.resolve(strict=True)
+        md_root_path = md_root_path.resolve(strict=True)
+
+        logger.info(f'Processing markdown file at "{md_file.absolute()}"')
 
         # Retrieve the frontmatter metadata and the markdown content
 
@@ -98,8 +98,10 @@ class MarkupGenerator:
         # Get the relative path of reveal.js
 
         output_markup_path = self.output_directory_path / md_file.relative_to(
-            self.md_root_path
+            md_root_path
         )
+        print(output_markup_path)
+
         output_markup_path = output_markup_path.with_suffix(".html")
         relative_revealjs_path = self.output_revealjs_path.relative_to(
             output_markup_path.parent, walk_up=True
@@ -161,14 +163,16 @@ class MarkupGenerator:
 
         # Copy images
 
-        self.__copy_images(md_file, markdown)
+        self.__copy_images(md_file, md_root_path, markdown)
 
         return metadata, output_markup_path
 
-    def __process_markdown_directory(self) -> None:
+    def __process_markdown_directory(self, md_root_path: Path) -> None:
+        md_root_path = md_root_path.resolve(strict=True)
+        logger.info(f"Processing markdown directory at {md_root_path.absolute()}")
         slideshows = []
-        for md_file in self.md_root_path.glob("**/*.md"):
-            (metadata, output_markup_path) = self.__process_markdown_file(md_file)
+        for md_file in md_root_path.glob("**/*.md"):
+            (metadata, output_markup_path) = self.__process_markdown_file(md_file, md_root_path)
 
             slideshows.append(
                 {
@@ -203,14 +207,14 @@ class MarkupGenerator:
         )
         self.__create_file(index_path, content)
 
-    def __copy_images(self, md_file: Path, markdown: str) -> None:
+    def __copy_images(self, md_file: Path, md_root_path: Path, markdown: str) -> None:
         for regex in [MD_IMAGE_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
             for m in regex.finditer(markdown):
                 location = m.group("location")
 
                 if not self.__is_absolute_url(location):
                     image = Path(md_file.parent, location).resolve(strict=True)
-                    self.__copy_to_output_relative_to_md_root(image)
+                    self.__copy_to_output_relative_to_md_root(image, md_root_path)
 
     def __copy_theme(
         self,
@@ -219,7 +223,9 @@ class MarkupGenerator:
         default_theme_resource: Traversable = None,
     ) -> Path | str:
         if self.__is_absolute_url(theme):
-            logger.info(f'Using theme "{theme}" from an absolute URL, no copy necessary')
+            logger.info(
+                f'Using theme "{theme}" from an absolute URL, no copy necessary'
+            )
             return theme
 
         theme_path = None
@@ -261,15 +267,15 @@ class MarkupGenerator:
         relative_path = destination_path.relative_to(self.output_directory_path)
         return relative_path
 
-    def __copy_to_output_relative_to_md_root(self, source_path: Path) -> Path:
+    def __copy_to_output_relative_to_md_root(self, source_path: Path, md_root_path: Path) -> Path:
         source_path = source_path.resolve(strict=True)
-        if not source_path.is_relative_to(self.md_root_path):
+        if not source_path.is_relative_to(md_root_path):
             logger.warning(
                 f'"{source_path.absolute()}" is outside the markdown root directory, skipped!"'
             )
             return
 
-        relative_path = source_path.relative_to(self.md_root_path)
+        relative_path = source_path.relative_to(md_root_path)
         destination_path = self.output_directory_path / relative_path
 
         self.__copy(source_path, destination_path)

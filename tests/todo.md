@@ -5,9 +5,3 @@
     - url
     - built-in
     - local file
-- test img
-    - url
-    - local file
-    - markdown
-    - HTML img tag
-    - background

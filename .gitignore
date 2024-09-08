@@ -140,6 +140,7 @@ venv.bak/
 # mkdocs documentation
 # mkslides-reveal slides
 /site
+/tests/site/
 
 # mypy
 .mypy_cache/

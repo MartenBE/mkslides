@@ -225,7 +225,7 @@ def serve(args):
     # Livereload
 
     def reload():
-        logger.info("Reloading...")
+        logger.info("Reloading ...")
         markup_generator.create_output_directory()
         markup_generator.process_markdown(input_path)
 
@@ -257,15 +257,12 @@ def serve(args):
 
         ip, port = parse_ip_port(args.dev_addr)
 
-        try:
-            server.serve(
-                host=ip,
-                port=port,
-                root=output_directory,
-                open_url_delay=0 if args.open else None,
-            )
-        except KeyboardInterrupt:
-            logger.info("Server shut down")
+        server.serve(
+            host=ip,
+            port=port,
+            root=output_directory,
+            open_url_delay=0 if args.open else None,
+        )
 
     finally:
         if output_directory.exists():

@@ -41,11 +41,13 @@
         -->
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
 
-        {% for plugin in plugins %}
-            {% for javascript in plugin.extra_javascript %}
-                <script src="{{ javascript }}"></script>
+        {% if plugins %}
+            {% for plugin in plugins %}
+                {% for javascript in plugin.extra_javascript %}
+                    <script src="{{ javascript }}"></script>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
+        {% endif %}
 
         <script>
             Reveal.initialize({
@@ -61,11 +63,13 @@
                     // RevealNotes, // https://github.com/hakimel/reveal.js/issues/3659
                     RevealMath,
 
-                    {% for plugin in plugins %}
-                        {% if plugin.name %}
-                            {{ plugin.name }},
-                        {% endif %}
-                    {% endfor %}
+                    {% if plugins %}
+                        {% for plugin in plugins %}
+                            {% if plugin.name %}
+                                {{ plugin.name }},
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 ],
             });
         </script>
