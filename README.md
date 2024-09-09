@@ -43,5 +43,5 @@ mkslides-reveal serve docs/
 ```
 
 ```bash
-mkslides-reveal build test.md
+mkslides-reveal serve test.md
 ```
