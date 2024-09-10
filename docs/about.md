@@ -19,7 +19,7 @@ Hosted on [GitHub](https://github.com/MartenBE/mkslides-reveal) and [Pypi](https
 -   What [MkDocs](https://www.mkdocs.org/) does for documentation, [MkSlides-Reveal](https://pypi.org/project/mkslides-reveal/) does for slides
     -   MkSlides-Reveal lets you focus on Markdown, not on Reveal.js HTML boilerplate
     -   Very similar use pattern and CLI as MkDocs
-- Inspired by both MkDocs and [reveal-md](https://github.com/webpro/reveal-md)
+-   Inspired by both MkDocs and [reveal-md](https://github.com/webpro/reveal-md)
 
 ---
 
@@ -38,31 +38,31 @@ $ pip install mkslides-reveal
     -   or **directory** with multiple (nested) Markdown files
 -   Output
     -   Folder with static HTML slides
-        - Includes an index.html page with links to each slideshow when the input was a directory
+        -   Includes an index.html page with links to each slideshow when the input was a directory
+        -   See the [index page](https://martenbe.github.io/mkslides-reveal/) of this repo
 -   Can be used for
     -   Local slides
     -   Hosted slides on webserver
     -   Slides generated automatically by CI/CD using Markdown files in GitHub/GitLab repo
-        - That's exactly what is happening [here](https://github.com/MartenBE/mkslides-reveal/blob/main/.github/workflows/publish.yml)!
+        -   That's exactly what is happening [here](https://github.com/MartenBE/mkslides-reveal/blob/main/.github/workflows/publish.yml)!
 
 ---
 
 ## Customizable
 
-- Configuration in `mkslides.yml`
-- You can customize:
-    - Index page:
-        - Theme (local file or by public URL)
-        - Favicon (local file or by public URL)
-        - Title
-        - Template for the output HTML page
-    - Slides
-        - Theme (local file, [Reveal.js theme](https://revealjs.com/themes/), or by public URL)
-        - Highlight.js Theme (local file, [highlight.js theme](https://highlightjs.org/examples), or by public URL)
-        - Favicon (local file or by public URL)
-        - Title
-        - Template for the output HTML page
-
+-   Configuration in `mkslides.yml`
+-   You can customize:
+    -   Index page:
+        -   Theme (local file or by public URL)
+        -   Favicon (local file or by public URL)
+        -   Title
+        -   Template for the output HTML page
+    -   Slides
+        -   Theme (local file, [Reveal.js theme](https://revealjs.com/themes/), or by public URL)
+        -   Highlight.js Theme (local file, [highlight.js theme](https://highlightjs.org/examples), or by public URL)
+        -   Favicon (local file or by public URL)
+        -   Title
+        -   Template for the output HTML page
 
 ---
 
@@ -132,11 +132,11 @@ TODO: video
 
 ## Example
 
-- This slideshow
-- Showcase of all possibilities using Reveal.js with the [HOGENT](https://hogent.be/) theme.
-    - Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, CI/CD, ... .
-    - [Slides](https://hogenttin.github.io/hogent-revealmd/)
-    - [Code](https://github.com/HoGentTIN/hogent-revealmd)
-- [Reveal.js](https://revealjs.com/?demo)
+-   This slideshow
+-   Showcase of all possibilities using Reveal.js with the [HOGENT](https://hogent.be/) theme.
+    -   Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, CI/CD, ... .
+    -   [Slides](https://hogenttin.github.io/hogent-revealmd/)
+    -   [Code](https://github.com/HoGentTIN/hogent-revealmd)
+-   [Reveal.js](https://revealjs.com/?demo)
 
 ---
