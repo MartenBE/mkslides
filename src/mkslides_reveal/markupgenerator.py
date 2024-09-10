@@ -13,7 +13,7 @@ from .config import Config
 from .constants import (
     HTML_BACKGROUND_IMAGE_REGEX,
     HTML_IMAGE_REGEX,
-    MD_IMAGE_REGEX,
+    MD_LINK_REGEX,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
     HIGHLIGHTJS_THEMES_RESOURCE,
@@ -100,7 +100,6 @@ class MarkupGenerator:
         output_markup_path = self.output_directory_path / md_file.relative_to(
             md_root_path
         )
-        print(output_markup_path)
 
         output_markup_path = output_markup_path.with_suffix(".html")
         relative_revealjs_path = self.output_revealjs_path.relative_to(
@@ -124,6 +123,12 @@ class MarkupGenerator:
             relative_highlight_theme_path = self.__copy_theme(
                 output_markup_path, theme, HIGHLIGHTJS_THEMES_RESOURCE
             )
+
+        # Copy the favicon
+
+        relative_favicon_path = None
+        if favicon := self.config.get("slides", "favicon"):
+            relative_favicon_path = self.__copy_favicon(output_markup_path, favicon)
 
         # Retrieve the 3rd party plugins
 
@@ -150,7 +155,7 @@ class MarkupGenerator:
                 markdown_data_options[option.replace("_", "-")] = value
 
         markup = slideshow_template.render(
-            favicon=self.config.get("slides", "favicon"),
+            favicon=relative_favicon_path,
             theme=relative_theme_path,
             highlight_theme=relative_highlight_theme_path,
             revealjs_path=relative_revealjs_path,
@@ -161,9 +166,9 @@ class MarkupGenerator:
         )
         self.__create_file(output_markup_path, markup)
 
-        # Copy images
+        # Copy local files
 
-        self.__copy_images(md_file, md_root_path, markdown)
+        self.__copy_local_files(md_file, md_root_path, markdown)
 
         return metadata, output_markup_path
 
@@ -187,9 +192,17 @@ class MarkupGenerator:
 
         index_path = self.output_directory_path / "index.html"
 
+        # Copy the theme
+
         relative_theme_path = None
         if theme := self.config.get("index", "theme"):
             relative_theme_path = self.__copy_theme(index_path, theme)
+
+        # Copy the favicon
+
+        relative_favicon_path = None
+        if favicon := self.config.get("index", "favicon"):
+            relative_favicon_path = self.__copy_favicon(index_path, favicon)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
@@ -199,7 +212,7 @@ class MarkupGenerator:
             index_template = DEFAULT_INDEX_TEMPLATE
 
         content = index_template.render(
-            favicon=self.config.get("index", "favicon"),
+            favicon=relative_favicon_path,
             title=self.config.get("index", "title"),
             theme=relative_theme_path,
             slideshows=slideshows,
@@ -207,8 +220,8 @@ class MarkupGenerator:
         )
         self.__create_file(index_path, content)
 
-    def __copy_images(self, md_file: Path, md_root_path: Path, markdown: str) -> None:
-        for regex in [MD_IMAGE_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
+    def __copy_local_files(self, md_file: Path, md_root_path: Path, markdown: str) -> None:
+        for regex in [MD_LINK_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
             for m in regex.finditer(markdown):
                 location = m.group("location")
 
@@ -250,6 +263,25 @@ class MarkupGenerator:
         )
 
         return relative_theme_path
+
+    def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
+        if self.__is_absolute_url(favicon):
+            logger.info(
+                f'Using favicon "{favicon}" from an absolute URL, no copy necessary'
+            )
+            return favicon
+
+        favicon_path = Path(favicon).resolve(strict=True)
+        logger.info(f'Using favicon "{favicon_path.absolute()}"')
+
+        favicon_output_path = self.output_assets_path / favicon_path.name
+        self.__copy_to_output(favicon_path, favicon_output_path)
+
+        relative_favicon_path = favicon_output_path.relative_to(
+            file_using_favicon_path.parent, walk_up=True
+        )
+
+        return relative_favicon_path
 
     ################################################################################
 

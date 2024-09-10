@@ -149,3 +149,97 @@ def test_absolute_url_index_theme_path(setup_markup_generator):
             '<link rel="stylesheet" href="https://example.org/theme.css" />',
         ],
     )
+
+def test_absolute_url_index_favicon_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "index": {
+                "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "index.html",
+        [
+            '<link rel="icon" href="https://hogenttin.github.io/cdn/favicon/favicon.ico">',
+        ],
+    )
+
+def test_absolute_url_slideshow_favicon_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "slides": {
+                "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "someslides.html",
+        [
+            '<link rel="icon" href="https://hogenttin.github.io/cdn/favicon/favicon.ico">',
+        ],
+    )
+
+    assert_html_contains(
+        output_path / "somefolder/someslides.html",
+        [
+            '<link rel="icon" href="https://hogenttin.github.io/cdn/favicon/favicon.ico">',
+        ],
+    )
+
+def test_local_index_favicon_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "index": {
+                "favicon": "tests/test_styles/favicon.ico",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "index.html",
+        [
+            '<link rel="icon" href="assets/favicon.ico">',
+        ],
+    )
+
+def test_local_slideshow_favicon_path(setup_markup_generator):
+    markup_generator, output_path = setup_markup_generator
+    markup_generator.config.merge_config_from_dict(
+        {
+            "slides": {
+                "favicon": "tests/test_styles/favicon.ico",
+            }
+        }
+    )
+
+    test_files_path = Path("tests/test_files")
+    markup_generator.process_markdown(test_files_path)
+
+    assert_html_contains(
+        output_path / "someslides.html",
+        [
+            '<link rel="icon" href="assets/favicon.ico">',
+        ],
+    )
+
+    assert_html_contains(
+        output_path / "somefolder/someslides.html",
+        [
+            '<link rel="icon" href="../assets/favicon.ico">',
+        ],
+    )

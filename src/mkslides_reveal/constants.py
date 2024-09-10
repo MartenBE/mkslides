@@ -4,14 +4,14 @@ import re
 from importlib import resources, metadata
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
 
-MD_IMAGE_REGEX = re.compile(
+MD_LINK_REGEX = re.compile(
     r"""
-    !                           # Start of the image
     \[.*?\]                     # Alt text
     \((?P<location>.*?)\)       # Image location
     """,
     re.VERBOSE,
 )
+
 HTML_IMAGE_REGEX = re.compile(
     r"""
     <img                        # Start of the image

@@ -27,6 +27,8 @@ def test_process_directory_without_config(setup_markup_generator):
             "img/example-4.png",
             "img/somefolder/example-5.png",
             "somefolder/example-6.png",
+            "test-1.txt",
+            "test-2.txt",
         ],
     )
 
@@ -68,6 +70,8 @@ def test_process_file_without_config(setup_markup_generator):
             "img/example-1.png",
             "img/example-2.png",
             "img/example-3.png",
+            "test-1.txt",
+            "test-2.txt",
         ],
     )
 

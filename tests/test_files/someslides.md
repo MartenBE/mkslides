@@ -10,11 +10,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Alfabet
 
-- A
-- B
-- C
-- D
-- E
+-   A
+-   B
+-   C
+-   D
+-   E
 
 ---
 
@@ -53,3 +53,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <!-- .slide: data-background-image="https://example.org/example-3.png" -->
 
 ---
+
+## Link to local file
+
+[](./test-1.txt)
+[](test-2.txt)
