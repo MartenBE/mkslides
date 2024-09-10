@@ -65,6 +65,12 @@ $ pip install mkslides-reveal
 
 ---
 
+## Example
+
+<iframe width="1280" height="720" src="https://www.youtube.com/embed/D9RSATHFf7U?si=Jr7Nj5Y8vaDzU_R6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+---
+
 ## Build
 
 -   Generate the static HTML files:
@@ -82,10 +88,6 @@ Options:
   -d, --site-dir PATH         The directory to output the result of the slides build.
   -h, --help                  Show this message and exit.
 ```
-
----
-
-TODO: video
 
 ---
 
@@ -111,10 +113,6 @@ Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
   -h, --help                  Show this message and exit.
 ```
-
----
-
-TODO: video
 
 ---
 

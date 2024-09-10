@@ -20,6 +20,8 @@
 
 [build.webm](https://github.com/user-attachments/assets/85432467-46db-46ad-aa90-378c912b0098)
 
+[:youtube: Youtube link](https://www.youtube.com/watch?v=D9RSATHFf7U) in case you want to look at 2x speed.
+
 ## Installation
 
 ```bash
