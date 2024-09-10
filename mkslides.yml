@@ -1,12 +1,12 @@
-# index:
-#   title: MkSlides-Reveal index
-#   theme: https://cdn.jsdelivr.net/npm/bootstrap/dist/css/bootstrap.min.css
-# slides:
-#   theme: black
-# reveal.js:
-#   height: 1080
-#   width: 1920
-#   transition: fade
+index:
+  title: MkSlides-Reveal
+  theme: index-theme.css
+slides:
+  theme: dracula
+reveal.js:
+  height: 1080
+  width: 1920
+  transition: slide
 plugins:
   - name: RevealMermaid
     extra_javascript:

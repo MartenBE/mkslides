@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-import argparse
-import json
 import shutil
 import click
 import livereload
 import logging
 import tempfile
 
-from importlib import metadata
+from livereload.handlers import LiveReloadHandler
 from pathlib import Path
 from rich.logging import RichHandler
 from urllib.parse import urlparse
@@ -17,8 +15,6 @@ from .config import Config
 from .constants import (
     EXPECTED_CONFIG_LOCATION,
     DEFAULT_OUTPUT_DIR,
-    REVEALJS_RESOURCE,
-    HIGHLIGHTJS_RESOURCE,
     VERSION,
     REVEALJS_VERSION,
     HIGHLIGHTJS_THEMES_VERSION,
@@ -30,6 +26,9 @@ logger = logging.getLogger()
 logger.setLevel("DEBUG")
 logger.addHandler(RichHandler(show_path=False))
 
+LiveReloadHandler.DEFAULT_RELOAD_TIME = (
+    0  # https://github.com/lepture/python-livereload/pull/244
+)
 
 ################################################################################
 
@@ -37,7 +36,6 @@ context_settings = {"help_option_names": ["-h", "--help"], "max_content_width": 
 
 files_argument_data = {
     "metavar": "FILENAME|PATH",
-    # "help": "Path to the Markdown file, or the directory containing Markdown files.",
 }
 
 config_file_argument_data = {
@@ -81,6 +79,13 @@ def parse_ip_port(
     return ip, port
 
 
+def generate(config_file, input_path, output_directory) -> None:
+    config = read_config(config_file)
+    markup_generator = MarkupGenerator(config, output_directory)
+    markup_generator.create_output_directory()
+    markup_generator.process_markdown(input_path)
+
+
 @cli.command()
 @click.argument("files", **files_argument_data)
 @click.option("-f", "--config-file", **config_file_argument_data)
@@ -100,21 +105,10 @@ def build(files, config_file, site_dir):
 
     logger.info("Command: build")
 
-    # Reading configuration
-
-    config = read_config(config_file)
-
-    # Configuring paths
-
     input_path = Path(files).resolve(strict=True)
-    md_root_path = input_path if input_path.is_dir() else input_path.parent
     output_directory = Path(site_dir).resolve(strict=False)
-    markup_generator = MarkupGenerator(config, output_directory)
 
-    # Process markdown files
-
-    markup_generator.create_output_directory()
-    markup_generator.process_markdown(input_path)
+    generate(config_file, input_path, output_directory)
 
 
 @cli.command()
@@ -172,29 +166,18 @@ def serve(
 
     logger.info("Command: serve")
 
-    # Reading configuration
-
-    config = read_config(config_file)
-
-    # Configuring paths
-
     input_path = Path(files).resolve(strict=True)
-    md_root_path = input_path if input_path.is_dir() else input_path.parent
     site_dir = tempfile.mkdtemp(prefix="mkslides_")
     output_directory = Path(site_dir).resolve(strict=False)
-    markup_generator = MarkupGenerator(config, output_directory)
 
-    # Process markdown files
-
-    markup_generator.create_output_directory()
-    markup_generator.process_markdown(input_path)
+    generate(config_file, input_path, output_directory)
+    config = read_config(config_file)
 
     # Livereload
 
     def reload():
         logger.info("Reloading ...")
-        markup_generator.create_output_directory()
-        markup_generator.process_markdown(input_path)
+        generate(config_file, input_path, output_directory)
 
     try:
         server = livereload.Server()
