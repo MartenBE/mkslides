@@ -39,7 +39,6 @@ $ pip install mkslides-reveal
 -   Output
     -   Folder with static HTML slides
         -   Includes an index.html page with links to each slideshow when the input was a directory
-        -   See the [index page](https://martenbe.github.io/mkslides-reveal/) of this repo
 -   Can be used for
     -   Local slides
     -   Hosted slides on webserver
