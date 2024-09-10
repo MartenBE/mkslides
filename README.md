@@ -16,6 +16,10 @@
 - Use custom favicons, CSS themes, templates, ... if desired.
 - And more!
 
+## Example
+
+[build.webm](https://github.com/user-attachments/assets/85432467-46db-46ad-aa90-378c912b0098)
+
 ## Installation
 
 ```bash
