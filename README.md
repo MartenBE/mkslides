@@ -22,6 +22,8 @@
 
 [Youtube link](https://www.youtube.com/watch?v=D9RSATHFf7U) in case you want to look at 2x speed.
 
+The [repo](https://github.com/HoGentTIN/hogent-revealmd) in this example also has advanced usage examples and theming, so check it out to see more possibilities!
+
 ## Installation
 
 ```bash
