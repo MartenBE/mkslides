@@ -71,7 +71,12 @@ class MarkupGenerator:
         if input_path.is_dir():
             self.__process_markdown_directory(input_path)
         else:
-            self.__process_markdown_file(input_path, input_path.parent)
+            _, output_markup_path = self.__process_markdown_file(input_path, input_path.parent)
+            original_output_markup_path = output_markup_path
+
+            if output_markup_path.stem != "index":
+                output_markup_path.rename(output_markup_path.with_stem("index"))
+                logger.info(f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file')
 
         end_time = time.perf_counter()
         logger.info(

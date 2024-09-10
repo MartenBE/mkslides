@@ -1,15 +1,6 @@
-index:
-  title: MkSlides-Reveal
-  theme: index-theme.css
 slides:
   theme: dracula
 reveal.js:
   height: 1080
   width: 1920
   transition: slide
-plugins:
-  - name: RevealMermaid
-    extra_javascript:
-      - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
-  - extra_javascript:
-      - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js

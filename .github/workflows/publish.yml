@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install mkslides-reveal
-      - run: mkslides-reveal build docs/
+      - run: mkslides-reveal build docs/about.md
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./site

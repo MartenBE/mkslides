@@ -66,7 +66,7 @@ def test_process_file_without_config(setup_markup_generator):
             "assets/reveal-js/plugin/zoom/zoom.js",
             "assets/black.css",
             "assets/monokai.css",
-            "someslides.html",
+            "index.html",
             "img/example-1.png",
             "img/example-2.png",
             "img/example-3.png",
@@ -75,4 +75,4 @@ def test_process_file_without_config(setup_markup_generator):
         ],
     )
 
-    assert not (output_path / "index.html").exists(), "index.html should not exist"
+    assert not (output_path / "someslides.html").exists(), "someslides.html should not exist"
