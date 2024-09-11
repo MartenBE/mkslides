@@ -191,13 +191,13 @@ def serve(
         ]
 
         if watch_index_theme:
-            watched_paths.append(config.get("index", "theme"))
+            watched_paths.append(config.get_index_theme())
         if watch_index_template:
-            watched_paths.append(config.get("index", "template"))
+            watched_paths.append(config.get_index_template())
         if watch_slides_theme:
-            watched_paths.append(config.get("slides", "theme"))
+            watched_paths.append(config.get_slides_theme())
         if watch_slides_template:
-            watched_paths.append(config.get("slides", "template"))
+            watched_paths.append(config.get_slides_template())
 
         for path in watched_paths:
             if path:

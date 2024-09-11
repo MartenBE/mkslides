@@ -71,12 +71,16 @@ class MarkupGenerator:
         if input_path.is_dir():
             self.__process_markdown_directory(input_path)
         else:
-            _, output_markup_path = self.__process_markdown_file(input_path, input_path.parent)
+            _, output_markup_path = self.__process_markdown_file(
+                input_path, input_path.parent
+            )
             original_output_markup_path = output_markup_path
 
             if output_markup_path.stem != "index":
                 output_markup_path.rename(output_markup_path.with_stem("index"))
-                logger.info(f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file')
+                logger.info(
+                    f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file'
+                )
 
         end_time = time.perf_counter()
         logger.info(
@@ -111,12 +115,12 @@ class MarkupGenerator:
             output_markup_path.parent, walk_up=True
         )
 
-        revealjs_config = self.config.get("reveal.js")
+        revealjs_config = self.config.get_revealjs_options()
 
         # Copy the theme CSS
 
         relative_theme_path = None
-        if theme := self.config.get("slides", "theme"):
+        if theme := self.config.get_slides_theme():
             relative_theme_path = self.__copy_theme(
                 output_markup_path, theme, REVEALJS_THEMES_RESOURCE
             )
@@ -124,7 +128,7 @@ class MarkupGenerator:
         # Copy the highlight CSS
 
         relative_highlight_theme_path = None
-        if theme := self.config.get("slides", "highlight_theme"):
+        if theme := self.config.get_slides_highlight_theme():
             relative_highlight_theme_path = self.__copy_theme(
                 output_markup_path, theme, HIGHLIGHTJS_THEMES_RESOURCE
             )
@@ -132,32 +136,32 @@ class MarkupGenerator:
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.get("slides", "favicon"):
+        if favicon := self.config.get_slides_favicon():
             relative_favicon_path = self.__copy_favicon(output_markup_path, favicon)
 
         # Retrieve the 3rd party plugins
 
-        plugins = self.config.get("plugins")
+        plugins = self.config.get_plugins()
 
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
         slideshow_template = None
-        if template_config := self.config.get("slides", "template"):
+        if template_config := self.config.get_slides_template():
             slideshow_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
         # https://revealjs.com/markdown/#external-markdown
         markdown_data_options = {}
-        for option in [
-            "separator",
-            "separator_vertical",
-            "separator_notes",
-            "charset",
-        ]:
-            if value := self.config.get("slides", option):
-                markdown_data_options[option.replace("_", "-")] = value
+        for key, value in {
+            "data-separator": self.config.get_slides_separator(),
+            "data-separator-vertical": self.config.get_slides_separator_vertical(),
+            "data-separator-notes": self.config.get_slides_separator_notes(),
+            "data-charset": self.config.get_slides_charset(),
+        }.items():
+            if value:
+                markdown_data_options[key] = value
 
         markup = slideshow_template.render(
             favicon=relative_favicon_path,
@@ -182,7 +186,9 @@ class MarkupGenerator:
         logger.info(f"Processing markdown directory at {md_root_path.absolute()}")
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
-            (metadata, output_markup_path) = self.__process_markdown_file(md_file, md_root_path)
+            (metadata, output_markup_path) = self.__process_markdown_file(
+                md_file, md_root_path
+            )
 
             slideshows.append(
                 {
@@ -200,32 +206,34 @@ class MarkupGenerator:
         # Copy the theme
 
         relative_theme_path = None
-        if theme := self.config.get("index", "theme"):
+        if theme := self.config.get_index_theme():
             relative_theme_path = self.__copy_theme(index_path, theme)
 
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.get("index", "favicon"):
+        if favicon := self.config.get_index_favicon():
             relative_favicon_path = self.__copy_favicon(index_path, favicon)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
-        if template_config := self.config.get("index", "template"):
+        if template_config := self.config.get_index_template():
             index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             index_template = DEFAULT_INDEX_TEMPLATE
 
         content = index_template.render(
             favicon=relative_favicon_path,
-            title=self.config.get("index", "title"),
+            title=self.config.get_index_title(),
             theme=relative_theme_path,
             slideshows=slideshows,
             build_datetime=datetime.datetime.now(),
         )
         self.__create_file(index_path, content)
 
-    def __copy_local_files(self, md_file: Path, md_root_path: Path, markdown: str) -> None:
+    def __copy_local_files(
+        self, md_file: Path, md_root_path: Path, markdown: str
+    ) -> None:
         for regex in [MD_LINK_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
             for m in regex.finditer(markdown):
                 location = m.group("location")
@@ -304,7 +312,9 @@ class MarkupGenerator:
         relative_path = destination_path.relative_to(self.output_directory_path)
         return relative_path
 
-    def __copy_to_output_relative_to_md_root(self, source_path: Path, md_root_path: Path) -> Path:
+    def __copy_to_output_relative_to_md_root(
+        self, source_path: Path, md_root_path: Path
+    ) -> Path:
         source_path = source_path.resolve(strict=True)
         if not source_path.is_relative_to(md_root_path):
             logger.warning(

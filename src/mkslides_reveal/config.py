@@ -13,28 +13,70 @@ logger = logging.getLogger(__name__)
 class Config:
     def __init__(self):
         with DEFAULT_CONFIG_RESOURCE.open() as f:
-            self.config = yaml.safe_load(f)
+            self.__config = yaml.safe_load(f)
 
         logger.info(f'Default config loaded from "{DEFAULT_CONFIG_RESOURCE}"')
-        logger.info(f"Default config: {self.config}")
+        logger.info(f"Default config: {self.__config}")
+
+    def get_index_title(self) -> str | None:
+        return self.__get("index", "title")
+
+    def get_index_favicon(self) -> str | None:
+        return self.__get("index", "favicon")
+
+    def get_index_theme(self) -> str | None:
+        return self.__get("index", "theme")
+
+    def get_index_template(self) -> str | None:
+        return self.__get("index", "template")
+
+    def get_slides_favicon(self) -> str | None:
+        return self.__get("slides", "favicon")
+
+    def get_slides_theme(self) -> str | None:
+        return self.__get("slides", "theme")
+
+    def get_slides_highlight_theme(self) -> str | None:
+        return self.__get("slides", "highlight_theme")
+
+    def get_slides_template(self) -> str | None:
+        return self.__get("slides", "template")
+
+    def get_slides_separator(self) -> str | None:
+        return self.__get("slides", "separator")
+
+    def get_slides_separator_vertical(self) -> str | None:
+        return self.__get("slides", "separator_vertical")
+
+    def get_slides_separator_notes(self) -> str | None:
+        return self.__get("slides", "separator_notes")
+
+    def get_slides_charset(self) -> str | None:
+        return self.__get("slides", "charset")
+
+    def get_revealjs_options(self) -> dict | None:
+        return self.__get("reveal.js")
+
+    def get_plugins(self) -> list | None:
+        return self.__get("plugins")
 
     def merge_config_from_file(self, config_path: Path):
         with config_path.open() as f:
             new_config = yaml.safe_load(f)
 
-            self.config = self.__recursive_merge(self.config, new_config)
+            self.__config = self.__recursive_merge(self.__config, new_config)
 
             logger.info(f'Config merged from "{config_path}"')
-            logger.info(f"Config: {self.config}")
+            logger.info(f"Config: {self.__config}")
 
     def merge_config_from_dict(self, new_config: dict):
-        self.config = self.__recursive_merge(self.config, new_config)
+        self.__config = self.__recursive_merge(self.__config, new_config)
 
         logger.info(f"Config merged from dict")
-        logger.info(f"Config: {self.config}")
+        logger.info(f"Config: {self.__config}")
 
-    def get(self, *keys):
-        current_value = self.config
+    def __get(self, *keys):
+        current_value = self.__config
         for key in keys:
             if isinstance(current_value, dict) and key in current_value:
                 current_value = current_value[key]
