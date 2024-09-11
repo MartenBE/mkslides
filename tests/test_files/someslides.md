@@ -58,3 +58,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 [](./test-1.txt)
 [](test-2.txt)
+
+## Escape using `<` and `>`
+
+![](<./img/example-(7).png>)
+![](<https://example.org/example_(1).png>)
+[](<./test-(3).txt>)
+[](<https://example.org/example_(2).html>)

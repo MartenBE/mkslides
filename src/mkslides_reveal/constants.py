@@ -7,7 +7,15 @@ from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoesca
 MD_LINK_REGEX = re.compile(
     r"""
     \[.*?\]                     # Alt text
-    \((?P<location>.*?)\)       # Image location
+    \((?P<location>[^()<>]*?)\) # Location without angle brackets
+    """,
+    re.VERBOSE,
+)
+
+MD_ESCAPED_LINK_REGEX = re.compile(
+    r"""
+    \[.*?\]                     # Alt text
+    \(<(?P<location>[^<>]*?)>\) # Location with mandatory angle brackets
     """,
     re.VERBOSE,
 )

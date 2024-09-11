@@ -9,6 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 class Config:
+    schema = {
+        "type": "object",
+        "properties": {
+            "price": {"type": "number"},
+            "name": {"type": "string"},
+        },
+    }
+
     def __init__(self) -> None:
         with DEFAULT_CONFIG_RESOURCE.open() as f:
             self.__config = yaml.safe_load(f)

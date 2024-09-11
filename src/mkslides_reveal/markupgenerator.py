@@ -18,6 +18,7 @@ from .constants import (
     HTML_BACKGROUND_IMAGE_REGEX,
     HTML_IMAGE_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
+    MD_ESCAPED_LINK_REGEX,
     MD_LINK_REGEX,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
@@ -244,7 +245,12 @@ class MarkupGenerator:
         md_root_path: Path,
         markdown: str,
     ) -> None:
-        for regex in [MD_LINK_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
+        for regex in [
+            MD_LINK_REGEX,
+            MD_ESCAPED_LINK_REGEX,
+            HTML_IMAGE_REGEX,
+            HTML_BACKGROUND_IMAGE_REGEX,
+        ]:
             for m in regex.finditer(markdown):
                 location = m.group("location")
 
