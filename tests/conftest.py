@@ -1,6 +1,6 @@
-import pytest
-
 from pathlib import Path
+
+import pytest
 
 from mkslides_reveal.config import Config
 from mkslides_reveal.markupgenerator import MarkupGenerator

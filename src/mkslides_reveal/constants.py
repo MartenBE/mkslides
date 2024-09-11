@@ -1,7 +1,7 @@
 import json
 import re
+from importlib import metadata, resources
 
-from importlib import resources, metadata
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
 
 MD_LINK_REGEX = re.compile(
@@ -51,11 +51,12 @@ HIGHLIGHTJS_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js")
 HIGHLIGHTJS_THEMES_RESOURCE = HIGHLIGHTJS_RESOURCE.joinpath("build", "styles")
 
 DEFAULT_JINJA2_ENVIRONMENT = Environment(
-    loader=PackageLoader("assets"), autoescape=select_autoescape()
+    loader=PackageLoader("assets"),
+    autoescape=select_autoescape(),
 )
 DEFAULT_INDEX_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("index.html.jinja")
 DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template(
-    "slideshow.html.jinja"
+    "slideshow.html.jinja",
 )
 LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."))
 

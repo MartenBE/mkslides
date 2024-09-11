@@ -1,26 +1,26 @@
 import datetime
-import frontmatter
 import logging
 import shutil
 import time
-
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+import frontmatter
+
 from .config import Config
 from .constants import (
+    DEFAULT_INDEX_TEMPLATE,
+    DEFAULT_SLIDESHOW_TEMPLATE,
+    HIGHLIGHTJS_THEMES_RESOURCE,
     HTML_BACKGROUND_IMAGE_REGEX,
     HTML_IMAGE_REGEX,
+    LOCAL_JINJA2_ENVIRONMENT,
     MD_LINK_REGEX,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
-    HIGHLIGHTJS_THEMES_RESOURCE,
-    DEFAULT_INDEX_TEMPLATE,
-    DEFAULT_SLIDESHOW_TEMPLATE,
-    LOCAL_JINJA2_ENVIRONMENT,
 )
 
 logger = logging.getLogger(__name__)
@@ -31,8 +31,7 @@ class MarkupGenerator:
         self,
         config: Config,
         output_directory_path: Path,
-    ):
-
+    ) -> None:
         # Config
 
         self.config = config
@@ -41,7 +40,7 @@ class MarkupGenerator:
 
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
-            f'Requested output directory: "{self.output_directory_path.absolute()}"'
+            f'Requested output directory: "{self.output_directory_path.absolute()}"',
         )
 
         self.output_assets_path = self.output_directory_path / "assets"
@@ -60,32 +59,33 @@ class MarkupGenerator:
             self.clear_output_directory()
         else:
             self.output_directory_path.mkdir(parents=True, exist_ok=True)
-            logger.info(f"Output directory created")
+            logger.info("Output directory created")
 
-        with resources.as_file(REVEALJS_RESOURCE) as REVEALJS_PATH:
-            self.__copy(REVEALJS_PATH, self.output_revealjs_path)
+        with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
+            self.__copy(revealjs_path, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
-        logger.info(f"Processing markdown")
+        logger.info("Processing markdown")
         start_time = time.perf_counter()
 
         if input_path.is_dir():
             self.__process_markdown_directory(input_path)
         else:
             _, output_markup_path = self.__process_markdown_file(
-                input_path, input_path.parent
+                input_path,
+                input_path.parent,
             )
             original_output_markup_path = output_markup_path
 
             if output_markup_path.stem != "index":
                 output_markup_path.rename(output_markup_path.with_stem("index"))
                 logger.info(
-                    f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file'
+                    f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file',
                 )
 
         end_time = time.perf_counter()
         logger.info(
-            f"Finished processing markdown in {end_time - start_time:.2f} seconds"
+            f"Finished processing markdown in {end_time - start_time:.2f} seconds",
         )
 
     ################################################################################
@@ -108,12 +108,13 @@ class MarkupGenerator:
         # Get the relative path of reveal.js
 
         output_markup_path = self.output_directory_path / md_file.relative_to(
-            md_root_path
+            md_root_path,
         )
 
         output_markup_path = output_markup_path.with_suffix(".html")
         relative_revealjs_path = self.output_revealjs_path.relative_to(
-            output_markup_path.parent, walk_up=True
+            output_markup_path.parent,
+            walk_up=True,
         )
 
         revealjs_config = self.config.get_revealjs_options()
@@ -123,7 +124,9 @@ class MarkupGenerator:
         relative_theme_path = None
         if theme := self.config.get_slides_theme():
             relative_theme_path = self.__copy_theme(
-                output_markup_path, theme, REVEALJS_THEMES_RESOURCE
+                output_markup_path,
+                theme,
+                REVEALJS_THEMES_RESOURCE,
             )
 
         # Copy the highlight CSS
@@ -131,7 +134,9 @@ class MarkupGenerator:
         relative_highlight_theme_path = None
         if theme := self.config.get_slides_highlight_theme():
             relative_highlight_theme_path = self.__copy_theme(
-                output_markup_path, theme, HIGHLIGHTJS_THEMES_RESOURCE
+                output_markup_path,
+                theme,
+                HIGHLIGHTJS_THEMES_RESOURCE,
             )
 
         # Copy the favicon
@@ -188,19 +193,20 @@ class MarkupGenerator:
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
             (metadata, output_markup_path) = self.__process_markdown_file(
-                md_file, md_root_path
+                md_file,
+                md_root_path,
             )
 
             slideshows.append(
                 {
                     "title": metadata.get("title", md_file.stem),
                     "location": output_markup_path.relative_to(
-                        self.output_directory_path
+                        self.output_directory_path,
                     ),
-                }
+                },
             )
 
-        logger.info(f"Generating index")
+        logger.info("Generating index")
 
         index_path = self.output_directory_path / "index.html"
 
@@ -233,7 +239,10 @@ class MarkupGenerator:
         self.__create_file(index_path, content)
 
     def __copy_local_files(
-        self, md_file: Path, md_root_path: Path, markdown: str
+        self,
+        md_file: Path,
+        md_root_path: Path,
+        markdown: str,
     ) -> None:
         for regex in [MD_LINK_REGEX, HTML_IMAGE_REGEX, HTML_BACKGROUND_IMAGE_REGEX]:
             for m in regex.finditer(markdown):
@@ -251,7 +260,7 @@ class MarkupGenerator:
     ) -> Path | str:
         if self.__is_absolute_url(theme):
             logger.info(
-                f'Using theme "{theme}" from an absolute URL, no copy necessary'
+                f'Using theme "{theme}" from an absolute URL, no copy necessary',
             )
             return theme
 
@@ -259,11 +268,11 @@ class MarkupGenerator:
         if not theme.endswith(".css"):
             assert default_theme_resource is not None
             with resources.as_file(
-                default_theme_resource.joinpath(theme)
+                default_theme_resource.joinpath(theme),
             ) as theme_path:
                 theme_path = theme_path.with_suffix(".css").resolve(strict=True)
                 logger.info(
-                    f'Using built-in theme "{theme}" from "{theme_path.absolute()}"'
+                    f'Using built-in theme "{theme}" from "{theme_path.absolute()}"',
                 )
         else:
             theme_path = Path(theme).resolve(strict=True)
@@ -273,7 +282,8 @@ class MarkupGenerator:
         self.__copy_to_output(theme_path, theme_output_path)
 
         relative_theme_path = theme_output_path.relative_to(
-            file_using_theme_path.parent, walk_up=True
+            file_using_theme_path.parent,
+            walk_up=True,
         )
 
         return relative_theme_path
@@ -281,7 +291,7 @@ class MarkupGenerator:
     def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
         if self.__is_absolute_url(favicon):
             logger.info(
-                f'Using favicon "{favicon}" from an absolute URL, no copy necessary'
+                f'Using favicon "{favicon}" from an absolute URL, no copy necessary',
             )
             return favicon
 
@@ -292,7 +302,8 @@ class MarkupGenerator:
         self.__copy_to_output(favicon_path, favicon_output_path)
 
         relative_favicon_path = favicon_output_path.relative_to(
-            file_using_favicon_path.parent, walk_up=True
+            file_using_favicon_path.parent,
+            walk_up=True,
         )
 
         return relative_favicon_path
@@ -314,12 +325,14 @@ class MarkupGenerator:
         return relative_path
 
     def __copy_to_output_relative_to_md_root(
-        self, source_path: Path, md_root_path: Path
+        self,
+        source_path: Path,
+        md_root_path: Path,
     ) -> Path | None:
         source_path = source_path.resolve(strict=True)
         if not source_path.is_relative_to(md_root_path):
             logger.warning(
-                f'"{source_path.absolute()}" is outside the markdown root directory, skipped!"'
+                f'"{source_path.absolute()}" is outside the markdown root directory, skipped!"',
             )
             return None
 
@@ -343,7 +356,7 @@ class MarkupGenerator:
 
         action = "Overwritten" if overwrite else "Copied"
         logger.info(
-            f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"'
+            f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
 
     def __copy_file(self, source_path, destination_path) -> None:
@@ -353,7 +366,7 @@ class MarkupGenerator:
 
         action = "Overwritten" if overwrite else "Copied"
         logger.info(
-            f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"'
+            f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
 
     def __is_absolute_url(self, url: str) -> bool:

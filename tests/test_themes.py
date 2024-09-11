@@ -1,17 +1,18 @@
 from pathlib import Path
+from typing import Any
 
 from tests.utils import assert_files_exist, assert_html_contains
 
 
-def test_local_slideshow_theme_path(setup_markup_generator) -> None:
+def test_local_slideshow_theme_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "slides": {
                 "theme": "tests/test_styles/theme.css",
                 "highlight_theme": "tests/test_styles/highlight-theme.css",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -36,15 +37,15 @@ def test_local_slideshow_theme_path(setup_markup_generator) -> None:
     )
 
 
-def test_absolute_url_slideshow_theme_path(setup_markup_generator) -> None:
+def test_absolute_url_slideshow_theme_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "slides": {
                 "theme": "https://example.org/theme.css",
                 "highlight_theme": "https://example.org/highlight-theme.css",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -69,15 +70,15 @@ def test_absolute_url_slideshow_theme_path(setup_markup_generator) -> None:
     )
 
 
-def test_builtin_slideshow_theme_path(setup_markup_generator) -> None:
+def test_builtin_slideshow_theme_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "slides": {
                 "theme": "simple",
                 "highlight_theme": "vs",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -109,14 +110,14 @@ def test_builtin_slideshow_theme_path(setup_markup_generator) -> None:
     )
 
 
-def test_local_index_theme_path(setup_markup_generator) -> None:
+def test_local_index_theme_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "index": {
                 "theme": "tests/test_styles/theme.css",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -130,14 +131,14 @@ def test_local_index_theme_path(setup_markup_generator) -> None:
     )
 
 
-def test_absolute_url_index_theme_path(setup_markup_generator) -> None:
+def test_absolute_url_index_theme_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "index": {
                 "theme": "https://example.org/theme.css",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -150,14 +151,15 @@ def test_absolute_url_index_theme_path(setup_markup_generator) -> None:
         ],
     )
 
-def test_absolute_url_index_favicon_path(setup_markup_generator) -> None:
+
+def test_absolute_url_index_favicon_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "index": {
                 "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -170,14 +172,15 @@ def test_absolute_url_index_favicon_path(setup_markup_generator) -> None:
         ],
     )
 
-def test_absolute_url_slideshow_favicon_path(setup_markup_generator) -> None:
+
+def test_absolute_url_slideshow_favicon_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "slides": {
                 "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -197,14 +200,15 @@ def test_absolute_url_slideshow_favicon_path(setup_markup_generator) -> None:
         ],
     )
 
-def test_local_index_favicon_path(setup_markup_generator) -> None:
+
+def test_local_index_favicon_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "index": {
                 "favicon": "tests/test_styles/favicon.ico",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")
@@ -217,14 +221,15 @@ def test_local_index_favicon_path(setup_markup_generator) -> None:
         ],
     )
 
-def test_local_slideshow_favicon_path(setup_markup_generator) -> None:
+
+def test_local_slideshow_favicon_path(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
             "slides": {
                 "favicon": "tests/test_styles/favicon.ico",
-            }
-        }
+            },
+        },
     )
 
     test_files_path = Path("tests/test_files")

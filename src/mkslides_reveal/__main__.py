@@ -1,26 +1,23 @@
-#!/usr/bin/env python
-
+import logging
 import shutil
+import tempfile
+from pathlib import Path
+from urllib.parse import urlparse
+
 import click
 import livereload
-import logging
-import tempfile
-
 from livereload.handlers import LiveReloadHandler
-from pathlib import Path
 from rich.logging import RichHandler
-from urllib.parse import urlparse
 
 from .config import Config
 from .constants import (
-    EXPECTED_CONFIG_LOCATION,
     DEFAULT_OUTPUT_DIR,
-    VERSION,
-    REVEALJS_VERSION,
+    EXPECTED_CONFIG_LOCATION,
     HIGHLIGHTJS_THEMES_VERSION,
+    REVEALJS_VERSION,
+    VERSION,
 )
 from .markupgenerator import MarkupGenerator
-
 
 logger = logging.getLogger()
 logger.setLevel("DEBUG")
@@ -54,8 +51,7 @@ config_file_argument_data = {
     "",
 )
 def cli() -> None:
-    "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
-    pass
+    """MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."""
 
 
 def read_config(config_location: str) -> Config:
@@ -100,12 +96,10 @@ def generate(config_file, input_path: Path, output_directory: Path) -> None:
     default=DEFAULT_OUTPUT_DIR,
 )
 def build(files, config_file, site_dir) -> None:
-    """
-    Build the MkDocs documentation.
+    """Build the MkDocs documentation.
 
     FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
     """
-
     logger.info("Command: build")
 
     input_path = Path(files).resolve(strict=True)
@@ -161,12 +155,10 @@ def serve(
     watch_slides_template,
     config_file,
 ) -> None:
-    """
-    Run the builtin development server.
+    """Run the builtin development server.
 
     FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
     """
-
     logger.info("Command: serve")
 
     input_path = Path(files).resolve(strict=True)
@@ -190,7 +182,7 @@ def serve(
 
         watched_paths = [
             files,
-            config_file,  # TODO reload config
+            config_file,  # TODO: reload config
         ]
 
         if watch_index_theme:

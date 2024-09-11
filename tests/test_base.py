@@ -1,9 +1,10 @@
 from pathlib import Path
+from typing import Any
 
 from tests.utils import assert_files_exist, assert_html_contains
 
 
-def test_process_directory_without_config(setup_markup_generator) -> None:
+def test_process_directory_without_config(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     test_files_path = Path("tests/test_files")
     markup_generator.process_markdown(test_files_path)
@@ -51,7 +52,7 @@ def test_process_directory_without_config(setup_markup_generator) -> None:
     )
 
 
-def test_process_file_without_config(setup_markup_generator) -> None:
+def test_process_file_without_config(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     test_file_path = Path("tests/test_files/someslides.md")
     markup_generator.process_markdown(test_file_path)
@@ -75,4 +76,6 @@ def test_process_file_without_config(setup_markup_generator) -> None:
         ],
     )
 
-    assert not (output_path / "someslides.html").exists(), "someslides.html should not exist"
+    assert not (
+        output_path / "someslides.html"
+    ).exists(), "someslides.html should not exist"

@@ -20,9 +20,9 @@ click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"
-black = "^24.8.0"
 mypy = "^1.11.2"
 types-pyyaml = "^6.0.12.20240808"
+ruff = "^0.6.4"
 
 
 [tool.poetry.group.test.dependencies]
@@ -50,3 +50,24 @@ push = true
 [tool.bumpver.file_patterns]
 "src/mkslides_reveal/__init__.py" = ['^__version__ = "{version}"']
 "pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
+
+[tool.ruff.lint]
+ignore = [
+    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
+    "D100",    # Missing docstring in public module
+    "D101",    # Missing docstring in public class
+    "D103",    # Missing docstring in public function
+    "D102",    # Missing docstring in public method
+    "D104",    # Missing docstring in public package"
+    "D107",    # Missing docstring in `__init__`
+    "E501",    # Line too long
+    "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
+    "G004",    # Logging statement uses f-string"
+    "PLR0913", #  Too many arguments in function definition
+    "RET504",  # Unnecessary assignment to `...` before `return` statement
+    "S101",    # Use of `assert` detected
+    "TD002",   # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+    "TD003",   # Missing issue link on the line following this TODO
+
+]
+select = ["ALL"]

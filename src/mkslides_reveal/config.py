@@ -1,11 +1,9 @@
-import importlib
 import logging
-import yaml
-
 from pathlib import Path
 
-from .constants import DEFAULT_CONFIG_RESOURCE
+import yaml
 
+from .constants import DEFAULT_CONFIG_RESOURCE
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +70,7 @@ class Config:
     def merge_config_from_dict(self, new_config: dict) -> None:
         self.__config = self.__recursive_merge(self.__config, new_config)
 
-        logger.info(f"Config merged from dict")
+        logger.info("Config merged from dict")
         logger.info(f"Config: {self.__config}")
 
     def __get(self, *keys) -> str | dict | list | None:
