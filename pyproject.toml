@@ -21,7 +21,12 @@ click = "^8.1.7"
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"
 black = "^24.8.0"
-pytest = "^8.3.2"
+mypy = "^1.11.2"
+types-pyyaml = "^6.0.12.20240808"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.3"
 
 [tool.poetry.scripts]
 mkslides-reveal = "mkslides_reveal.__main__:cli"

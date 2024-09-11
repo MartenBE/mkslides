@@ -53,7 +53,7 @@ config_file_argument_data = {
     message=f"mkslides-reveal, version {VERSION}\nreveal.js, version {REVEALJS_VERSION}\nhighlight.js themes, version {HIGHLIGHTJS_THEMES_VERSION}"
     "",
 )
-def cli():
+def cli() -> None:
     "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
     pass
 
@@ -76,10 +76,13 @@ def parse_ip_port(
     ip = urlparse_result.hostname
     port = urlparse_result.port
 
+    assert ip, f"Invalid IP address: {ip_port_str}"
+    assert port, f"Invalid port: {ip_port_str}"
+
     return ip, port
 
 
-def generate(config_file, input_path, output_directory) -> None:
+def generate(config_file, input_path: Path, output_directory: Path) -> None:
     config = read_config(config_file)
     markup_generator = MarkupGenerator(config, output_directory)
     markup_generator.create_output_directory()
@@ -96,7 +99,7 @@ def generate(config_file, input_path, output_directory) -> None:
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
-def build(files, config_file, site_dir):
+def build(files, config_file, site_dir) -> None:
     """
     Build the MkDocs documentation.
 
@@ -157,7 +160,7 @@ def serve(
     watch_slides_theme,
     watch_slides_template,
     config_file,
-):
+) -> None:
     """
     Run the builtin development server.
 
@@ -175,7 +178,7 @@ def serve(
 
     # Livereload
 
-    def reload():
+    def reload() -> None:
         logger.info("Reloading ...")
         generate(config_file, input_path, output_directory)
 

@@ -3,7 +3,7 @@ from pathlib import Path
 from tests.utils import assert_files_exist, assert_html_contains
 
 
-def test_local_slideshow_theme_path(setup_markup_generator):
+def test_local_slideshow_theme_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -36,7 +36,7 @@ def test_local_slideshow_theme_path(setup_markup_generator):
     )
 
 
-def test_absolute_url_slideshow_theme_path(setup_markup_generator):
+def test_absolute_url_slideshow_theme_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -69,7 +69,7 @@ def test_absolute_url_slideshow_theme_path(setup_markup_generator):
     )
 
 
-def test_builtin_slideshow_theme_path(setup_markup_generator):
+def test_builtin_slideshow_theme_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -109,7 +109,7 @@ def test_builtin_slideshow_theme_path(setup_markup_generator):
     )
 
 
-def test_local_index_theme_path(setup_markup_generator):
+def test_local_index_theme_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -130,7 +130,7 @@ def test_local_index_theme_path(setup_markup_generator):
     )
 
 
-def test_absolute_url_index_theme_path(setup_markup_generator):
+def test_absolute_url_index_theme_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -150,7 +150,7 @@ def test_absolute_url_index_theme_path(setup_markup_generator):
         ],
     )
 
-def test_absolute_url_index_favicon_path(setup_markup_generator):
+def test_absolute_url_index_favicon_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -170,7 +170,7 @@ def test_absolute_url_index_favicon_path(setup_markup_generator):
         ],
     )
 
-def test_absolute_url_slideshow_favicon_path(setup_markup_generator):
+def test_absolute_url_slideshow_favicon_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -197,7 +197,7 @@ def test_absolute_url_slideshow_favicon_path(setup_markup_generator):
         ],
     )
 
-def test_local_index_favicon_path(setup_markup_generator):
+def test_local_index_favicon_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
@@ -217,7 +217,7 @@ def test_local_index_favicon_path(setup_markup_generator):
         ],
     )
 
-def test_local_slideshow_favicon_path(setup_markup_generator):
+def test_local_slideshow_favicon_path(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {

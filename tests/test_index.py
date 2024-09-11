@@ -3,7 +3,7 @@ from pathlib import Path
 from tests.utils import assert_html_contains
 
 
-def test_index_title(setup_markup_generator):
+def test_index_title(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {

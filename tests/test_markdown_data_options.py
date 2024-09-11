@@ -5,7 +5,7 @@ from pathlib import Path
 from tests.utils import assert_html_contains_regexp
 
 
-def test_revealjs_markdown_data_options(setup_markup_generator):
+def test_revealjs_markdown_data_options(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {

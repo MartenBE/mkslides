@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class Config:
-    def __init__(self):
+    def __init__(self) -> None:
         with DEFAULT_CONFIG_RESOURCE.open() as f:
             self.__config = yaml.safe_load(f)
 
@@ -60,7 +60,7 @@ class Config:
     def get_plugins(self) -> list | None:
         return self.__get("plugins")
 
-    def merge_config_from_file(self, config_path: Path):
+    def merge_config_from_file(self, config_path: Path) -> None:
         with config_path.open() as f:
             new_config = yaml.safe_load(f)
 
@@ -69,13 +69,13 @@ class Config:
             logger.info(f'Config merged from "{config_path}"')
             logger.info(f"Config: {self.__config}")
 
-    def merge_config_from_dict(self, new_config: dict):
+    def merge_config_from_dict(self, new_config: dict) -> None:
         self.__config = self.__recursive_merge(self.__config, new_config)
 
         logger.info(f"Config merged from dict")
         logger.info(f"Config: {self.__config}")
 
-    def __get(self, *keys):
+    def __get(self, *keys) -> str | dict | list | None:
         current_value = self.__config
         for key in keys:
             if isinstance(current_value, dict) and key in current_value:
@@ -84,7 +84,7 @@ class Config:
                 return None
         return current_value
 
-    def __recursive_merge(self, current, new):
+    def __recursive_merge(self, current, new) -> dict:
         if new:
             for key, value in new.items():
                 if isinstance(value, dict):

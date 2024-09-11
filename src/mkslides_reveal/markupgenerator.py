@@ -1,12 +1,13 @@
 import datetime
-from importlib.resources.abc import Traversable
 import frontmatter
 import logging
 import shutil
 import time
 
 from importlib import resources
+from importlib.resources.abc import Traversable
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 from .config import Config
@@ -246,7 +247,7 @@ class MarkupGenerator:
         self,
         file_using_theme_path: Path,
         theme: str,
-        default_theme_resource: Traversable = None,
+        default_theme_resource: Traversable | None = None,
     ) -> Path | str:
         if self.__is_absolute_url(theme):
             logger.info(
@@ -298,7 +299,7 @@ class MarkupGenerator:
 
     ################################################################################
 
-    def __create_file(self, destination_path: Path, content: any) -> None:
+    def __create_file(self, destination_path: Path, content: Any) -> None:
         if destination_path.exists():
             destination_path.write_text(content)
             logger.info(f'Overwritten: "{destination_path}"')
@@ -314,13 +315,13 @@ class MarkupGenerator:
 
     def __copy_to_output_relative_to_md_root(
         self, source_path: Path, md_root_path: Path
-    ) -> Path:
+    ) -> Path | None:
         source_path = source_path.resolve(strict=True)
         if not source_path.is_relative_to(md_root_path):
             logger.warning(
                 f'"{source_path.absolute()}" is outside the markdown root directory, skipped!"'
             )
-            return
+            return None
 
         relative_path = source_path.relative_to(md_root_path)
         destination_path = self.output_directory_path / relative_path

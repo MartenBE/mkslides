@@ -4,7 +4,7 @@ import re
 from tests.utils import assert_html_contains, assert_html_contains_regexp
 
 
-def test_plugins(setup_markup_generator):
+def test_plugins(setup_markup_generator) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {

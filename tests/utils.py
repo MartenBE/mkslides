@@ -8,7 +8,7 @@ def assert_files_exist(output_path: Path, files: list[str]) -> None:
         assert (output_path / file).exists(), f"{file} does not exist"
 
 
-def assert_html_contains(file_path: Path, expected_content: str) -> None:
+def assert_html_contains(file_path: Path, expected_content: list[str]) -> None:
     with file_path.open() as file:
         content = file.read()
         for substring in expected_content:
