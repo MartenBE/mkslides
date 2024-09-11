@@ -12,6 +12,9 @@
     -   Turn a single Markdown file into a HTML slideshow.
     -   Turn a folder with Markdown files into a collection of HTML slideshows.
 -   Publish your slideshow(s) anywhere that static files can be served.
+    -   Locally
+    -   On a webserver
+    -   Deploy through CI/CD with GitHub/GitLab (like this repo!)
 -   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 -   Use custom favicons, CSS themes, templates, ... if desired.
 -   And more!
