@@ -17,6 +17,7 @@
     -   Deploy through CI/CD with GitHub/GitLab (like this repo!)
 -   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 -   Use custom favicons, CSS themes, templates, ... if desired.
+-   Depends heavily on integration/unit tests to prevent regressions.
 -   And more!
 
 ## Example

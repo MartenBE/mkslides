@@ -207,6 +207,8 @@ class MarkupGenerator:
                 },
             )
 
+        slideshows.sort(key=lambda x: x["location"])
+
         logger.info("Generating index")
 
         index_path = self.output_directory_path / "index.html"
