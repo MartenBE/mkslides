@@ -19,10 +19,13 @@
 
         <ul>
         {%+ for s in slideshows %}
-            <li><a href="{{ s.location }}" target="_blank">{{ s.title }}</a></li>
+            <li><a href="{{ s.location }}" target="_blank">{{ s.title }}</a> (<a href="{{ s.location }}?print-pdf" target="_blank">PDF version</a>)</li>
         {% endfor %}
         </ul>
 
-        <p>Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.</p>
+        <p>
+            Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
+            The PDF version link generates a single-page document suitable for <a href="https://revealjs.com/pdf-export/" target="_blank">saving as a PDF for printing</a>.
+        </p>
     </body>
 </html>
