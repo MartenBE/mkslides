@@ -71,9 +71,11 @@ LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."))
 VERSION = metadata.version("mkslides_reveal")
 
 REVEALJS_VERSION = None
-with REVEALJS_RESOURCE.joinpath("package.json").open() as f:
+with REVEALJS_RESOURCE.joinpath("package.json").open(encoding="utf-8-sig") as f:
     REVEALJS_VERSION = json.load(f)["version"]
 
 HIGHLIGHTJS_THEMES_VERSION = None
-with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open() as f:
+with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open(
+    encoding="utf-8-sig"
+) as f:
     HIGHLIGHTJS_THEMES_VERSION = json.load(f)["version"]

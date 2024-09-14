@@ -67,7 +67,7 @@ class Config:
         return self.__get("plugins")
 
     def merge_config_from_file(self, config_path: Path) -> None:
-        with config_path.open() as f:
+        with config_path.open(encoding="utf-8-sig") as f:
             new_config = yaml.safe_load(f)
 
             self.__config = self.__recursive_merge(self.__config, new_config)

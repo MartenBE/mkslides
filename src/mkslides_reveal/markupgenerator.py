@@ -103,7 +103,7 @@ class MarkupGenerator:
 
         # Retrieve the frontmatter metadata and the markdown content
 
-        content = md_file.read_text()
+        content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown = frontmatter.parse(content)
 
         # Get the relative path of reveal.js
