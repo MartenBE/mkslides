@@ -4,6 +4,7 @@ import shutil
 import time
 from importlib import resources
 from importlib.resources.abc import Traversable
+from natsort import natsorted
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -207,7 +208,7 @@ class MarkupGenerator:
                 },
             )
 
-        slideshows.sort(key=lambda x: x["location"])
+        slideshows = natsorted(slideshows, key=lambda x: x["location"])
 
         logger.info("Generating index")
 
