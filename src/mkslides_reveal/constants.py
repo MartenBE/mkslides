@@ -76,6 +76,6 @@ with REVEALJS_RESOURCE.joinpath("package.json").open(encoding="utf-8-sig") as f:
 
 HIGHLIGHTJS_THEMES_VERSION = None
 with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open(
-    encoding="utf-8-sig"
+    encoding="utf-8-sig",
 ) as f:
     HIGHLIGHTJS_THEMES_VERSION = json.load(f)["version"]

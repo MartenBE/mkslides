@@ -23,8 +23,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install mkslides-reveal
-      - run: mkslides-reveal build docs/index.md
+      - run: pip install poetry
+      - run: poetry install --with dev
+      - run: poetry run ruff format --check
+      # - run: poetry run ruff check # TODO: Enable this line
+      # - run: poetry run mypy src/ tests/  # TODO: Enable this line
+      - run: poetry run pytest
+      - run: poetry run mkslides-reveal build docs/index.md
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
