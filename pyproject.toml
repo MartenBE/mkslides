@@ -19,6 +19,7 @@ rich = "^13.8.0"
 click = "^8.1.7"
 jsonschema = "^4.23.0"
 natsort = "^8.4.0"
+emoji = "^2.12.1"
 
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"

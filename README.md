@@ -8,7 +8,7 @@
 
 ## Features
 
--   Build static HTML files from Markdown files.
+-   Build static HTML slideshow files from Markdown files.
     -   Turn a single Markdown file into a HTML slideshow.
     -   Turn a folder with Markdown files into a collection of HTML slideshows.
 -   Publish your slideshow(s) anywhere that static files can be served.
@@ -17,6 +17,7 @@
     -   Deploy through CI/CD with GitHub/GitLab (like this repo!)
 -   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 -   Use custom favicons, CSS themes, templates, ... if desired.
+-   Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
 -   Depends heavily on integration/unit tests to prevent regressions.
 -   And more!
 

@@ -2,6 +2,7 @@ import datetime
 import logging
 import shutil
 import time
+from emoji import emojize
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -106,6 +107,7 @@ class MarkupGenerator:
 
         content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown = frontmatter.parse(content)
+        markdown = emojize(markdown, language="alias")
 
         # Get the relative path of reveal.js
 

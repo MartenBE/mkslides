@@ -8,18 +8,28 @@ Created by [MartenBE](https://github.com/MartenBE)
 
 Hosted on [GitHub](https://github.com/MartenBE/mkslides-reveal) and [Pypi](https://pypi.org/project/mkslides-reveal/)
 
+Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md)
+
 ---
 
 ## What does it do?
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Markdown-mark.svg" height="100px" style="margin-right: 50px; background: white; border-radius: 16px"/>
-<img src="https://static.slid.es/reveal/logo-v1/reveal-white-text.svg" height="100px"/>
+<img src="./img/markdown-logo.png" height="100px" style="margin-right: 50px;"/>
+<img src="./img/reveal-js-logo.svg" height="100px"/>
 
--   From Markdown to static HTML slides using [Reveal.js](https://revealjs.com/)
--   What [MkDocs](https://www.mkdocs.org/) does for documentation, [MkSlides-Reveal](https://pypi.org/project/mkslides-reveal/) does for slides
-    -   MkSlides-Reveal lets you focus on Markdown, not on Reveal.js HTML boilerplate
-    -   Very similar use pattern and CLI as MkDocs
--   Inspired by both MkDocs and [reveal-md](https://github.com/webpro/reveal-md)
+-   Build static HTML slideshow files from Markdown files.
+    -   Turn a single Markdown file into a HTML slideshow.
+    -   Turn a folder with Markdown files into a collection of HTML slideshows.
+-   Publish your slideshow(s) anywhere that static files can be served.
+    -   Locally, on a webserver, deploy through CI/CD with GitHub/GitLab (like this repo!), ...
+
+---
+
+-   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
+-   Use custom favicons, CSS themes, templates, ... if desired.
+-   Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
+-   Depends heavily on integration/unit tests to prevent regressions.
+-   And more!
 
 ---
 
