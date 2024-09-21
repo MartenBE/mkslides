@@ -6,7 +6,7 @@ title: "Would you like to know more?"
 
 Created by [MartenBE](https://github.com/MartenBE)
 
-Hosted on [GitHub](https://github.com/MartenBE/mkslides-reveal) and [Pypi](https://pypi.org/project/mkslides/)
+Hosted on [GitHub](https://github.com/MartenBE/mkslides) and [Pypi](https://pypi.org/project/mkslides/)
 
 Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md)
 
@@ -53,7 +53,7 @@ $ pip install mkslides
     -   Local slides
     -   Hosted slides on webserver
     -   Slides generated automatically by CI/CD using Markdown files in GitHub/GitLab repo
-        -   That's exactly what is happening [here](https://github.com/MartenBE/mkslides-reveal/blob/main/.github/workflows/publish.yml)!
+        -   That's exactly what is happening [here](https://github.com/MartenBE/mkslides/blob/main/.github/workflows/publish.yml)!
 
 ---
 
@@ -129,11 +129,11 @@ Options:
 ## Contributions
 
 -   MkSlides is and always will be open source
-    -   [MIT license](https://github.com/MartenBE/mkslides-reveal/blob/main/LICENSE)
+    -   [MIT license](https://github.com/MartenBE/mkslides/blob/main/LICENSE)
 -   Contributions are very welcome!
     -   Open an issue and/or PR
     -   We only ask that you try real hard to include **tests**!
-        -   Almost everything is [tested automatically](https://github.com/MartenBE/mkslides-reveal/tree/main/tests)
+        -   Almost everything is [tested automatically](https://github.com/MartenBE/mkslides/tree/main/tests)
 
 ---
 
