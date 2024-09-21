@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from mkslides_reveal.config import Config
-from mkslides_reveal.markupgenerator import MarkupGenerator
+from mkslides.config import Config
+from mkslides.markupgenerator import MarkupGenerator
 
 
 @pytest.fixture
