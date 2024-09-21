@@ -6,7 +6,9 @@ authors = ["MartenBE"]
 repository = "https://github.com/MartenBE/mkslides-reveal"
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "mkslides_reveal", from = "src" }]
+packages = [
+    { include = "mkslides_reveal", from = "src" },
+]
 include = [{ path = "assets", format = ["sdist", "wheel"] }]
 
 [tool.poetry.dependencies]
@@ -19,9 +21,7 @@ click = "^8.1.7"
 jsonschema = "^4.23.0"
 natsort = "^8.4.0"
 emoji = "^2.12.1"
-
-# TODO: go back to official package, see https://github.com/MartenBE/mkslides-reveal/issues/3
-livereload = { git = "https://github.com/Lucas-C/python-livereload.git", branch = "issue-277" }
+livereload = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"

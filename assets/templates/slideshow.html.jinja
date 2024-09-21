@@ -35,7 +35,10 @@
         <script src="{{ revealjs_path }}/plugin/markdown/markdown.js"></script>
         <script src="{{ revealjs_path }}/plugin/highlight/highlight.js"></script>
         <script src="{{ revealjs_path }}/plugin/zoom/zoom.js"></script>
-        <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
+
+        <!-- https://github.com/MartenBE/mkslides-reveal/issues/3
+            <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
+        -->
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
 
         {% if plugins %}
@@ -57,7 +60,9 @@
                     RevealMarkdown,
                     RevealHighlight,
                     RevealZoom,
-                    RevealNotes,
+                    <!-- https://github.com/MartenBE/mkslides-reveal/issues/3
+                        RevealNotes,
+                    -->
                     RevealMath,
 
                     {% if plugins %}

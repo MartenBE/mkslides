@@ -159,17 +159,13 @@ version = "2.7.0"
 description = "Python LiveReload is an awesome tool for web developers"
 optional = false
 python-versions = ">=3.7"
-files = []
-develop = false
+files = [
+    {file = "livereload-2.7.0-py3-none-any.whl", hash = "sha256:19bee55aff51d5ade6ede0dc709189a0f904d3b906d3ea71641ed548acff3246"},
+    {file = "livereload-2.7.0.tar.gz", hash = "sha256:f4ba199ef93248902841e298670eebfe1aa9e148e19b343bc57dbf1b74de0513"},
+]
 
 [package.dependencies]
 tornado = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/Lucas-C/python-livereload.git"
-reference = "issue-277"
-resolved_reference = "1103f942bd681cca85b7432ce7ed93797cc861e5"
 
 [[package]]
 name = "looseversion"
@@ -726,4 +722,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "87c5de376fe8304575ffbc765d97d76c81004d923ef378d8802b51489a48f31c"
+content-hash = "64a9c1dd9fc574b7be55f3afb9772b805b9417dfa1e91ad5d74d1821de46f117"
