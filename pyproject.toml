@@ -3,6 +3,7 @@ name = "mkslides"
 version = "0.1.28"
 description = "MkSlides - Slides with Markdown using the power of Reveal.js."
 authors = ["MartenBE"]
+homepage = "https://martenbe.github.io/mkslides"
 repository = "https://github.com/MartenBE/mkslides"
 license = "MIT"
 readme = "README.md"
