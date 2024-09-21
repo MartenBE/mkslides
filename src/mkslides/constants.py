@@ -68,7 +68,7 @@ DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template(
 )
 LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."))
 
-VERSION = metadata.version("mkslides_reveal")
+VERSION = metadata.version("mkslides")
 
 REVEALJS_VERSION = None
 with REVEALJS_RESOURCE.joinpath("package.json").open(encoding="utf-8-sig") as f:

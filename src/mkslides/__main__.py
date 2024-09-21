@@ -47,11 +47,11 @@ config_file_argument_data = {
     VERSION,
     "-V",
     "--version",
-    message=f"mkslides-reveal, version {VERSION}\nreveal.js, version {REVEALJS_VERSION}\nhighlight.js themes, version {HIGHLIGHTJS_THEMES_VERSION}"
+    message=f"mkslides, version {VERSION}\nreveal.js, version {REVEALJS_VERSION}\nhighlight.js themes, version {HIGHLIGHTJS_THEMES_VERSION}"
     "",
 )
 def cli() -> None:
-    """MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."""
+    """MkSlides - Slides with Markdown using the power of Reveal.js."""
 
 
 def read_config(config_location: str) -> Config:

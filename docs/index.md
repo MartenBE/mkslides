@@ -2,11 +2,11 @@
 title: "Would you like to know more?"
 ---
 
-# MkSlides-Reveal
+# MkSlides
 
 Created by [MartenBE](https://github.com/MartenBE)
 
-Hosted on [GitHub](https://github.com/MartenBE/mkslides-reveal) and [Pypi](https://pypi.org/project/mkslides-reveal/)
+Hosted on [GitHub](https://github.com/MartenBE/mkslides-reveal) and [Pypi](https://pypi.org/project/mkslides/)
 
 Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md)
 
@@ -36,7 +36,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
 ## Installation
 
 ```console
-$ pip install mkslides-reveal
+$ pip install mkslides
 ```
 
 ---
@@ -86,15 +86,15 @@ $ pip install mkslides-reveal
 -   Generate the static HTML files:
 
 ```console
-$ mkslides-reveal build -h
-Usage: mkslides-reveal build [OPTIONS] FILENAME|PATH
+$ mkslides build -h
+Usage: mkslides build [OPTIONS] FILENAME|PATH
 
   Build the MkDocs documentation.
 
   FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
 
 Options:
-  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -f, --config-file FILENAME  Provide a specific MkSlides config file.
   -d, --site-dir PATH         The directory to output the result of the slides build.
   -h, --help                  Show this message and exit.
 ```
@@ -106,8 +106,8 @@ Options:
 -   Live preview:
 
 ```console
-$ mkslides-reveal serve -h
-Usage: mkslides-reveal serve [OPTIONS] FILENAME|PATH
+$ mkslides serve -h
+Usage: mkslides serve [OPTIONS] FILENAME|PATH
 
   Run the builtin development server.
 
@@ -120,7 +120,7 @@ Options:
   --watch-index-template      Include the index template in list of files to watch for live reloading.
   --watch-slides-theme        Include the slides theme in list of files to watch for live reloading.
   --watch-slides-template     Include the slides template in list of files to watch for live reloading.
-  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -f, --config-file FILENAME  Provide a specific MkSlides config file.
   -h, --help                  Show this message and exit.
 ```
 
@@ -128,7 +128,7 @@ Options:
 
 ## Contributions
 
--   MkSlides-Reveal is and always will be open source
+-   MkSlides is and always will be open source
     -   [MIT license](https://github.com/MartenBE/mkslides-reveal/blob/main/LICENSE)
 -   Contributions are very welcome!
     -   Open an issue and/or PR

@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "mkslides-reveal"
+name = "mkslides"
 version = "0.1.25"
-description = "MkSlides-Reveal - Slides with Markdown using the power of Reveal.js."
+description = "MkSlides - Slides with Markdown using the power of Reveal.js."
 authors = ["MartenBE"]
 repository = "https://github.com/MartenBE/mkslides-reveal"
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "mkslides_reveal", from = "src" },
+    { include = "mkslides", from = "src" },
 ]
 include = [{ path = "assets", format = ["sdist", "wheel"] }]
 
@@ -34,7 +34,7 @@ ruff = "^0.6.4"
 pytest = "^8.3.3"
 
 [tool.poetry.scripts]
-mkslides-reveal = "mkslides_reveal.__main__:cli"
+mkslides = "mkslides.__main__:cli"
 
 [build-system]
 requires = ["poetry-core"]
@@ -53,7 +53,7 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
-"src/mkslides_reveal/__init__.py" = ['^__version__ = "{version}"']
+"src/mkslides/__init__.py" = ['^__version__ = "{version}"']
 "pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
 
 [tool.ruff.lint]

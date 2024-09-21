@@ -31,7 +31,7 @@ jobs:
       # - run: poetry run ruff check # TODO: Enable this line
       # - run: poetry run mypy src/ tests/  # TODO: Enable this line
       - run: poetry run pytest
-      - run: poetry run mkslides-reveal build docs/index.md
+      - run: poetry run mkslides build docs/index.md
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
