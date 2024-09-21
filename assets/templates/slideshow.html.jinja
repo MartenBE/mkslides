@@ -22,7 +22,7 @@
             <div class="slides">
                 <section data-markdown
                 {% for key, value in markdown_data_options.items() %}
-                    data-{{ key }}="{{ value }}"
+                    {{ key }}="{{ value }}"
                 {% endfor %}
                 >
                     <textarea data-template>

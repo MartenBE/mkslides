@@ -27,13 +27,13 @@ def test_revealjs_markdown_data_options(setup_markup_generator: Any) -> None:
             r"""
             <section\s+data-markdown
                 .*?
-                data-separator="\^\\s\*---\\s\*\$"
+                \s+data-separator="\^\\s\*---\\s\*\$"\s+
                 .*?
-                data-separator-vertical="\^\\s\*-v-\\s\*\$"
+                \s+data-separator-vertical="\^\\s\*-v-\\s\*\$"\s+
                 .*?
-                data-separator-notes="\^Notes\?:"
+                \s+data-separator-notes="\^Notes\?:"\s+
                 .*?
-                data-charset="utf-8"
+                \s+data-charset="utf-8"\s+
                 .*?
             >
             """,
