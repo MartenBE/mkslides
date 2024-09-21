@@ -12,7 +12,6 @@ include = [{ path = "assets", format = ["sdist", "wheel"] }]
 [tool.poetry.dependencies]
 python = "^3.12"
 Jinja2 = "^3.1.4"
-livereload = "^2.7.0"
 python-frontmatter = "^1.1.0"
 PyYAML = "^6.0.2"
 rich = "^13.8.0"
@@ -20,6 +19,9 @@ click = "^8.1.7"
 jsonschema = "^4.23.0"
 natsort = "^8.4.0"
 emoji = "^2.12.1"
+
+# TODO: go back to official package, see https://github.com/MartenBE/mkslides-reveal/issues/3
+livereload = { git = "https://github.com/Lucas-C/python-livereload.git", branch = "issue-277" }
 
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"
