@@ -5,3 +5,4 @@ slides:
   highlight_theme: monokai
 reveal.js:
   history: true # Necessary for back/forward buttons and livereload
+  slideNumber: "c/t"
