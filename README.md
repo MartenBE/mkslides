@@ -1,10 +1,10 @@
-# MkSlides-Reveal
+# MkSlides
 
-> Use `mkslides-reveal` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
+> Use `mkslides` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
 
-[![PyPI](https://img.shields.io/pypi/v/mkslides-reveal)](https://pypi.org/project/mkslides-reveal/)
+[![PyPI](https://img.shields.io/pypi/v/mkslides)](https://pypi.org/project/mkslides/)
 
-[MkSlides-Reveal](https://pypi.org/project/mkslides-reveal/) is a static site generator that's geared towards building slideshows. Slideshow source files are written in Markdown, and configured with a single YAML configuration file. The workflow and commands are heavily inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md).
+[MkSlides](https://pypi.org/project/mkslides/) is a static site generator that's geared towards building slideshows. Slideshow source files are written in Markdown, and configured with a single YAML configuration file. The workflow and commands are heavily inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md).
 
 ## Features
 
@@ -32,7 +32,7 @@ The [repo](https://github.com/HoGentTIN/hogent-revealmd) in this example also ha
 ## Installation
 
 ```bash
-pip install mkslides-reveal
+pip install mkslides
 ```
 
 ## Create static site
@@ -40,23 +40,23 @@ pip install mkslides-reveal
 E.g. when your Markdown files are located in the `docs/` folder:
 
 ```bash
-mkslides-reveal build docs/
+mkslides build docs/
 ```
 
 E.g. when you have a single Markdown file called `test.md`:
 
 ```bash
-mkslides-reveal build test.md
+mkslides build test.md
 ```
 
 ## Live preview
 
 ```bash
-mkslides-reveal serve docs/
+mkslides serve docs/
 ```
 
 ```bash
-mkslides-reveal serve test.md
+mkslides serve test.md
 ```
 
 ## Configuration
