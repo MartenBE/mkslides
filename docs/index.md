@@ -140,10 +140,8 @@ Options:
 ## Example
 
 -   This slideshow
--   Showcase of all possibilities using Reveal.js with the [HOGENT](https://hogent.be/) theme.
+-   [Slides](https://hogenttin.github.io/hogent-revealmd/) with all possibilities using Reveal.js using the [HOGENT](https://hogent.be/) theme.
     -   Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, CI/CD, ... .
-    -   [Slides](https://hogenttin.github.io/hogent-revealmd/)
-    -   [Code](https://github.com/HoGentTIN/hogent-revealmd)
--   [Reveal.js](https://revealjs.com/?demo)
+    -   Markdown can be found [here](https://github.com/HoGentTIN/hogent-revealmd).
 
 ---
