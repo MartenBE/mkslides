@@ -24,7 +24,7 @@ def test_revealjs_integer_options(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
-            "reveal.js": {
+            "revealjs": {
                 "height": 1080,
                 "width": 1920,
             },
@@ -55,7 +55,7 @@ def test_revealjs_string_options(setup_markup_generator: Any) -> None:
     markup_generator, output_path = setup_markup_generator
     markup_generator.config.merge_config_from_dict(
         {
-            "reveal.js": {
+            "revealjs": {
                 "transition": "fade",
             },
         },

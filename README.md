@@ -78,7 +78,7 @@ slides:
     separator_vertical: ^\s*-v-\s*$
     separator_notes: "^Notes?:"
     separator_charset: utf-8
-reveal.js:
+revealjs:
     height: 1080
     width: 1920
     transition: fade
@@ -93,4 +93,4 @@ plugins:
 -   `favicon`and `theme`, can also be configured as an URL, e.g. `https://example.org/theme.css`.
 -   `theme` can also be configured as a [Reveal.js built-in theme](https://revealjs.com/themes/), e.g. `black`, `white`, `league`, `solarized`, `dracula`, ... .
 -   `highlight_theme` can also be configured as a [highlight.js built-in theme](https://highlightjs.org/examples), e.g. `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ... .
--   `reveal.js` can contain all [Reveal.js options](https://revealjs.com/config/).
+-   `revealjs` can contain all [Reveal.js options](https://revealjs.com/config/).

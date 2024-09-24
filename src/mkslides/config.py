@@ -61,7 +61,7 @@ class Config:
         return self.__get("slides", "charset")
 
     def get_revealjs_options(self) -> dict | None:
-        return self.__get("reveal.js")
+        return self.__get("revealjs")
 
     def get_plugins(self) -> list | None:
         return self.__get("plugins")

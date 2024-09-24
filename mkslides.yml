@@ -1,6 +1,6 @@
 slides:
   theme: dracula
-reveal.js:
+revealjs:
   height: 1080
   width: 1920
   transition: slide
