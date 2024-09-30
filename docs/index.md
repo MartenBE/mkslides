@@ -77,7 +77,7 @@ $ pip install mkslides
 
 ## Example
 
-<iframe width="1280" height="720" src="https://www.youtube.com/embed/D9RSATHFf7U?si=Jr7Nj5Y8vaDzU_R6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="1280" height="720" src="https://www.youtube.com/embed/RdyRe3JZC7Q?si=GQoCFem5ZKHoIaVA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ---
 
@@ -137,11 +137,13 @@ Options:
 
 ---
 
-## Example
+## Examples
 
--   This slideshow
--   [Slides](https://hogenttin.github.io/hogent-revealmd/) with all possibilities using Reveal.js using the [HOGENT](https://hogent.be/) theme.
-    -   Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, CI/CD, ... .
-    -   Markdown can be found [here](https://github.com/HoGentTIN/hogent-revealmd).
+-   The [Markdown code](https://github.com/MartenBE/mkslides/tree/main/docs) of the slideshow you are currently watching.
+-   An Example repo with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities using Reveal.js with the [HOGENT](https://hogent.be/) theme.
+    -   An example of the automatically generated index page.
+    -   Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, ... .
+    -   Example of CI/CD pipelines.
+    -   Markdown code can be found [here](https://github.com/HoGentTIN/hogent-markdown-slides).
 
 ---
