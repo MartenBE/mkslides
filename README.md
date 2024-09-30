@@ -23,11 +23,11 @@
 
 ## Example
 
-[build.webm](https://github.com/user-attachments/assets/85432467-46db-46ad-aa90-378c912b0098)
+https://github.com/user-attachments/assets/004e7323-c0ac-46a5-8329-e1166bf22cf7
 
 [Youtube link](https://youtu.be/RdyRe3JZC7Q) in case you want to look at 2x speed.
 
-The [repo](https://github.com/HoGentTIN/hogent-markdown-slides) in this example also has advanced usage examples and theming, so check it out to see more possibilities!
+Want more examples? An example repo with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
 
 ## Installation
 
