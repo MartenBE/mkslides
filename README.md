@@ -25,9 +25,9 @@
 
 [build.webm](https://github.com/user-attachments/assets/85432467-46db-46ad-aa90-378c912b0098)
 
-[Youtube link](https://www.youtube.com/watch?v=D9RSATHFf7U) in case you want to look at 2x speed.
+[Youtube link](https://youtu.be/RdyRe3JZC7Q) in case you want to look at 2x speed.
 
-The [repo](https://github.com/HoGentTIN/hogent-revealmd) in this example also has advanced usage examples and theming, so check it out to see more possibilities!
+The [repo](https://github.com/HoGentTIN/hogent-markdown-slides) in this example also has advanced usage examples and theming, so check it out to see more possibilities!
 
 ## Installation
 
