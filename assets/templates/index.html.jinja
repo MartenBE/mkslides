@@ -22,7 +22,7 @@
             <li>
                 {{ s.title }}:
                 <a href="{{ s.location }}" target="_blank" title="View slides">slides</a>
-                <!-- / <a href="{{ s.location }}?view=scroll" target="_blank">scroll</a> -->
+                / <a href="{{ s.location }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>
                 / <a href="{{ s.location }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
             </li>
         {% endfor %}
