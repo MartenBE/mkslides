@@ -13,20 +13,44 @@
         {% endif %}
 
         <title>{{ title }}</title>
+        <style>
+            table {
+                border-collapse: collapse;
+            }
+
+            th, td {
+                border: 1px solid lightgrey;
+                padding: 0.5em 1em 0.5em 1em;
+            }
+        </style>
     </head>
     <body>
         <h1>{{ title }}</h1>
 
-        <ul>
-        {%+ for s in slideshows %}
-            <li>
-                {{ s.title }}:
-                <a href="{{ s.location }}" target="_blank" title="View slides">slides</a>
-                / <a href="{{ s.location }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>
-                / <a href="{{ s.location }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
-            </li>
-        {% endfor %}
-        </ul>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th colspan="3">Links</th>
+                </tr>
+            </thead>
+            <tbody>
+            {%+ for s in slideshows %}
+                <tr>
+                    <td>{{ s.title }}</td>
+                    <td>
+                        <a href="{{ s.location }}" target="_blank" title="View slides">slides</a>
+                    </td>
+                    <td>
+                        <a href="{{ s.location }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>
+                    </td>
+                    <td>
+                        <a href="{{ s.location }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
         <p>
             Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
