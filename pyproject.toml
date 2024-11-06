@@ -66,8 +66,11 @@ ignore = [
     "D102",    # Missing docstring in public method
     "D104",    # Missing docstring in public package"
     "D107",    # Missing docstring in `__init__`
+    "D203",    # one-blank-line-before-class
+    "D212",    # multi-line-summary-first-line
     "E501",    # Line too long
     "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
+    "FBT001",  # Boolean-typed positional argument in function definition
     "G004",    # Logging statement uses f-string"
     "PLR0913", #  Too many arguments in function definition
     "RET504",  # Unnecessary assignment to `...` before `return` statement

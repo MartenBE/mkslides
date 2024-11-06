@@ -66,7 +66,7 @@ DEFAULT_INDEX_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template("index.html.jin
 DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template(
     "slideshow.html.jinja",
 )
-LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."))
+LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."), autoescape=True)
 
 VERSION = metadata.version("mkslides")
 

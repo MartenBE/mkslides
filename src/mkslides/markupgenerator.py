@@ -2,7 +2,6 @@ import datetime
 import logging
 import shutil
 import time
-from emoji import emojize
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -10,6 +9,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import frontmatter
+from emoji import emojize
 from natsort import natsorted
 
 from .config import Config
@@ -164,15 +164,16 @@ class MarkupGenerator:
             slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
         # https://revealjs.com/markdown/#external-markdown
-        markdown_data_options = {}
-        for key, value in {
-            "data-separator": self.config.get_slides_separator(),
-            "data-separator-vertical": self.config.get_slides_separator_vertical(),
-            "data-separator-notes": self.config.get_slides_separator_notes(),
-            "data-charset": self.config.get_slides_charset(),
-        }.items():
-            if value:
-                markdown_data_options[key] = value
+        markdown_data_options = {
+            key: value
+            for key, value in {
+                "data-separator": self.config.get_slides_separator(),
+                "data-separator-vertical": self.config.get_slides_separator_vertical(),
+                "data-separator-notes": self.config.get_slides_separator_notes(),
+                "data-charset": self.config.get_slides_charset(),
+            }.items()
+            if value
+        }
 
         markup = slideshow_template.render(
             favicon=relative_favicon_path,
@@ -241,7 +242,7 @@ class MarkupGenerator:
             title=self.config.get_index_title(),
             theme=relative_theme_path,
             slideshows=slideshows,
-            build_datetime=datetime.datetime.now(),
+            build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
         )
         self.__create_file(index_path, content)
 
@@ -281,8 +282,8 @@ class MarkupGenerator:
             assert default_theme_resource is not None
             with resources.as_file(
                 default_theme_resource.joinpath(theme),
-            ) as theme_path:
-                theme_path = theme_path.with_suffix(".css").resolve(strict=True)
+            ) as builtin_theme_path:
+                theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
                 logger.info(
                     f'Using built-in theme "{theme}" from "{theme_path.absolute()}"',
                 )
@@ -355,13 +356,13 @@ class MarkupGenerator:
 
         return relative_path
 
-    def __copy(self, source_path, destination_path) -> None:
+    def __copy(self, source_path: Path, destination_path: Path) -> None:
         if source_path.is_dir():
             self.__copy_tree(source_path, destination_path)
         else:
             self.__copy_file(source_path, destination_path)
 
-    def __copy_tree(self, source_path, destination_path) -> None:
+    def __copy_tree(self, source_path: Path, destination_path: Path) -> None:
         overwrite = destination_path.exists()
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
@@ -371,7 +372,7 @@ class MarkupGenerator:
             f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
 
-    def __copy_file(self, source_path, destination_path) -> None:
+    def __copy_file(self, source_path: Path, destination_path: Path) -> None:
         overwrite = destination_path.exists()
         destination_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(source_path, destination_path)

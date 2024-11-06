@@ -78,7 +78,7 @@ def parse_ip_port(
     return ip, port
 
 
-def generate(config_file, input_path: Path, output_directory: Path) -> None:
+def generate(config_file: str, input_path: Path, output_directory: Path) -> None:
     config = read_config(config_file)
     markup_generator = MarkupGenerator(config, output_directory)
     markup_generator.create_output_directory()
@@ -95,8 +95,9 @@ def generate(config_file, input_path: Path, output_directory: Path) -> None:
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
-def build(files, config_file, site_dir) -> None:
-    """Build the MkDocs documentation.
+def build(files: str, config_file: str, site_dir: str) -> None:
+    """
+    Build the MkDocs documentation.
 
     FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
     """
@@ -145,17 +146,18 @@ def build(files, config_file, site_dir) -> None:
     is_flag=True,
 )
 @click.option("-f", "--config-file", **config_file_argument_data)
-def serve(
-    files,
-    dev_addr,
-    open_in_browser,
-    watch_index_theme,
-    watch_index_template,
-    watch_slides_theme,
-    watch_slides_template,
-    config_file,
+def serve( # noqa: C901
+    files: str,
+    dev_addr: str,
+    open_in_browser: bool,
+    watch_index_theme: bool,
+    watch_index_template: bool,
+    watch_slides_theme: bool,
+    watch_slides_template: bool,
+    config_file: str,
 ) -> None:
-    """Run the builtin development server.
+    """
+    Run the builtin development server.
 
     FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
     """
@@ -176,29 +178,42 @@ def serve(
 
     try:
         server = livereload.Server()
-        server._setup_logging = (
+
+        # https://github.com/lepture/python-livereload/issues/232
+        server._setup_logging = ( # noqa: SLF001
             lambda: None
-        )  # https://github.com/lepture/python-livereload/issues/232
+        )
 
         watched_paths = [
             files,
-            config_file,  # TODO: reload config
+            config_file,
         ]
 
         if watch_index_theme:
-            watched_paths.append(config.get_index_theme())
+            index_theme = config.get_index_theme()
+            if index_theme is not None:
+                watched_paths.append(index_theme)
+
         if watch_index_template:
-            watched_paths.append(config.get_index_template())
+            index_template = config.get_index_template()
+            if index_template is not None:
+                watched_paths.append(index_template)
+
         if watch_slides_theme:
-            watched_paths.append(config.get_slides_theme())
+            slides_theme = config.get_slides_theme()
+            if slides_theme is not None:
+                watched_paths.append(slides_theme)
+
         if watch_slides_template:
-            watched_paths.append(config.get_slides_template())
+            slides_template = config.get_slides_template()
+            if slides_template is not None:
+                watched_paths.append(slides_template)
 
         for path in watched_paths:
             if path:
-                path = Path(path).resolve(strict=True)
-                logger.info(f'Watching: "{path.absolute()}"')
-                server.watch(filepath=path.absolute().as_posix(), func=reload, delay=1)
+                resolved_path = Path(path).resolve(strict=True).absolute()
+                logger.info(f'Watching: "{resolved_path}"')
+                server.watch(filepath=resolved_path.as_posix(), func=reload, delay=1)
 
         ip, port = parse_ip_port(dev_addr)
 

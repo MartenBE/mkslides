@@ -7,7 +7,7 @@ from mkslides.markupgenerator import MarkupGenerator
 
 
 @pytest.fixture
-def setup_markup_generator() -> None:
+def setup_markup_generator() -> tuple[MarkupGenerator, Path]:
     config = Config()
     output_path = Path("tests/site")
     markup_generator = MarkupGenerator(config, output_path)
