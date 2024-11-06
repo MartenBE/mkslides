@@ -6,7 +6,7 @@ title: "Would you like to know more?"
 
 Created by [MartenBE](https://github.com/MartenBE)
 
-Hosted on [GitHub](https://github.com/MartenBE/mkslides) and [Pypi](https://pypi.org/project/mkslides/)
+Hosted on [GitHub](https://github.com/MartenBE/mkslides) and [PyPI](https://pypi.org/project/mkslides/)
 
 Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md)
 
@@ -139,11 +139,10 @@ Options:
 
 ## Examples
 
--   The [Markdown code](https://github.com/MartenBE/mkslides/tree/main/docs) of the slideshow you are currently watching.
--   An Example repo with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities using Reveal.js with the [HOGENT](https://hogent.be/) theme.
-    -   An example of the automatically generated index page.
-    -   Also includes a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, ... .
-    -   Example of CI/CD pipelines.
-    -   Markdown code can be found [here](https://github.com/HoGentTIN/hogent-markdown-slides).
+-   The [MkSlides repo](https://github.com/MartenBE/mkslides/) itself generates the slideshow you are currently watching.
+-   https://github.com/HoGentTIN/hogent-markdown-slides: an example repo demonstrating all possibilities using Reveal.js with the custom [HOGENT](https://hogent.be/) theme, including ...
+    -   an example of the automatically generated index page
+    -   a [slideshow](https://hogenttin.github.io/hogent-markdown-slides/) with a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, ...
+    -   an example of GitHub CI/CD pipelines
 
 ---
