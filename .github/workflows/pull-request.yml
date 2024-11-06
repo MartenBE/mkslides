@@ -28,5 +28,5 @@ jobs:
       - run: poetry install --with dev
       - run: poetry run ruff format --check
       - run: poetry run ruff check
-      # - run: poetry run mypy src/ tests/  # TODO: Enable this line
+      - run: poetry run mypy src/ tests/
       - run: poetry run pytest

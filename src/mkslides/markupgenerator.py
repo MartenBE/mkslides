@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-import frontmatter
+import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
 from natsort import natsorted
 

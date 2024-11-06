@@ -5,8 +5,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import click
-import livereload
-from livereload.handlers import LiveReloadHandler
+import livereload  # type: ignore[import-untyped]
+from livereload.handlers import LiveReloadHandler  # type: ignore[import-untyped]
 from rich.logging import RichHandler
 
 from .config import Config
@@ -86,8 +86,8 @@ def generate(config_file: str, input_path: Path, output_directory: Path) -> None
 
 
 @cli.command()
-@click.argument("files", **files_argument_data)
-@click.option("-f", "--config-file", **config_file_argument_data)
+@click.argument("files", **files_argument_data) # type: ignore[arg-type]
+@click.option("-f", "--config-file", **config_file_argument_data) # type: ignore[arg-type]
 @click.option(
     "-d",
     "--site-dir",
@@ -110,7 +110,7 @@ def build(files: str, config_file: str, site_dir: str) -> None:
 
 
 @cli.command()
-@click.argument("files", **files_argument_data)
+@click.argument("files", **files_argument_data) # type: ignore[arg-type]
 @click.option(
     "-a",
     "--dev-addr",
@@ -145,7 +145,7 @@ def build(files: str, config_file: str, site_dir: str) -> None:
     help="Include the slides template in list of files to watch for live reloading.",
     is_flag=True,
 )
-@click.option("-f", "--config-file", **config_file_argument_data)
+@click.option("-f", "--config-file", **config_file_argument_data) # type: ignore[arg-type]
 def serve( # noqa: C901
     files: str,
     dev_addr: str,
