@@ -76,3 +76,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 :thumbsup: <!-- checking aliases https://www.webfx.com/tools/emoji-cheat-sheet/ -->
 
 ---
+
+## Don't try to parse anchor links
+
+[Go to anchor](#anchor)
+
+---

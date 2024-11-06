@@ -25,6 +25,7 @@ from .constants import (
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
 )
+from .urltype import URLType
 
 logger = logging.getLogger(__name__)
 
@@ -259,7 +260,7 @@ class MarkupGenerator:
             for m in regex.finditer(markdown):
                 location = m.group("location")
 
-                if not self.__is_absolute_url(location):
+                if self.__get_url_type(location) == URLType.RELATIVE:
                     image = Path(md_file.parent, location).resolve(strict=True)
                     self.__copy_to_output_relative_to_md_root(image, md_root_path)
 
@@ -269,7 +270,7 @@ class MarkupGenerator:
         theme: str,
         default_theme_resource: Traversable | None = None,
     ) -> Path | str:
-        if self.__is_absolute_url(theme):
+        if self.__get_url_type(theme) == URLType.ABSOLUTE:
             logger.info(
                 f'Using theme "{theme}" from an absolute URL, no copy necessary',
             )
@@ -300,7 +301,7 @@ class MarkupGenerator:
         return relative_theme_path
 
     def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
-        if self.__is_absolute_url(favicon):
+        if self.__get_url_type(favicon) == URLType.ABSOLUTE:
             logger.info(
                 f'Using favicon "{favicon}" from an absolute URL, no copy necessary',
             )
@@ -380,5 +381,11 @@ class MarkupGenerator:
             f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
 
-    def __is_absolute_url(self, url: str) -> bool:
-        return bool(urlparse(url).scheme)
+    def __get_url_type(self, url: str) -> URLType:
+        if url.startswith("#"):
+            return URLType.ANCHOR
+
+        if bool(urlparse(url).scheme):
+            return URLType.ABSOLUTE
+
+        return URLType.RELATIVE

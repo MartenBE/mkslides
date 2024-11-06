@@ -94,3 +94,11 @@ plugins:
 -   `theme` can also be configured as a [Reveal.js built-in theme](https://revealjs.com/themes/), e.g. `black`, `white`, `league`, `solarized`, `dracula`, ... .
 -   `highlight_theme` can also be configured as a [highlight.js built-in theme](https://highlightjs.org/examples), e.g. `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ... .
 -   `revealjs` can contain all [Reveal.js options](https://revealjs.com/config/).
+
+## Contributing
+
+You can run the tests with `poetry` and `pytest`:
+
+```bash
+poetry run pytest
+```
