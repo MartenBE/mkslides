@@ -86,8 +86,8 @@ def generate(config_file: str, input_path: Path, output_directory: Path) -> None
 
 
 @cli.command()
-@click.argument("files", **files_argument_data) # type: ignore[arg-type]
-@click.option("-f", "--config-file", **config_file_argument_data) # type: ignore[arg-type]
+@click.argument("files", **files_argument_data)  # type: ignore[arg-type]
+@click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
 @click.option(
     "-d",
     "--site-dir",
@@ -110,7 +110,7 @@ def build(files: str, config_file: str, site_dir: str) -> None:
 
 
 @cli.command()
-@click.argument("files", **files_argument_data) # type: ignore[arg-type]
+@click.argument("files", **files_argument_data)  # type: ignore[arg-type]
 @click.option(
     "-a",
     "--dev-addr",
@@ -145,8 +145,8 @@ def build(files: str, config_file: str, site_dir: str) -> None:
     help="Include the slides template in list of files to watch for live reloading.",
     is_flag=True,
 )
-@click.option("-f", "--config-file", **config_file_argument_data) # type: ignore[arg-type]
-def serve( # noqa: C901
+@click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
+def serve(  # noqa: C901
     files: str,
     dev_addr: str,
     open_in_browser: bool,
@@ -180,7 +180,7 @@ def serve( # noqa: C901
         server = livereload.Server()
 
         # https://github.com/lepture/python-livereload/issues/232
-        server._setup_logging = ( # noqa: SLF001
+        server._setup_logging = (  # noqa: SLF001
             lambda: None
         )
 
