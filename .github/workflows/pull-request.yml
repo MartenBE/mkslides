@@ -1,9 +1,9 @@
 on:
-  push:
-    branches:
-      - main
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -21,7 +21,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: actions/configure-pages@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
@@ -31,9 +30,3 @@ jobs:
       # - run: poetry run ruff check # TODO: Enable this line
       # - run: poetry run mypy src/ tests/  # TODO: Enable this line
       - run: poetry run pytest
-      - run: poetry run mkslides build docs/index.md
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./site
-      - id: deployment
-        uses: actions/deploy-pages@v4
