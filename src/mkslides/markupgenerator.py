@@ -9,6 +9,8 @@ from typing import Any
 from urllib.parse import urlparse
 
 import frontmatter  # type: ignore[import-untyped]
+import markdown
+from bs4 import BeautifulSoup, Comment
 from emoji import emojize
 from natsort import natsorted
 
@@ -18,10 +20,7 @@ from .constants import (
     DEFAULT_SLIDESHOW_TEMPLATE,
     HIGHLIGHTJS_THEMES_RESOURCE,
     HTML_BACKGROUND_IMAGE_REGEX,
-    HTML_IMAGE_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
-    MD_ESCAPED_LINK_REGEX,
-    MD_LINK_REGEX,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
 )
@@ -107,8 +106,8 @@ class MarkupGenerator:
         # Retrieve the frontmatter metadata and the markdown content
 
         content = md_file.read_text(encoding="utf-8-sig")
-        metadata, markdown = frontmatter.parse(content)
-        markdown = emojize(markdown, language="alias")
+        metadata, markdown_content = frontmatter.parse(content)
+        markdown_content = emojize(markdown_content, language="alias")
 
         # Get the relative path of reveal.js
 
@@ -181,7 +180,7 @@ class MarkupGenerator:
             highlight_theme=relative_highlight_theme_path,
             revealjs_path=relative_revealjs_path,
             markdown_data_options=markdown_data_options,
-            markdown=markdown,
+            markdown=markdown_content,
             revealjs_config=revealjs_config,
             plugins=plugins,
         )
@@ -189,7 +188,7 @@ class MarkupGenerator:
 
         # Copy local files
 
-        self.__copy_local_files(md_file, md_root_path, markdown)
+        self.__copy_local_files(md_file, md_root_path, markdown_content)
 
         return metadata, output_markup_path
 
@@ -250,20 +249,13 @@ class MarkupGenerator:
         self,
         md_file: Path,
         md_root_path: Path,
-        markdown: str,
+        markdown_content: str,
     ) -> None:
-        for regex in [
-            MD_LINK_REGEX,
-            MD_ESCAPED_LINK_REGEX,
-            HTML_IMAGE_REGEX,
-            HTML_BACKGROUND_IMAGE_REGEX,
-        ]:
-            for m in regex.finditer(markdown):
-                location = m.group("location")
-
-                if self.__get_url_type(location) == URLType.RELATIVE:
-                    image = Path(md_file.parent, location).resolve(strict=True)
-                    self.__copy_to_output_relative_to_md_root(image, md_root_path)
+        links = self.__find_all_links(markdown_content)
+        for link in links:
+            if self.__get_url_type(link) == URLType.RELATIVE:
+                image = Path(md_file.parent, link).resolve(strict=True)
+                self.__copy_to_output_relative_to_md_root(image, md_root_path)
 
     def __copy_theme(
         self,
@@ -390,3 +382,23 @@ class MarkupGenerator:
             return URLType.ABSOLUTE
 
         return URLType.RELATIVE
+
+    def __find_all_links(self, markdown_content: str) -> set[str]:
+        html_content = markdown.markdown(markdown_content)
+        soup = BeautifulSoup(html_content, "html.parser")
+
+        found_links = set()
+
+        for link in soup.find_all("a", href=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["href"])
+
+        for link in soup.find_all("img", src=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["src"])
+
+        for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
+            if match := HTML_BACKGROUND_IMAGE_REGEX.search(comment):
+                found_links.add(match.group("location"))
+
+        return found_links

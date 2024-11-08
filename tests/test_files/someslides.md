@@ -79,6 +79,39 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Don't try to parse anchor links
 
-[Go to anchor](#anchor)
+This should not throw an error:
+
+[Go to anchor](#some-random-anchor)
 
 ---
+
+## Don't try to parse links in code blocks
+
+This should not throw an error:
+
+`[test](./some-random-md-link)`
+`![test](./some-random-md-image)`
+`<a href="./some-random-html-link">test</a>`
+`<img src="./some-random-html-image" />`
+
+```markdown
+[test](./some-random-md-link)
+![test](./some-random-md-image)
+```
+
+```html
+<a href="./some-random-html-link">test</a>
+<img src="./some-random-html-image" />
+```
+
+    [test](./some-random-md-link)
+    ![test](./some-random-md-image)
+    <a href="./some-random-html-link">test</a>
+    <img src="./some-random-html-image" />
+
+<!--
+[test](./some-random-md-link)
+![test](./some-random-md-image)
+<a href="./some-random-html-link">test</a>
+<img src="./some-random-html-image" />
+-->

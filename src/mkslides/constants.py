@@ -4,46 +4,12 @@ from importlib import metadata, resources
 
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
 
-MD_LINK_REGEX = re.compile(
-    r"""
-    \[.*?\]                     # Alt text
-    \((?P<location>[^()<>]*?)\) # Location without angle brackets
-    """,
-    re.VERBOSE,
-)
-
-MD_ESCAPED_LINK_REGEX = re.compile(
-    r"""
-    \[.*?\]                     # Alt text
-    \(<(?P<location>[^<>]*?)>\) # Location with mandatory angle brackets
-    """,
-    re.VERBOSE,
-)
-
-HTML_IMAGE_REGEX = re.compile(
-    r"""
-    <img                        # Start of the image
-    .+?                         # Any attributes
-    src=                        # src attribute
-        (?P<delimiter>['\"])    # Delimiter
-        (?P<location>.+?)       # Image location
-        (?P=delimiter)          # Delimiter
-    .*?                         # Any attributes
-    >                           # End of the image
-    """,
-    re.VERBOSE,
-)
-
 HTML_BACKGROUND_IMAGE_REGEX = re.compile(
     r"""
-    <!--                        # Start of the comment
-    .*?                         # Any content
     data-background-image=      # data-background-image attribute
         (?P<delimiter>['\"])    # Delimiter
         (?P<location>.+?)       # Image location
         (?P=delimiter)          # Delimiter
-    .*?                         # Any content
-    -->                         # End of the comment
     """,
     re.VERBOSE,
 )
