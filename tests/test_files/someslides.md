@@ -90,28 +90,54 @@ This should not throw an error:
 This should not throw an error:
 
 `[test](./some-random-md-link)`
-`![test](./some-random-md-image)`
+`![test](./some-random-md-image.png)`
 `<a href="./some-random-html-link">test</a>`
-`<img src="./some-random-html-image" />`
+`<img src="./some-random-html-image.png" />`
 
 ```markdown
 [test](./some-random-md-link)
-![test](./some-random-md-image)
+![test](./some-random-md-image.png)
 ```
 
 ```html
 <a href="./some-random-html-link">test</a>
-<img src="./some-random-html-image" />
+<img src="./some-random-html-image.png" />
 ```
 
     [test](./some-random-md-link)
-    ![test](./some-random-md-image)
+    ![test](./some-random-md-image.png)
     <a href="./some-random-html-link">test</a>
-    <img src="./some-random-html-image" />
+    <img src="./some-random-html-image.png" />
 
 <!--
 [test](./some-random-md-link)
-![test](./some-random-md-image)
+![test](./some-random-md-image.png)
 <a href="./some-random-html-link">test</a>
-<img src="./some-random-html-image" />
+<img src="./some-random-html-image.png" />
 -->
+
+```md
+<!--
+    [test](./some-random-md-link)
+    ![test](./some-random-md-image.png)
+-->
+```
+
+    <!--
+        [test](./some-random-md-link)
+        ![test](./some-random-md-image.png)
+    -->
+
+```html
+<!--
+    <a href="./some-random-html-link">test</a>
+    <img src="./some-random-html-image.png" />
+-->
+<!-- .slide: data-background-image="./some-random-background-image.png" -->
+```
+
+    <!--
+        <a href="./some-random-html-link">test</a>
+        <img src="./some-random-html-image.png" />
+    -->
+    <!-- .slide: data-background-image="./some-random-background-image.png" -->

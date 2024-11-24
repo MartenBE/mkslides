@@ -384,7 +384,7 @@ class MarkupGenerator:
         return URLType.RELATIVE
 
     def __find_all_links(self, markdown_content: str) -> set[str]:
-        html_content = markdown.markdown(markdown_content)
+        html_content = markdown.markdown(markdown_content, extensions=["extra"])
         soup = BeautifulSoup(html_content, "html.parser")
 
         found_links = set()
