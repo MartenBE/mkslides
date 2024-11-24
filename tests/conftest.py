@@ -11,5 +11,5 @@ def setup_markup_generator() -> tuple[MarkupGenerator, Path]:
     config = Config()
     output_path = Path("tests/site")
     markup_generator = MarkupGenerator(config, output_path)
-    markup_generator.create_output_directory()
+    markup_generator.create_or_clear_output_directory()
     return markup_generator, output_path

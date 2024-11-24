@@ -1,122 +1,80 @@
+from dataclasses import dataclass, field
 import logging
 from pathlib import Path
-from typing import Any
+import sys
+from typing import Any, Dict, Optional
 
-import yaml
-
-from .constants import DEFAULT_CONFIG_RESOURCE
+from omegaconf import MISSING, DictConfig, OmegaConf
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class Index:
+    favicon: Optional[str] = None
+    template: Optional[str] = None
+    theme: Optional[str] = None
+    title: str = "Index"
+
+
+@dataclass
+class Slides:
+    charset: Optional[str] = None
+    favicon: Optional[str] = None
+    highlight_theme: str = "monokai"
+    separator_notes: Optional[str] = None
+    separator_vertical: Optional[str] = None
+    separator: Optional[str] = None
+    template: Optional[str] = None
+    theme: str = "black"
+
+
+@dataclass
+class Plugin:
+    name: Optional[str] = None
+    extra_javascript: Optional[str] = MISSING
+
+
+@dataclass
 class Config:
-    def __init__(self) -> None:
-        with DEFAULT_CONFIG_RESOURCE.open() as f:
-            self.__config = yaml.safe_load(f)
+    index: Index = field(default_factory=Index)
+    slides: Slides = field(default_factory=Slides)
+    revealjs: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "history": True,  # Necessary for back/forward buttons and livereload
+            "slideNumber": "c/t",
+        }
+    )
+    plugins: list[Plugin] = field(default_factory=list)
 
-        logger.info(f'Default config loaded from "{DEFAULT_CONFIG_RESOURCE}"')
-        logger.info(f"Default config: {self.__config}")
 
-    def get_index_title(self) -> str | None:
-        value = self.__get("index", "title")
-        assert isinstance(value, str) or value is None
-        return value
+def validate_config(config: Config) -> None:
+    # index.favicon
+    # index.theme
+    # index.template
+    # slides.favicon
+    # slides.highlight_theme
+    # slides.theme
+    # slides.template
 
-    def get_index_favicon(self) -> str | None:
-        value = self.__get("index", "favicon")
-        assert isinstance(value, str) or value is None
-        return value
+    return True
 
-    def get_index_theme(self) -> str | None:
-        value = self.__get("index", "theme")
-        assert isinstance(value, str) or value is None
-        return value
 
-    def get_index_template(self) -> str | None:
-        value = self.__get("index", "template")
-        assert isinstance(value, str) or value is None
-        return value
+def load_config_file(config_file: Path) -> DictConfig:
+    config = OmegaConf.structured(Config)
 
-    def get_slides_favicon(self) -> str | None:
-        value = self.__get("slides", "favicon")
-        assert isinstance(value, str) or value is None
-        return value
+    # config = OmegaConf.merge(
+    #     config,
+    #     OmegaConf.load(config_file),
+    # )
+    # logger.info(f"Loaded config from {config_file}")
 
-    def get_slides_theme(self) -> str | None:
-        value = self.__get("slides", "theme")
-        assert isinstance(value, str) or value is None
-        return value
+    assert OmegaConf.is_dict(config)
 
-    def get_slides_highlight_theme(self) -> str | None:
-        value = self.__get("slides", "highlight_theme")
-        assert isinstance(value, str) or value is None
-        return value
+    if not validate_config(config):
+        raise ValueError("Invalid config")
 
-    def get_slides_template(self) -> str | None:
-        value = self.__get("slides", "template")
-        assert isinstance(value, str) or value is None
-        return value
+    OmegaConf.set_readonly(conf=config, value=True)
+    logger.debug(f"Used config: {config}")
 
-    def get_slides_separator(self) -> str | None:
-        value = self.__get("slides", "separator")
-        assert isinstance(value, str) or value is None
-        return value
-
-    def get_slides_separator_vertical(self) -> str | None:
-        value = self.__get("slides", "separator_vertical")
-        assert isinstance(value, str) or value is None
-        return value
-
-    def get_slides_separator_notes(self) -> str | None:
-        value = self.__get("slides", "separator_notes")
-        assert isinstance(value, str) or value is None
-        return value
-
-    def get_slides_charset(self) -> str | None:
-        value = self.__get("slides", "charset")
-        assert isinstance(value, str) or value is None
-        return value
-
-    def get_revealjs_options(self) -> dict | None:
-        value = self.__get("revealjs")
-        assert isinstance(value, dict) or value is None
-        return value
-
-    def get_plugins(self) -> list | None:
-        value = self.__get("plugins")
-        assert isinstance(value, list) or value is None
-        return value
-
-    def merge_config_from_file(self, config_path: Path) -> None:
-        with config_path.open(encoding="utf-8-sig") as f:
-            new_config = yaml.safe_load(f)
-
-            self.__config = self.__recursive_merge(self.__config, new_config)
-
-            logger.info(f'Config merged from "{config_path}"')
-            logger.info(f"Config: {self.__config}")
-
-    def merge_config_from_dict(self, new_config: dict) -> None:
-        self.__config = self.__recursive_merge(self.__config, new_config)
-
-        logger.info("Config merged from dict")
-        logger.info(f"Config: {self.__config}")
-
-    def __get(self, *keys: str) -> str | dict | list | None:
-        current_value = self.__config
-        for key in keys:
-            if isinstance(current_value, dict) and key in current_value:
-                current_value = current_value[key]
-            else:
-                return None
-        return current_value
-
-    def __recursive_merge(self, current: Any, new: dict) -> dict:
-        if new:
-            for key, value in new.items():
-                if isinstance(value, dict):
-                    current[key] = self.__recursive_merge(current.get(key, {}), value)
-                else:
-                    current[key] = value
-
-        return current
+    return config

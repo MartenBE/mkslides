@@ -18,7 +18,6 @@ EXPECTED_CONFIG_LOCATION = "mkslides.yml"
 DEFAULT_OUTPUT_DIR = "site"
 
 ASSETS_RESOURCE = resources.files("assets")
-DEFAULT_CONFIG_RESOURCE = ASSETS_RESOURCE.joinpath("mkslides.default.yml")
 REVEALJS_RESOURCE = ASSETS_RESOURCE.joinpath("reveal.js")
 REVEALJS_THEMES_RESOURCE = REVEALJS_RESOURCE.joinpath("dist", "theme")
 HIGHLIGHTJS_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js")
