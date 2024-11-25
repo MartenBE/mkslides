@@ -6,7 +6,7 @@ from mkslides.markupgenerator import MarkupGenerator
 logger = logging.getLogger(__name__)
 
 
-def execute_build_command(
+def build(
     config_path: Path, input_path: Path, output_path: Path
 ) -> None:
     config = get_config(config_path)

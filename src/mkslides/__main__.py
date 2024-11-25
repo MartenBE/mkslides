@@ -6,8 +6,7 @@ from pathlib import Path
 import click
 from rich.logging import RichHandler
 
-from mkslides.build import execute_build_command
-from mkslides.serve import execute_serve_command
+from .build import build
 
 from .constants import (
     DEFAULT_OUTPUT_DIR,
@@ -67,7 +66,7 @@ def cli(verbose) -> None:
 # Build Command ################################################################
 
 
-@cli.command()
+@cli.command(name="build")
 @click.argument("files", **files_argument_data)  # type: ignore[arg-type]
 @click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
 @click.option(
@@ -78,7 +77,7 @@ def cli(verbose) -> None:
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
-def build(files: Path, config_file: Path | None, site_dir: str) -> None:
+def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
     """
     Build the MkDocs documentation.
 
@@ -88,13 +87,13 @@ def build(files: Path, config_file: Path | None, site_dir: str) -> None:
 
     output_path = Path(site_dir).resolve(strict=False)
 
-    execute_build_command(config_file, files, output_path)
+    build(config_file, files, output_path)
 
 
 # Serve Command ################################################################
 
 
-@cli.command()
+@cli.command(name="serve")
 @click.argument("files", **files_argument_data)  # type: ignore[arg-type]
 @click.option(
     "-a",
@@ -131,7 +130,7 @@ def build(files: Path, config_file: Path | None, site_dir: str) -> None:
     is_flag=True,
 )
 @click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
-def serve(  # noqa: C901
+def serve_command(  # noqa: C901
     files: Path,
     dev_addr: str,
     open_in_browser: bool,
@@ -150,17 +149,17 @@ def serve(  # noqa: C901
 
     output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
 
-    execute_serve_command(
-        config_file,
-        files,
-        output_path,
-        dev_addr,
-        open_in_browser,
-        watch_index_theme,
-        watch_index_template,
-        watch_slides_theme,
-        watch_slides_template,
-    )
+    # execute_serve_command(
+    #     config_file,
+    #     files,
+    #     output_path,
+    #     dev_addr,
+    #     open_in_browser,
+    #     watch_index_theme,
+    #     watch_index_template,
+    #     watch_slides_theme,
+    #     watch_slides_template,
+    # )
 
 
 ################################################################################

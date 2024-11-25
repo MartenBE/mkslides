@@ -107,7 +107,6 @@ def get_config(config_file: Path | None = None) -> DictConfig:
 
     assert OmegaConf.is_dict(config)
 
-    OmegaConf.set_readonly(conf=config, value=True)
     logger.debug(f"Used config: {config}")
 
     return config
