@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import re
 from importlib import metadata, resources
 
@@ -15,7 +16,7 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
 )
 
 VERSION = metadata.version("mkslides")
-EXPECTED_CONFIG_LOCATION = "mkslides.yml"
+DEFAULT_CONFIG_LOCATION = Path("mkslides.yml")
 DEFAULT_OUTPUT_DIR = "site"
 
 ASSETS_RESOURCE = resources.files("assets")

@@ -193,7 +193,7 @@ class MarkupGenerator:
 
     def __process_markdown_directory(self, md_root_path: Path) -> None:
         md_root_path = md_root_path.resolve(strict=True)
-        logger.debug(f"Processing markdown directory at {md_root_path.absolute()}")
+        logger.debug(f'Processing markdown directory at "{md_root_path.absolute()}"')
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
             (metadata, output_markup_path) = self.__process_markdown_file(

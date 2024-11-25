@@ -4,7 +4,11 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
 
-from mkslides.constants import HIGHLIGHTJS_THEMES_LIST, REVEALJS_THEMES_LIST
+from mkslides.constants import (
+    DEFAULT_CONFIG_LOCATION,
+    HIGHLIGHTJS_THEMES_LIST,
+    REVEALJS_THEMES_LIST,
+)
 from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 from omegaconf import MISSING, DictConfig, OmegaConf
@@ -98,15 +102,21 @@ def validate(config) -> None:
 def get_config(config_file: Path | None = None) -> DictConfig:
     config = OmegaConf.structured(Config)
 
+    if not config_file and DEFAULT_CONFIG_LOCATION.exists():
+        config_file = DEFAULT_CONFIG_LOCATION
+
     if config_file:
-        config = OmegaConf.merge(
-            config,
-            OmegaConf.load(config_file),
-        )
-        logger.info(f"Loaded config from {config_file}")
+        try:
+            loaded_config = OmegaConf.load(config_file)
+            config = OmegaConf.merge(config, loaded_config)
+            logger.info(f'Loaded config from "{config_file}"')
+        except Exception as e:
+            logger.error(f"Failed to load config from {config_file}: {e}")
+            raise
 
     assert OmegaConf.is_dict(config)
 
-    logger.debug(f"Used config: {config}")
+    logger.debug("Used config:")
+    logger.debug(OmegaConf.to_yaml(config, resolve=True))
 
     return config

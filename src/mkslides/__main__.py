@@ -7,10 +7,9 @@ import click
 from rich.logging import RichHandler
 
 from .build import build
-
+from .config import get_config
 from .constants import (
     DEFAULT_OUTPUT_DIR,
-    EXPECTED_CONFIG_LOCATION,
     HIGHLIGHTJS_THEMES_VERSION,
     REVEALJS_VERSION,
     VERSION,
@@ -35,7 +34,6 @@ files_argument_data = {
 config_file_argument_data = {
     "metavar": "FILENAME",
     "type": click.Path(exists=True, resolve_path=True, path_type=Path),
-    "default": EXPECTED_CONFIG_LOCATION,
     "help": "Provide a specific MkSlides-Reveal config file.",
 }
 
@@ -85,9 +83,10 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
     """
     logger.debug("Command: build")
 
+    config = get_config(config_file)
     output_path = Path(site_dir).resolve(strict=False)
 
-    build(config_file, files, output_path)
+    build(config, files, output_path)
 
 
 # Serve Command ################################################################
@@ -95,6 +94,7 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
 
 @cli.command(name="serve")
 @click.argument("files", **files_argument_data)  # type: ignore[arg-type]
+@click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
 @click.option(
     "-a",
     "--dev-addr",
@@ -129,16 +129,15 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
     help="Include the slides template in list of files to watch for live reloading.",
     is_flag=True,
 )
-@click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
 def serve_command(  # noqa: C901
     files: Path,
+    config_file: Path | None,
     dev_addr: str,
     open_in_browser: bool,
     watch_index_theme: bool,
     watch_index_template: bool,
     watch_slides_theme: bool,
     watch_slides_template: bool,
-    config_file: Path | None,
 ) -> None:
     """
     Run the builtin development server.
@@ -147,19 +146,27 @@ def serve_command(  # noqa: C901
     """
     logger.debug("Command: serve")
 
+    config = get_config(config_file)
+    config.merge_with(
+        {
+            "serve": {
+                "config_file": config_file,
+                "dev_addr": dev_addr,
+                "open_in_browser": open_in_browser,
+                "watch_index_theme": watch_index_theme,
+                "watch_index_template": watch_index_template,
+                "watch_slides_theme": watch_slides_theme,
+                "watch_slides_template": watch_slides_template,
+            }
+        }
+    )
     output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
 
-    # execute_serve_command(
-    #     config_file,
-    #     files,
-    #     output_path,
-    #     dev_addr,
-    #     open_in_browser,
-    #     watch_index_theme,
-    #     watch_index_template,
-    #     watch_slides_theme,
-    #     watch_slides_template,
-    # )
+    serve(
+        config,
+        files,
+        output_path,
+    )
 
 
 ################################################################################
