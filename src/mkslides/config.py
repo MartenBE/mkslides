@@ -4,6 +4,9 @@ from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
 
+from mkslides.constants import HIGHLIGHTJS_THEMES_LIST, REVEALJS_THEMES_LIST
+from mkslides.urltype import URLType
+from mkslides.utils import get_url_type
 from omegaconf import MISSING, DictConfig, OmegaConf
 
 logger = logging.getLogger(__name__)
@@ -48,31 +51,61 @@ class Config:
     plugins: list[Plugin] = field(default_factory=list)
 
 
-def validate_config(config: Config) -> None:
-    # index.favicon
-    # index.theme
-    # index.template
-    # slides.favicon
-    # slides.highlight_theme
-    # slides.theme
-    # slides.template
+def validate(config) -> None:
+    if config.index.favicon and get_url_type(config.index.favicon) == URLType.RELATIVE:
+        Path(config.index.favicon).resolve(strict=True)
 
-    return True
+    if (
+        config.index.template
+        and get_url_type(config.index.template) == URLType.RELATIVE
+    ):
+        Path(config.index.template).resolve(strict=True)
+
+    if (
+        config.index.theme
+        and get_url_type(config.index.theme) == URLType.RELATIVE
+        and not config.index.theme in REVEALJS_THEMES_LIST
+    ):
+        Path(config.index.theme).resolve(strict=True)
+
+    if (
+        config.slides.favicon
+        and get_url_type(config.slides.favicon) == URLType.RELATIVE
+    ):
+        Path(config.slides.favicon).resolve(strict=True)
+
+    if (
+        config.slides.highlight_theme
+        and get_url_type(config.slides.highlight_theme) == URLType.RELATIVE
+        and not config.slides.highlight_theme in HIGHLIGHTJS_THEMES_LIST
+    ):
+        Path(config.slides.highlight_theme).resolve(strict=True)
+
+    if (
+        config.slides.template
+        and get_url_type(config.slides.template) == URLType.RELATIVE
+    ):
+        Path(config.slides.template).resolve(strict=True)
+
+    if config.slides.theme:
+        if get_url_type(config.slides.theme) == URLType.RELATIVE:
+            if config.slides.theme in REVEALJS_THEMES_LIST:
+                pass
+            else:
+                Path(config.slides.theme).resolve(strict=True)
 
 
-def load_config_file(config_file: Path) -> DictConfig:
+def get_config(config_file: Path | None = None) -> DictConfig:
     config = OmegaConf.structured(Config)
 
-    # config = OmegaConf.merge(
-    #     config,
-    #     OmegaConf.load(config_file),
-    # )
-    # logger.info(f"Loaded config from {config_file}")
+    if config_file:
+        config = OmegaConf.merge(
+            config,
+            OmegaConf.load(config_file),
+        )
+        logger.info(f"Loaded config from {config_file}")
 
     assert OmegaConf.is_dict(config)
-
-    if not validate_config(config):
-        raise ValueError("Invalid config")
 
     OmegaConf.set_readonly(conf=config, value=True)
     logger.debug(f"Used config: {config}")

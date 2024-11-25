@@ -1,5 +1,7 @@
 from urllib.parse import urlparse
 
+from mkslides.urltype import URLType
+
 
 def parse_ip_port(
     ip_port_str: str,
@@ -12,3 +14,13 @@ def parse_ip_port(
     assert port, f"Invalid port: {ip_port_str}"
 
     return ip, port
+
+
+def get_url_type(url: str) -> URLType:
+    if url.startswith("#"):
+        return URLType.ANCHOR
+
+    if bool(urlparse(url).scheme):
+        return URLType.ABSOLUTE
+
+    return URLType.RELATIVE
