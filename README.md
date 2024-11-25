@@ -109,11 +109,11 @@ revealjs:
 # Plugins or additional CSS/JavaScript files for the slides. These are given as
 # a list.
 plugins:
-    # Name of the plugin (optional): plugin id string
+    # Name of the plugin (optional, see plugin README): plugin id string
     # (see https://revealjs.com/creating-plugins/#registering-a-plugin)
     - name: RevealMermaid
-      # JavaScript file of the plugin: file path or public url to JavaScript
-      # file
+      # List of JavaScript files of the plugin: file path or public url to
+      # JavaScript file per entry
       extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
     - extra_javascript:

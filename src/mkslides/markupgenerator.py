@@ -6,17 +6,16 @@ from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 import frontmatter  # type: ignore[import-untyped]
 import markdown
 from bs4 import BeautifulSoup, Comment
 from emoji import emojize
 from natsort import natsorted
-from mkslides.utils import get_url_type
 from omegaconf import DictConfig
 
-from .config import Config
+from mkslides.utils import get_url_type
+
 from .constants import (
     DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
@@ -37,7 +36,6 @@ class MarkupGenerator:
         config: DictConfig,
         output_directory_path: Path,
     ) -> None:
-
         self.config = config
 
         self.output_directory_path = output_directory_path.resolve(strict=False)

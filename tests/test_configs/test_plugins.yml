@@ -1,0 +1,6 @@
+plugins:
+  - name: RevealMermaid
+    extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
+  - extra_javascript:
+      - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js

@@ -1,22 +1,11 @@
-from pathlib import Path
 from typing import Any
 
-from tests.utils import assert_files_exist, assert_html_contains
+from tests.utils import assert_files_exist, assert_html_contains, run_build_with_config
 
 
-def test_local_slideshow_theme_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "theme": "tests/test_styles/theme.css",
-                "highlight_theme": "tests/test_styles/highlight-theme.css",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_local_slideshow_theme_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_local_slideshow_theme_path.yml")
 
     assert_html_contains(
         output_path / "someslides.html",
@@ -37,19 +26,13 @@ def test_local_slideshow_theme_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_absolute_url_slideshow_theme_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "theme": "https://example.org/theme.css",
-                "highlight_theme": "https://example.org/highlight-theme.css",
-            },
-        },
+def test_absolute_url_slideshow_theme_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(
+        cwd,
+        output_path,
+        "test_absolute_url_slideshow_theme_path.yml",
     )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
 
     assert_html_contains(
         output_path / "someslides.html",
@@ -70,19 +53,9 @@ def test_absolute_url_slideshow_theme_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_builtin_slideshow_theme_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "theme": "simple",
-                "highlight_theme": "vs",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_builtin_slideshow_theme_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_builtin_slideshow_theme_path.yml")
 
     assert_files_exist(
         output_path,
@@ -110,18 +83,9 @@ def test_builtin_slideshow_theme_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_local_index_theme_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "index": {
-                "theme": "tests/test_styles/theme.css",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_local_index_theme_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_local_index_theme_path.yml")
 
     assert_html_contains(
         output_path / "index.html",
@@ -131,18 +95,9 @@ def test_local_index_theme_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_absolute_url_index_theme_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "index": {
-                "theme": "https://example.org/theme.css",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_absolute_url_index_theme_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_absolute_url_index_theme_path.yml")
 
     assert_html_contains(
         output_path / "index.html",
@@ -152,18 +107,9 @@ def test_absolute_url_index_theme_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_absolute_url_index_favicon_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "index": {
-                "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_absolute_url_index_favicon_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_absolute_url_index_favicon_path.yml")
 
     assert_html_contains(
         output_path / "index.html",
@@ -173,18 +119,13 @@ def test_absolute_url_index_favicon_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_absolute_url_slideshow_favicon_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "favicon": "https://hogenttin.github.io/cdn/favicon/favicon.ico",
-            },
-        },
+def test_absolute_url_slideshow_favicon_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(
+        cwd,
+        output_path,
+        "test_absolute_url_slideshow_favicon_path.yml",
     )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
 
     assert_html_contains(
         output_path / "someslides.html",
@@ -201,18 +142,9 @@ def test_absolute_url_slideshow_favicon_path(setup_markup_generator: Any) -> Non
     )
 
 
-def test_local_index_favicon_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "index": {
-                "favicon": "tests/test_styles/favicon.ico",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_local_index_favicon_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_local_index_favicon_path.yml")
 
     assert_html_contains(
         output_path / "index.html",
@@ -222,18 +154,9 @@ def test_local_index_favicon_path(setup_markup_generator: Any) -> None:
     )
 
 
-def test_local_slideshow_favicon_path(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "favicon": "tests/test_styles/favicon.ico",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_local_slideshow_favicon_path(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_local_slideshow_favicon_path.yml")
 
     assert_html_contains(
         output_path / "someslides.html",

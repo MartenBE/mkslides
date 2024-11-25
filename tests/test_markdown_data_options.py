@@ -1,25 +1,12 @@
 import re
-from pathlib import Path
 from typing import Any
 
-from tests.utils import assert_html_contains_regexp
+from tests.utils import assert_html_contains_regexp, run_build_with_config
 
 
-def test_revealjs_markdown_data_options(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "slides": {
-                "charset": "utf-8",
-                "separator": r"^\s*---\s*$",
-                "separator_vertical": r"^\s*-v-\s*$",
-                "separator_notes": r"^Notes?:",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_revealjs_markdown_data_options(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_revealjs_markdown_data_options.yml")
 
     assert_html_contains_regexp(
         output_path / "someslides.html",
