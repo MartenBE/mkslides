@@ -1,5 +1,6 @@
 import subprocess
 from typing import Any
+import re
 
 
 def test_process_file_without_config(setup_paths: Any) -> None:
@@ -20,7 +21,7 @@ def test_process_file_without_config(setup_paths: Any) -> None:
         check=False,
     )
     assert result.returncode == 1
-    assert (
-        "Local file './some-random-md-link' mentioned in '/home/martijn/git/mkslides/tests/test_files_crash/strict.md' not found."
-        in result.stderr
+    assert re.search(
+        r"Local file '\./some-random-md-link' mentioned in '.*/test_files_crash/strict\.md' not found\.",
+        result.stderr,
     )
