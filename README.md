@@ -63,37 +63,106 @@ mkslides serve test.md
 
 Just create a `mkslides.yml`. All options are optional, you only have to add what you want to change to `mkslides.yml`.
 
-Here's an example:
+Here's an example showcasing all possible options in the config file:
 
 ```yml
+# Configuration for the generated index page
 index:
+    # Title of the generated index page: string
     title: example-title
+    # Favicon of the generated index page: file path or public url to favicon
+    # file
     favicon: ./example-index-favicon.ico
+    # Theme of the generated index page: file path or public url to CSS file
     theme: example-index-theme.css
+# Configuration for the slides
 slides:
+    # Favicon of the slides: file path or public url to favicon file
     favicon: ./example-slides-favicon.ico
+    # Theme of the slides: file path to CSS file, public url to CSS file, or one
+    # of the reveal.js themes such as `black`, `white`, `league`, `solarized`,
+    # `dracula`, ... (see https://revealjs.com/themes/)
     theme: example-slides-theme.css
+    # Theme for syntax highlighting of code fragments on the slides: file path
+    # to CSS file, public url to CSS file, or one of the highlight.js built-in
+    # themes such as `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ...
+    # (see https://highlightjs.org/examples)
     highlight_theme: example-slides-highlight-theme.css
+    # Separator to determine end current/begin new slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
     separator: ^\s*---\s*$
+    # Separator to determine end current/begin new vertical slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
     separator_vertical: ^\s*-v-\s*$
+    # Separator to determine notes of the slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
     separator_notes: "^Notes?:"
+    # Charset of the slides: string
+    # (see https://revealjs.com/markdown/#external-markdown)
     separator_charset: utf-8
+# Options to be passed to reveal.js: options in yaml format, they will be
+# translated to JSON automatically (see https://revealjs.com/config/)
 revealjs:
     height: 1080
     width: 1920
     transition: fade
+# Plugins or additional CSS/JavaScript files for the slides. These are given as
+# a list.
 plugins:
+    # Name of the plugin (optional, see plugin README): plugin id string
+    # (see https://revealjs.com/creating-plugins/#registering-a-plugin)
     - name: RevealMermaid
+      # List of JavaScript files of the plugin: file path or public url to
+      # JavaScript file per entry
       extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
     - extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
 ```
 
--   `favicon`and `theme`, can also be configured as an URL, e.g. `https://example.org/theme.css`.
--   `theme` can also be configured as a [Reveal.js built-in theme](https://revealjs.com/themes/), e.g. `black`, `white`, `league`, `solarized`, `dracula`, ... .
--   `highlight_theme` can also be configured as a [highlight.js built-in theme](https://highlightjs.org/examples), e.g. `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ... .
--   `revealjs` can contain all [Reveal.js options](https://revealjs.com/config/).
+Default config:
+
+```yml
+index:
+    title: Index
+slides:
+    theme: black
+    highlight_theme: monokai
+revealjs:
+    history: true
+    slideNumber: c/t
+```
+
+It is also possible to override `slides`, `revealjs`, and `plugins` options on a per markdown file base using it's frontmatter:
+
+```md
+---
+title: frontmatter title
+slides:
+    theme: solarized
+    highlight_theme: vs
+    separator: <!--s-->
+revealjs:
+    height: 1080
+    width: 1920
+    transition: zoom
+---
+
+# Slides with frontmatter
+
+<!--s-->
+
+## Lorem ipsum
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+<!--s-->
+```
+
+Notes:
+
+-   `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
+-   The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Contributing
 

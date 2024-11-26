@@ -1,13 +1,11 @@
-from pathlib import Path
 from typing import Any
 
-from tests.utils import assert_html_contains
+from tests.utils import assert_html_contains, run_build
 
 
-def test_emojize(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_emojize(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build(cwd, output_path)
 
     assert_html_contains(
         output_path / "someslides.html",

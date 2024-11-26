@@ -1,21 +1,11 @@
-from pathlib import Path
 from typing import Any
 
-from tests.utils import assert_html_contains
+from tests.utils import assert_html_contains, run_build_with_config
 
 
-def test_index_title(setup_markup_generator: Any) -> None:
-    markup_generator, output_path = setup_markup_generator
-    markup_generator.config.merge_config_from_dict(
-        {
-            "index": {
-                "title": "Lorem ipsum",
-            },
-        },
-    )
-
-    test_files_path = Path("tests/test_files")
-    markup_generator.process_markdown(test_files_path)
+def test_index_title(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build_with_config(cwd, output_path, "test_index_title.yml")
 
     assert_html_contains(
         output_path / "index.html",

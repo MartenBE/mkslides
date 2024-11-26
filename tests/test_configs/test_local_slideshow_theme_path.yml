@@ -1,0 +1,3 @@
+slides:
+  theme: test_styles/theme.css
+  highlight_theme: test_styles/highlight-theme.css

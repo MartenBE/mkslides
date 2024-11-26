@@ -1,15 +1,17 @@
+import shutil
+import tempfile
 from pathlib import Path
+from typing import Generator
 
 import pytest
 
-from mkslides.config import Config
-from mkslides.markupgenerator import MarkupGenerator
 
+@pytest.fixture(scope="module")
+def setup_paths() -> Generator[tuple[Path, Path], None, None]:
+    cwd = Path("tests").resolve(strict=True)
+    output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
 
-@pytest.fixture
-def setup_markup_generator() -> tuple[MarkupGenerator, Path]:
-    config = Config()
-    output_path = Path("tests/site")
-    markup_generator = MarkupGenerator(config, output_path)
-    markup_generator.create_output_directory()
-    return markup_generator, output_path
+    yield cwd, output_path
+
+    if output_path.exists():
+        shutil.rmtree(output_path)

@@ -1,122 +1,132 @@
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Optional
 
-import yaml
+from omegaconf import MISSING, DictConfig, OmegaConf
 
-from .constants import DEFAULT_CONFIG_RESOURCE
+from mkslides.constants import (
+    DEFAULT_CONFIG_LOCATION,
+    HIGHLIGHTJS_THEMES_LIST,
+    REVEALJS_THEMES_LIST,
+)
+from mkslides.urltype import URLType
+from mkslides.utils import get_url_type
 
 logger = logging.getLogger(__name__)
 
+FRONTMATTER_ALLOWED_KEYS = ["slides", "revealjs", "plugins"]
 
+
+@dataclass
+class Index:
+    favicon: Optional[str] = None
+    template: Optional[str] = None
+    theme: Optional[str] = None
+    title: str = "Index"
+
+
+@dataclass
+class Slides:
+    charset: Optional[str] = None
+    favicon: Optional[str] = None
+    highlight_theme: str = "monokai"
+    separator_notes: Optional[str] = None
+    separator_vertical: Optional[str] = None
+    separator: Optional[str] = None
+    template: Optional[str] = None
+    theme: str = "black"
+
+
+@dataclass
+class Plugin:
+    name: Optional[str] = None
+    extra_javascript: list[str] = MISSING
+
+
+# For internal use only
+@dataclass
+class Internal:
+    config_path: Optional[Path] = MISSING
+
+
+@dataclass
 class Config:
-    def __init__(self) -> None:
-        with DEFAULT_CONFIG_RESOURCE.open() as f:
-            self.__config = yaml.safe_load(f)
+    index: Index = field(default_factory=Index)
+    slides: Slides = field(default_factory=Slides)
+    revealjs: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "history": True,  # Necessary for back/forward buttons and livereload
+            "slideNumber": "c/t",
+        },
+    )
+    plugins: list[Plugin] = field(default_factory=list)
+    internal: Internal = field(default_factory=Internal)
 
-        logger.info(f'Default config loaded from "{DEFAULT_CONFIG_RESOURCE}"')
-        logger.info(f"Default config: {self.__config}")
 
-    def get_index_title(self) -> str | None:
-        value = self.__get("index", "title")
-        assert isinstance(value, str) or value is None
-        return value
+def validate(config: DictConfig) -> None:
+    if config.index.favicon and get_url_type(config.index.favicon) == URLType.RELATIVE:
+        Path(config.index.favicon).resolve(strict=True)
 
-    def get_index_favicon(self) -> str | None:
-        value = self.__get("index", "favicon")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.index.template
+        and get_url_type(config.index.template) == URLType.RELATIVE
+    ):
+        Path(config.index.template).resolve(strict=True)
 
-    def get_index_theme(self) -> str | None:
-        value = self.__get("index", "theme")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.index.theme
+        and get_url_type(config.index.theme) == URLType.RELATIVE
+        and config.index.theme not in REVEALJS_THEMES_LIST
+    ):
+        Path(config.index.theme).resolve(strict=True)
 
-    def get_index_template(self) -> str | None:
-        value = self.__get("index", "template")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.slides.favicon
+        and get_url_type(config.slides.favicon) == URLType.RELATIVE
+    ):
+        Path(config.slides.favicon).resolve(strict=True)
 
-    def get_slides_favicon(self) -> str | None:
-        value = self.__get("slides", "favicon")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.slides.highlight_theme
+        and get_url_type(config.slides.highlight_theme) == URLType.RELATIVE
+        and config.slides.highlight_theme not in HIGHLIGHTJS_THEMES_LIST
+    ):
+        Path(config.slides.highlight_theme).resolve(strict=True)
 
-    def get_slides_theme(self) -> str | None:
-        value = self.__get("slides", "theme")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.slides.template
+        and get_url_type(config.slides.template) == URLType.RELATIVE
+    ):
+        Path(config.slides.template).resolve(strict=True)
 
-    def get_slides_highlight_theme(self) -> str | None:
-        value = self.__get("slides", "highlight_theme")
-        assert isinstance(value, str) or value is None
-        return value
+    if (
+        config.slides.theme
+        and get_url_type(config.slides.theme) == URLType.RELATIVE
+        and config.slides.theme not in REVEALJS_THEMES_LIST
+    ):
+        Path(config.slides.theme).resolve(strict=True)
 
-    def get_slides_template(self) -> str | None:
-        value = self.__get("slides", "template")
-        assert isinstance(value, str) or value is None
-        return value
 
-    def get_slides_separator(self) -> str | None:
-        value = self.__get("slides", "separator")
-        assert isinstance(value, str) or value is None
-        return value
+def get_config(config_file: Path | None = None) -> DictConfig:
+    config = OmegaConf.structured(Config)
 
-    def get_slides_separator_vertical(self) -> str | None:
-        value = self.__get("slides", "separator_vertical")
-        assert isinstance(value, str) or value is None
-        return value
+    if not config_file and DEFAULT_CONFIG_LOCATION.exists():
+        config_file = DEFAULT_CONFIG_LOCATION.resolve(strict=True).absolute()
 
-    def get_slides_separator_notes(self) -> str | None:
-        value = self.__get("slides", "separator_notes")
-        assert isinstance(value, str) or value is None
-        return value
+    if config_file:
+        try:
+            loaded_config = OmegaConf.load(config_file)
+            config = OmegaConf.merge(config, loaded_config)
+            config.internal.config_path = config_file
+            logger.info(f'Loaded config from "{config_file}"')
+        except Exception:
+            logger.exception(f"Failed to load config from {config_file}")
+            raise
 
-    def get_slides_charset(self) -> str | None:
-        value = self.__get("slides", "charset")
-        assert isinstance(value, str) or value is None
-        return value
+    assert OmegaConf.is_dict(config)
 
-    def get_revealjs_options(self) -> dict | None:
-        value = self.__get("revealjs")
-        assert isinstance(value, dict) or value is None
-        return value
+    logger.debug("Used config:")
+    logger.debug(OmegaConf.to_yaml(config, resolve=True))
 
-    def get_plugins(self) -> list | None:
-        value = self.__get("plugins")
-        assert isinstance(value, list) or value is None
-        return value
-
-    def merge_config_from_file(self, config_path: Path) -> None:
-        with config_path.open(encoding="utf-8-sig") as f:
-            new_config = yaml.safe_load(f)
-
-            self.__config = self.__recursive_merge(self.__config, new_config)
-
-            logger.info(f'Config merged from "{config_path}"')
-            logger.info(f"Config: {self.__config}")
-
-    def merge_config_from_dict(self, new_config: dict) -> None:
-        self.__config = self.__recursive_merge(self.__config, new_config)
-
-        logger.info("Config merged from dict")
-        logger.info(f"Config: {self.__config}")
-
-    def __get(self, *keys: str) -> str | dict | list | None:
-        current_value = self.__config
-        for key in keys:
-            if isinstance(current_value, dict) and key in current_value:
-                current_value = current_value[key]
-            else:
-                return None
-        return current_value
-
-    def __recursive_merge(self, current: Any, new: dict) -> dict:
-        if new:
-            for key, value in new.items():
-                if isinstance(value, dict):
-                    current[key] = self.__recursive_merge(current.get(key, {}), value)
-                else:
-                    current[key] = value
-
-        return current
+    return config

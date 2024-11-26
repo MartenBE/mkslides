@@ -7,10 +7,7 @@ homepage = "https://martenbe.github.io/mkslides"
 repository = "https://github.com/MartenBE/mkslides"
 license = "MIT"
 readme = "README.md"
-packages = [
-    { include = "mkslides", from = "src" },
-]
-include = [{ path = "assets", format = ["sdist", "wheel"] }]
+packages = [{ include = "mkslides", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -27,6 +24,7 @@ markdown = "^3.7"
 beautifulsoup4 = "^4.12.3"
 types-markdown = "^3.7.0.20240822"
 types-beautifulsoup4 = "^4.12.0.20241020"
+omegaconf = "^2.3.0"
 
 [tool.poetry.group.dev.dependencies]
 bumpver = "^2023.1129"
@@ -61,6 +59,9 @@ push = true
 "src/mkslides/__init__.py" = ['^__version__ = "{version}"']
 "pyproject.toml" = ['^version = "{version}"', '^current_version = "{version}"']
 
+[tool.pytest.ini_options]
+pythonpath = ["assets"]
+
 [tool.ruff.lint]
 ignore = [
     "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
@@ -73,12 +74,15 @@ ignore = [
     "D203",    # one-blank-line-before-class
     "D212",    # multi-line-summary-first-line
     "E501",    # Line too long
+    "FA100",   # Add `from __future__ import annotations` to simplify `typing.Optional`
     "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
     "FBT001",  # Boolean-typed positional argument in function definition
     "G004",    # Logging statement uses f-string"
-    "PLR0913", #  Too many arguments in function definition
+    "PLR0913", # Too many arguments in function definition
     "RET504",  # Unnecessary assignment to `...` before `return` statement
     "S101",    # Use of `assert` detected
+    "S603",    # `subprocess` call: check for execution of untrusted input
+    "S607",    # Starting a process with a partial executable path
     "TD002",   # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
     "TD003",   # Missing issue link on the line following this TODO
 

@@ -1,6 +1,6 @@
 [submodule "assets/reveal.js"]
-	path = assets/reveal.js
+	path = src/mkslides/assets/reveal.js
 	url = https://github.com/hakimel/reveal.js.git
 [submodule "assets/highlight.js"]
-	path = assets/highlight.js
+	path = src/mkslides/assets/highlight.js
 	url = https://github.com/highlightjs/cdn-release.git

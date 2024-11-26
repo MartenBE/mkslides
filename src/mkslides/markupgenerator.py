@@ -2,19 +2,22 @@ import datetime
 import logging
 import shutil
 import time
+from copy import deepcopy
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 import frontmatter  # type: ignore[import-untyped]
 import markdown
 from bs4 import BeautifulSoup, Comment
 from emoji import emojize
 from natsort import natsorted
+from omegaconf import DictConfig, OmegaConf
 
-from .config import Config
+from mkslides.config import FRONTMATTER_ALLOWED_KEYS
+from mkslides.utils import get_url_type
+
 from .constants import (
     DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
@@ -32,18 +35,14 @@ logger = logging.getLogger(__name__)
 class MarkupGenerator:
     def __init__(
         self,
-        config: Config,
+        global_config: DictConfig,
         output_directory_path: Path,
     ) -> None:
-        # Config
-
-        self.config = config
-
-        # Paths
+        self.global_config = global_config
 
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
-            f'Requested output directory: "{self.output_directory_path.absolute()}"',
+            f'Output directory: "{self.output_directory_path.absolute()}"',
         )
 
         self.output_assets_path = self.output_directory_path / "assets"
@@ -55,20 +54,20 @@ class MarkupGenerator:
                 item.unlink()
             elif item.is_dir():
                 shutil.rmtree(item)
-        logger.info("Output directory cleared")
+        logger.debug("Output directory cleared")
 
-    def create_output_directory(self) -> None:
+    def create_or_clear_output_directory(self) -> None:
         if self.output_directory_path.exists():
             self.clear_output_directory()
         else:
             self.output_directory_path.mkdir(parents=True, exist_ok=True)
-            logger.info("Output directory created")
+            logger.debug("Output directory created")
 
         with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
             self.__copy(revealjs_path, self.output_revealjs_path)
 
     def process_markdown(self, input_path: Path) -> None:
-        logger.info("Processing markdown")
+        logger.debug("Processing markdown")
         start_time = time.perf_counter()
 
         if input_path.is_dir():
@@ -82,7 +81,7 @@ class MarkupGenerator:
 
             if output_markup_path.stem != "index":
                 output_markup_path.rename(output_markup_path.with_stem("index"))
-                logger.info(
+                logger.debug(
                     f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file',
                 )
 
@@ -101,12 +100,24 @@ class MarkupGenerator:
         md_file = md_file.resolve(strict=True)
         md_root_path = md_root_path.resolve(strict=True)
 
-        logger.info(f'Processing markdown file at "{md_file.absolute()}"')
+        logger.debug(f'Processing markdown file at "{md_file.absolute()}"')
 
         # Retrieve the frontmatter metadata and the markdown content
 
         content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown_content = frontmatter.parse(content)
+
+        slide_config = None
+        if metadata:
+            slide_config = deepcopy(self.global_config)
+            for key in FRONTMATTER_ALLOWED_KEYS:
+                if key in metadata:
+                    OmegaConf.update(slide_config, key, metadata[key])
+            logger.debug("Detected frontmatter, used config:")
+            logger.debug(OmegaConf.to_yaml(slide_config, resolve=True))
+        else:
+            slide_config = self.global_config
+
         markdown_content = emojize(markdown_content, language="alias")
 
         # Get the relative path of reveal.js
@@ -121,12 +132,12 @@ class MarkupGenerator:
             walk_up=True,
         )
 
-        revealjs_config = self.config.get_revealjs_options()
+        revealjs_config = slide_config.revealjs
 
         # Copy the theme CSS
 
         relative_theme_path = None
-        if theme := self.config.get_slides_theme():
+        if theme := slide_config.slides.theme:
             relative_theme_path = self.__copy_theme(
                 output_markup_path,
                 theme,
@@ -136,7 +147,7 @@ class MarkupGenerator:
         # Copy the highlight CSS
 
         relative_highlight_theme_path = None
-        if theme := self.config.get_slides_highlight_theme():
+        if theme := slide_config.slides.highlight_theme:
             relative_highlight_theme_path = self.__copy_theme(
                 output_markup_path,
                 theme,
@@ -146,18 +157,18 @@ class MarkupGenerator:
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.get_slides_favicon():
+        if favicon := slide_config.slides.favicon:
             relative_favicon_path = self.__copy_favicon(output_markup_path, favicon)
 
         # Retrieve the 3rd party plugins
 
-        plugins = self.config.get_plugins()
+        plugins = slide_config.plugins
 
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
         slideshow_template = None
-        if template_config := self.config.get_slides_template():
+        if template_config := slide_config.slides.template:
             slideshow_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
@@ -166,10 +177,10 @@ class MarkupGenerator:
         markdown_data_options = {
             key: value
             for key, value in {
-                "data-separator": self.config.get_slides_separator(),
-                "data-separator-vertical": self.config.get_slides_separator_vertical(),
-                "data-separator-notes": self.config.get_slides_separator_notes(),
-                "data-charset": self.config.get_slides_charset(),
+                "data-separator": slide_config.slides.separator,
+                "data-separator-vertical": slide_config.slides.separator_vertical,
+                "data-separator-notes": slide_config.slides.separator_notes,
+                "data-charset": slide_config.slides.charset,
             }.items()
             if value
         }
@@ -190,55 +201,55 @@ class MarkupGenerator:
 
         self.__copy_local_files(md_file, md_root_path, markdown_content)
 
-        return metadata, output_markup_path
+        return metadata.get("title"), output_markup_path
 
     def __process_markdown_directory(self, md_root_path: Path) -> None:
         md_root_path = md_root_path.resolve(strict=True)
-        logger.info(f"Processing markdown directory at {md_root_path.absolute()}")
+        logger.debug(f'Processing markdown directory at "{md_root_path.absolute()}"')
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
-            (metadata, output_markup_path) = self.__process_markdown_file(
+            (title_for_index, output_markup_path) = self.__process_markdown_file(
                 md_file,
                 md_root_path,
             )
 
             slideshows.append(
                 {
-                    "title": metadata.get("title", md_file.stem),
+                    "title": title_for_index if title_for_index else md_file.stem,
                     "location": output_markup_path.relative_to(
                         self.output_directory_path,
                     ),
                 },
             )
 
-        slideshows = natsorted(slideshows, key=lambda x: x["location"])
+        slideshows = natsorted(slideshows, key=lambda x: str(x["location"]))
 
-        logger.info("Generating index")
+        logger.debug("Generating index")
 
         index_path = self.output_directory_path / "index.html"
 
         # Copy the theme
 
         relative_theme_path = None
-        if theme := self.config.get_index_theme():
+        if theme := self.global_config.index.theme:
             relative_theme_path = self.__copy_theme(index_path, theme)
 
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.get_index_favicon():
+        if favicon := self.global_config.index.favicon:
             relative_favicon_path = self.__copy_favicon(index_path, favicon)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
-        if template_config := self.config.get_index_template():
+        if template_config := self.global_config.index.template:
             index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             index_template = DEFAULT_INDEX_TEMPLATE
 
         content = index_template.render(
             favicon=relative_favicon_path,
-            title=self.config.get_index_title(),
+            title=self.global_config.index.title,
             theme=relative_theme_path,
             slideshows=slideshows,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
@@ -253,7 +264,7 @@ class MarkupGenerator:
     ) -> None:
         links = self.__find_all_links(markdown_content)
         for link in links:
-            if self.__get_url_type(link) == URLType.RELATIVE:
+            if get_url_type(link) == URLType.RELATIVE:
                 image = Path(md_file.parent, link).resolve(strict=True)
                 self.__copy_to_output_relative_to_md_root(image, md_root_path)
 
@@ -263,8 +274,8 @@ class MarkupGenerator:
         theme: str,
         default_theme_resource: Traversable | None = None,
     ) -> Path | str:
-        if self.__get_url_type(theme) == URLType.ABSOLUTE:
-            logger.info(
+        if get_url_type(theme) == URLType.ABSOLUTE:
+            logger.debug(
                 f'Using theme "{theme}" from an absolute URL, no copy necessary',
             )
             return theme
@@ -276,12 +287,12 @@ class MarkupGenerator:
                 default_theme_resource.joinpath(theme),
             ) as builtin_theme_path:
                 theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
-                logger.info(
+                logger.debug(
                     f'Using built-in theme "{theme}" from "{theme_path.absolute()}"',
                 )
         else:
             theme_path = Path(theme).resolve(strict=True)
-            logger.info(f'Using theme "{theme_path.absolute()}"')
+            logger.debug(f'Using theme "{theme_path.absolute()}"')
 
         theme_output_path = self.output_assets_path / theme_path.name
         self.__copy_to_output(theme_path, theme_output_path)
@@ -294,14 +305,14 @@ class MarkupGenerator:
         return relative_theme_path
 
     def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
-        if self.__get_url_type(favicon) == URLType.ABSOLUTE:
-            logger.info(
+        if get_url_type(favicon) == URLType.ABSOLUTE:
+            logger.debug(
                 f'Using favicon "{favicon}" from an absolute URL, no copy necessary',
             )
             return favicon
 
         favicon_path = Path(favicon).resolve(strict=True)
-        logger.info(f'Using favicon "{favicon_path.absolute()}"')
+        logger.debug(f'Using favicon "{favicon_path.absolute()}"')
 
         favicon_output_path = self.output_assets_path / favicon_path.name
         self.__copy_to_output(favicon_path, favicon_output_path)
@@ -318,11 +329,11 @@ class MarkupGenerator:
     def __create_file(self, destination_path: Path, content: Any) -> None:
         if destination_path.exists():
             destination_path.write_text(content)
-            logger.info(f'Overwritten: "{destination_path}"')
+            logger.debug(f'Overwritten: "{destination_path}"')
         else:
             destination_path.parent.mkdir(parents=True, exist_ok=True)
             destination_path.write_text(content)
-            logger.info(f'Created file "{destination_path}"')
+            logger.debug(f'Created file "{destination_path}"')
 
     def __copy_to_output(self, source_path: Path, destination_path: Path) -> Path:
         self.__copy(source_path, destination_path)
@@ -360,7 +371,7 @@ class MarkupGenerator:
         shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
 
         action = "Overwritten" if overwrite else "Copied"
-        logger.info(
+        logger.debug(
             f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
 
@@ -370,18 +381,9 @@ class MarkupGenerator:
         shutil.copy(source_path, destination_path)
 
         action = "Overwritten" if overwrite else "Copied"
-        logger.info(
+        logger.debug(
             f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"',
         )
-
-    def __get_url_type(self, url: str) -> URLType:
-        if url.startswith("#"):
-            return URLType.ANCHOR
-
-        if bool(urlparse(url).scheme):
-            return URLType.ABSOLUTE
-
-        return URLType.RELATIVE
 
     def __find_all_links(self, markdown_content: str) -> set[str]:
         html_content = markdown.markdown(markdown_content, extensions=["extra"])
