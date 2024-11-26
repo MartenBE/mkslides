@@ -9,7 +9,7 @@ def run_build_with_custom_input(
     input_filename: str,
 ) -> subprocess.CompletedProcess[str]:
     result = subprocess.run(
-        ["mkslides", "-v", "build", "-d", output_path, input_filename],
+        ["mkslides", "-v", "build", "-s", "-d", output_path, input_filename],
         cwd=cwd,
         capture_output=True,
         text=True,
@@ -30,7 +30,17 @@ def run_build_with_config(
 ) -> subprocess.CompletedProcess[str]:
     config_path = (cwd / "test_configs" / config_filename).resolve(strict=True)
     result = subprocess.run(
-        ["mkslides", "-v", "build", "-d", output_path, "-f", config_path, "test_files"],
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-s",
+            "-d",
+            output_path,
+            "-f",
+            config_path,
+            "test_files",
+        ],
         cwd=cwd,
         capture_output=True,
         text=True,

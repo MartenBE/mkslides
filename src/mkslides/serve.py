@@ -8,11 +8,11 @@ import livereload  # type: ignore[import-untyped]
 from livereload.handlers import LiveReloadHandler  # type: ignore[import-untyped]
 from omegaconf import DictConfig
 
+from mkslides.build import build
 from mkslides.config import get_config
+from mkslides.constants import REVEALJS_THEMES_LIST
 from mkslides.urltype import URLType
-
-from .build import build
-from .utils import get_url_type
+from mkslides.utils import get_url_type
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +29,19 @@ class ServeConfig:
 
 
 def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]:
-    def should_watch(path: Optional[str]) -> Optional[Path]:
+    def should_watch(
+        path: Optional[str],
+        unwatchable_values: Optional[list[str]] = None,
+    ) -> Optional[Path]:
+        # https://docs.astral.sh/ruff/rules/mutable-argument-default/
+        if unwatchable_values is None:
+            unwatchable_values = []
+
         return (
             Path(path).resolve(strict=True).absolute()
-            if path and get_url_type(path) == URLType.RELATIVE
+            if path
+            and get_url_type(path) == URLType.RELATIVE
+            and path not in unwatchable_values
             else None
         )
 
@@ -41,7 +50,7 @@ def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]
         config.internal.config_path,
         should_watch(config.index.theme),
         should_watch(config.index.template),
-        should_watch(config.slides.theme),
+        should_watch(config.slides.theme, REVEALJS_THEMES_LIST),
         should_watch(config.slides.template),
     ]
 
@@ -59,7 +68,7 @@ def serve(
     def reload() -> None:
         logger.info("Reloading...")
         new_config = get_config(config_path)
-        build(new_config, input_path, output_path)
+        build(new_config, input_path, output_path, serve_config.strict)
 
         new_paths_to_watch = determine_paths_to_watch(input_path, new_config)
         diff_paths_to_watch = set(new_paths_to_watch) - set(paths_to_watch)
@@ -67,7 +76,7 @@ def serve(
             logger.debug(f'Adding new watched path: "{path}"')
             server.watch(filepath=path.as_posix(), func=reload, delay=1)
 
-    build(config, input_path, output_path)
+    build(config, input_path, output_path, serve_config.strict)
     paths_to_watch = determine_paths_to_watch(input_path, config)
 
     try:

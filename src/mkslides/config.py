@@ -114,11 +114,12 @@ def get_config(config_file: Path | None = None) -> DictConfig:
     if not config_file and DEFAULT_CONFIG_LOCATION.exists():
         config_file = DEFAULT_CONFIG_LOCATION.resolve(strict=True).absolute()
 
+    config.internal.config_path = config_file
     if config_file:
         try:
             loaded_config = OmegaConf.load(config_file)
             config = OmegaConf.merge(config, loaded_config)
-            config.internal.config_path = config_file
+
             logger.info(f'Loaded config from "{config_file}"')
         except Exception:
             logger.exception(f"Failed to load config from {config_file}")

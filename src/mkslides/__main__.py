@@ -24,11 +24,6 @@ logger.addHandler(RichHandler(show_path=False))
 
 ################################################################################
 
-context_settings = {
-    "help_option_names": ["-h", "--help"],
-    "max_content_width": 120,
-}
-
 files_argument_data = {
     "metavar": "FILENAME|PATH",
     "type": click.Path(exists=True, resolve_path=True, path_type=Path),
@@ -40,8 +35,18 @@ config_file_argument_data = {
     "help": "Provide a specific MkSlides-Reveal config file.",
 }
 
+strict_argument_data = {
+    "is_flag": True,
+    "help": "Provide a specific MkSlides-Reveal config file.",
+}
 
-@click.group(context_settings=context_settings)
+
+@click.group(
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+        "max_content_width": 120,
+    },
+)
 @click.version_option(
     VERSION,
     "-V",
@@ -77,7 +82,13 @@ def cli(verbose: bool) -> None:
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
-def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
+@click.option("-s", "--strict", **strict_argument_data)  # type: ignore[arg-type]
+def build_command(
+    files: Path,
+    config_file: Path | None,
+    site_dir: str,
+    strict: bool,
+) -> None:
     """
     Build the MkDocs documentation.
 
@@ -88,7 +99,7 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
     config = get_config(config_file)
     output_path = Path(site_dir).resolve(strict=False)
 
-    build(config, files, output_path)
+    build(config, files, output_path, strict)
 
 
 # Serve Command ################################################################
@@ -97,6 +108,7 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
 @cli.command(name="serve")
 @click.argument("files", **files_argument_data)  # type: ignore[arg-type]
 @click.option("-f", "--config-file", **config_file_argument_data)  # type: ignore[arg-type]
+@click.option("-s", "--strict", **strict_argument_data)  # type: ignore[arg-type]
 @click.option(
     "-a",
     "--dev-addr",
@@ -114,6 +126,7 @@ def build_command(files: Path, config_file: Path | None, site_dir: str) -> None:
 def serve_command(
     files: Path,
     config_file: Path | None,
+    strict: bool,
     dev_addr: str,
     open_in_browser: bool,
 ) -> None:
@@ -132,6 +145,7 @@ def serve_command(
             "dev_ip": dev_ip,
             "dev_port": dev_port,
             "open_in_browser": open_in_browser,
+            "strict": strict,
         },
     )
 

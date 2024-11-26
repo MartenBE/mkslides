@@ -16,6 +16,7 @@ from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
+from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
 from .constants import (
@@ -27,7 +28,6 @@ from .constants import (
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_RESOURCE,
 )
-from .urltype import URLType
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,7 @@ class MarkupGenerator:
         self,
         global_config: DictConfig,
         output_directory_path: Path,
+        strict: bool,
     ) -> None:
         self.global_config = global_config
 
@@ -47,6 +48,8 @@ class MarkupGenerator:
 
         self.output_assets_path = self.output_directory_path / "assets"
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
+
+        self.strict = strict
 
     def clear_output_directory(self) -> None:
         for item in self.output_directory_path.iterdir():
@@ -265,8 +268,18 @@ class MarkupGenerator:
         links = self.__find_all_links(markdown_content)
         for link in links:
             if get_url_type(link) == URLType.RELATIVE:
-                image = Path(md_file.parent, link).resolve(strict=True)
-                self.__copy_to_output_relative_to_md_root(image, md_root_path)
+                try:
+                    local_file_path = Path(md_file.parent, link).resolve(strict=True)
+                    self.__copy_to_output_relative_to_md_root(
+                        local_file_path,
+                        md_root_path,
+                    )
+                except FileNotFoundError as e:
+                    message = f"Local file '{link}' mentioned in '{md_file}' not found."
+                    if self.strict:
+                        # https://docs.astral.sh/ruff/rules/raise-without-from-inside-except/
+                        raise FileNotFoundError(message) from e
+                    logger.warning(message)
 
     def __copy_theme(
         self,

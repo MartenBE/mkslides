@@ -141,3 +141,5 @@ This should not throw an error:
         <img src="./some-random-html-image.png" />
     -->
     <!-- .slide: data-background-image="./some-random-background-image.png" -->
+
+---
