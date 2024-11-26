@@ -54,15 +54,17 @@ def serve(
     output_path: Path,
     serve_config: DictConfig,
 ) -> None:
+    config_path = config.internal.config_path
+
     def reload() -> None:
         logger.info("Reloading...")
-        config = get_config(serve_config.config_path)
-        build(config, input_path, output_path)
+        new_config = get_config(config_path)
+        build(new_config, input_path, output_path)
 
-        new_paths_to_watch = determine_paths_to_watch(input_path, config)
+        new_paths_to_watch = determine_paths_to_watch(input_path, new_config)
         diff_paths_to_watch = set(new_paths_to_watch) - set(paths_to_watch)
         for path in diff_paths_to_watch:
-            logger.debug(f'Adding new watch path: "{path}"')
+            logger.debug(f'Adding new watched path: "{path}"')
             server.watch(filepath=path.as_posix(), func=reload, delay=1)
 
     build(config, input_path, output_path)
