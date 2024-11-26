@@ -8,18 +8,18 @@
 
 ## Features
 
--   Build static HTML slideshow files from Markdown files.
-    -   Turn a single Markdown file into a HTML slideshow.
-    -   Turn a folder with Markdown files into a collection of HTML slideshows.
--   Publish your slideshow(s) anywhere that static files can be served.
-    -   Locally
-    -   On a webserver
-    -   Deploy through CI/CD with GitHub/GitLab (like this repo!)
--   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
--   Use custom favicons, CSS themes, templates, ... if desired.
--   Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
--   Depends heavily on integration/unit tests to prevent regressions.
--   And more!
+- Build static HTML slideshow files from Markdown files.
+    - Turn a single Markdown file into a HTML slideshow.
+    - Turn a folder with Markdown files into a collection of HTML slideshows.
+- Publish your slideshow(s) anywhere that static files can be served.
+    - Locally
+    - On a webserver
+    - Deploy through CI/CD with GitHub/GitLab (like this repo!)
+- Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
+- Use custom favicons, CSS themes, templates, ... if desired.
+- Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
+- Depends heavily on integration/unit tests to prevent regressions.
+- And more!
 
 ## Example
 
@@ -57,6 +57,15 @@ mkslides serve docs/
 
 ```bash
 mkslides serve test.md
+```
+
+# Need help or want to know more?
+
+## Commands
+
+```bash
+mkslides build -h
+mkslides serve -h
 ```
 
 ## Configuration
@@ -161,8 +170,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Notes:
 
--   `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
--   The precedence is frontmatter > `mkslides.yml` > defaults.
+- `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
+- The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Contributing
 

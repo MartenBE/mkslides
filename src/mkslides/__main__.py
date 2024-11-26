@@ -37,7 +37,7 @@ config_file_argument_data = {
 
 strict_argument_data = {
     "is_flag": True,
-    "help": "Provide a specific MkSlides-Reveal config file.",
+    "help": "Fail if a relative link cannot be resolved, otherwise just print a warning.",
 }
 
 
