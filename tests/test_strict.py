@@ -1,6 +1,6 @@
+import re
 import subprocess
 from typing import Any
-import re
 
 
 def test_process_file_without_config(setup_paths: Any) -> None:
