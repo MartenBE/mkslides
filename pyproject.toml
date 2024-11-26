@@ -64,20 +64,21 @@ pythonpath = ["assets"]
 
 [tool.ruff.lint]
 ignore = [
-    "ANN401",  # Dynamically typed expressions (typing.Any) are disallowed
-    "D100",    # Missing docstring in public module
-    "D101",    # Missing docstring in public class
-    "D103",    # Missing docstring in public function
-    "D102",    # Missing docstring in public method
-    "D104",    # Missing docstring in public package"
-    "D107",    # Missing docstring in `__init__`
-    "D203",    # one-blank-line-before-class
-    "D212",    # multi-line-summary-first-line
-    "E501",    # Line too long
-    "FA100",   # Add `from __future__ import annotations` to simplify `typing.Optional`
-    "FA102",   # Missing `from __future__ import annotations`, but uses PEP 585 collection
-    "FBT001",  # Boolean-typed positional argument in function definition
-    "G004",    # Logging statement uses f-string"
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
+    "D100",   # Missing docstring in public module
+    "D101",   # Missing docstring in public class
+    "D103",   # Missing docstring in public function
+    "D102",   # Missing docstring in public method
+    "D104",   # Missing docstring in public package"
+    "D107",   # Missing docstring in `__init__`
+    "D203",   # one-blank-line-before-class
+    "D212",   # multi-line-summary-first-line
+    "E501",   # Line too long
+    "FA100",  # Add `from __future__ import annotations` to simplify `typing.Optional`
+    "FA102",  # Missing `from __future__ import annotations`, but uses PEP 585 collection
+    "FBT001", # Boolean-typed positional argument in function definition
+    "G004",   # Logging statement uses f-string"
+    #
     "PLR0913", # Too many arguments in function definition
     "RET504",  # Unnecessary assignment to `...` before `return` statement
     "S101",    # Use of `assert` detected
@@ -85,6 +86,12 @@ ignore = [
     "S607",    # Starting a process with a partial executable path
     "TD002",   # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
     "TD003",   # Missing issue link on the line following this TODO
-
+    "TRY003",  # Avoid specifying long messages outside the exception class
 ]
 select = ["ALL"]
+
+# https://github.com/astral-sh/ruff/issues/8794
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    "INP001", # File `tests/test_preprocessors/replace_ats.py` is part of an implicit namespace package. Add an `__init__.py`.
+]

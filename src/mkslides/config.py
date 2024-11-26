@@ -31,6 +31,7 @@ class Slides:
     charset: Optional[str] = None
     favicon: Optional[str] = None
     highlight_theme: str = "monokai"
+    preprocess_script: Optional[str] = None
     separator_notes: Optional[str] = None
     separator_vertical: Optional[str] = None
     separator: Optional[str] = None
@@ -94,6 +95,9 @@ def validate(config: DictConfig) -> None:
     ):
         Path(config.slides.highlight_theme).resolve(strict=True)
 
+    if config.slides.preprocess_script:
+        Path(config.slides.preprocess_script).resolve(strict=True)
+
     if (
         config.slides.template
         and get_url_type(config.slides.template) == URLType.RELATIVE
@@ -120,7 +124,7 @@ def get_config(config_file: Path | None = None) -> DictConfig:
             loaded_config = OmegaConf.load(config_file)
             config = OmegaConf.merge(config, loaded_config)
 
-            logger.info(f'Loaded config from "{config_file}"')
+            logger.info(f"Loaded config from '{config_file}'")
         except Exception:
             logger.exception(f"Failed to load config from {config_file}")
             raise

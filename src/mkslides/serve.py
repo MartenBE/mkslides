@@ -73,7 +73,7 @@ def serve(
         new_paths_to_watch = determine_paths_to_watch(input_path, new_config)
         diff_paths_to_watch = set(new_paths_to_watch) - set(paths_to_watch)
         for path in diff_paths_to_watch:
-            logger.debug(f'Adding new watched path: "{path}"')
+            logger.debug(f"Adding new watched path: '{path}'")
             server.watch(filepath=path.as_posix(), func=reload, delay=1)
 
     build(config, input_path, output_path, serve_config.strict)
@@ -86,7 +86,7 @@ def serve(
         server._setup_logging = lambda: None  # noqa: SLF001
 
         for path in paths_to_watch:
-            logger.debug(f'Watching: "{path}"')
+            logger.debug(f"Watching: '{path}'")
             server.watch(filepath=path.as_posix(), func=reload, delay=1)
 
         server.serve(
@@ -99,4 +99,4 @@ def serve(
     finally:
         if output_path.exists():
             shutil.rmtree(output_path)
-            logger.debug(f'Removed "{output_path}"')
+            logger.debug(f"Removed '{output_path}'")

@@ -16,6 +16,7 @@ from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
+from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
@@ -43,13 +44,19 @@ class MarkupGenerator:
 
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
-            f'Output directory: "{self.output_directory_path.absolute()}"',
+            f"Output directory: '{self.output_directory_path.absolute()}'",
         )
 
         self.output_assets_path = self.output_directory_path / "assets"
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
 
         self.strict = strict
+
+        self.preprocess_script_func = (
+            load_preprocessing_function(self.global_config.slides.preprocess_script)
+            if self.global_config.slides.preprocess_script
+            else None
+        )
 
     def clear_output_directory(self) -> None:
         for item in self.output_directory_path.iterdir():
@@ -85,7 +92,7 @@ class MarkupGenerator:
             if output_markup_path.stem != "index":
                 output_markup_path.rename(output_markup_path.with_stem("index"))
                 logger.debug(
-                    f'Renamed "{original_output_markup_path.absolute()}" to "{output_markup_path.absolute()}" as it was the only Markdown file',
+                    f"Renamed '{original_output_markup_path.absolute()}' to '{output_markup_path.absolute()}' as it was the only Markdown file",
                 )
 
         end_time = time.perf_counter()
@@ -103,12 +110,16 @@ class MarkupGenerator:
         md_file = md_file.resolve(strict=True)
         md_root_path = md_root_path.resolve(strict=True)
 
-        logger.debug(f'Processing markdown file at "{md_file.absolute()}"')
+        logger.debug(f"Processing markdown file at '{md_file.absolute()}'")
 
         # Retrieve the frontmatter metadata and the markdown content
 
         content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown_content = frontmatter.parse(content)
+
+        if self.preprocess_script_func:
+            markdown_content = self.preprocess_script_func(markdown_content)
+            logger.debug("Preprocessed markdown content with {preprocess_script_func}")
 
         slide_config = None
         if metadata:
@@ -208,7 +219,7 @@ class MarkupGenerator:
 
     def __process_markdown_directory(self, md_root_path: Path) -> None:
         md_root_path = md_root_path.resolve(strict=True)
-        logger.debug(f'Processing markdown directory at "{md_root_path.absolute()}"')
+        logger.debug(f"Processing markdown directory at '{md_root_path.absolute()}'")
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
             (title_for_index, output_markup_path) = self.__process_markdown_file(
@@ -289,7 +300,7 @@ class MarkupGenerator:
     ) -> Path | str:
         if get_url_type(theme) == URLType.ABSOLUTE:
             logger.debug(
-                f'Using theme "{theme}" from an absolute URL, no copy necessary',
+                f"Using theme '{theme}' from an absolute URL, no copy necessary",
             )
             return theme
 
@@ -301,11 +312,11 @@ class MarkupGenerator:
             ) as builtin_theme_path:
                 theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
                 logger.debug(
-                    f'Using built-in theme "{theme}" from "{theme_path.absolute()}"',
+                    f"Using built-in theme '{theme}' from '{theme_path.absolute()}'",
                 )
         else:
             theme_path = Path(theme).resolve(strict=True)
-            logger.debug(f'Using theme "{theme_path.absolute()}"')
+            logger.debug(f"Using theme '{theme_path.absolute()}'")
 
         theme_output_path = self.output_assets_path / theme_path.name
         self.__copy_to_output(theme_path, theme_output_path)
@@ -320,12 +331,12 @@ class MarkupGenerator:
     def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
         if get_url_type(favicon) == URLType.ABSOLUTE:
             logger.debug(
-                f'Using favicon "{favicon}" from an absolute URL, no copy necessary',
+                f"Using favicon '{favicon}' from an absolute URL, no copy necessary",
             )
             return favicon
 
         favicon_path = Path(favicon).resolve(strict=True)
-        logger.debug(f'Using favicon "{favicon_path.absolute()}"')
+        logger.debug(f"Using favicon '{favicon_path.absolute()}'")
 
         favicon_output_path = self.output_assets_path / favicon_path.name
         self.__copy_to_output(favicon_path, favicon_output_path)
@@ -342,11 +353,11 @@ class MarkupGenerator:
     def __create_file(self, destination_path: Path, content: Any) -> None:
         if destination_path.exists():
             destination_path.write_text(content)
-            logger.debug(f'Overwritten: "{destination_path}"')
+            logger.debug(f"Overwritten: '{destination_path}'")
         else:
             destination_path.parent.mkdir(parents=True, exist_ok=True)
             destination_path.write_text(content)
-            logger.debug(f'Created file "{destination_path}"')
+            logger.debug(f"Created file '{destination_path}'")
 
     def __copy_to_output(self, source_path: Path, destination_path: Path) -> Path:
         self.__copy(source_path, destination_path)
@@ -361,7 +372,7 @@ class MarkupGenerator:
         source_path = source_path.resolve(strict=True)
         if not source_path.is_relative_to(md_root_path):
             logger.warning(
-                f'"{source_path.absolute()}" is outside the markdown root directory, skipped!"',
+                f"'{source_path.absolute()}' is outside the markdown root directory, skipped!",
             )
             return None
 
@@ -385,7 +396,7 @@ class MarkupGenerator:
 
         action = "Overwritten" if overwrite else "Copied"
         logger.debug(
-            f'{action} directory "{source_path.absolute()}" to "{destination_path.absolute()}"',
+            f"{action} directory '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )
 
     def __copy_file(self, source_path: Path, destination_path: Path) -> None:
@@ -395,7 +406,7 @@ class MarkupGenerator:
 
         action = "Overwritten" if overwrite else "Copied"
         logger.debug(
-            f'{action} file "{source_path.absolute()}" to "{destination_path.absolute()}"',
+            f"{action} file '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )
 
     def __find_all_links(self, markdown_content: str) -> set[str]:
