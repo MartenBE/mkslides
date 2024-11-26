@@ -120,7 +120,7 @@ plugins:
           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
 ```
 
-Default config:
+Default config (also used if no config file is present):
 
 ```yml
 index:
