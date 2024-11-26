@@ -1,0 +1,2 @@
+slides:
+  preprocess_script: test_preprocessors/replace_ats.py

@@ -97,6 +97,11 @@ slides:
     # themes such as `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ...
     # (see https://highlightjs.org/examples)
     highlight_theme: example-slides-highlight-theme.css
+    # Relative path to a python script containing a function
+    # Callable[[str], str] named `preprocess`. For each Markdown file, the whole
+    # file content is given to the function as a str. The returned string is
+    # then further processed as the markdown to give to Reveal.js
+    preprocess_script: tests/test_preprocessors/replace_ats.py
     # Separator to determine end current/begin new slide: regexp
     # (see https://revealjs.com/markdown/#external-markdown)
     separator: ^\s*---\s*$
@@ -142,7 +147,7 @@ revealjs:
     slideNumber: c/t
 ```
 
-It is also possible to override `slides`, `revealjs`, and `plugins` options on a per markdown file base using it's frontmatter:
+It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter:
 
 ```md
 ---
