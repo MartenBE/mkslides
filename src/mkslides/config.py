@@ -15,6 +15,7 @@ from mkslides.utils import get_url_type
 
 logger = logging.getLogger(__name__)
 
+FRONTMATTER_ALLOWED_KEYS = ["slides", "revealjs", "plugins"]
 
 @dataclass
 class Index:

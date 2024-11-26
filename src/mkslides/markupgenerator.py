@@ -1,3 +1,4 @@
+from copy import deepcopy
 import datetime
 import logging
 import shutil
@@ -12,8 +13,9 @@ import markdown
 from bs4 import BeautifulSoup, Comment
 from emoji import emojize
 from natsort import natsorted
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
+from mkslides.config import FRONTMATTER_ALLOWED_KEYS, Config
 from mkslides.utils import get_url_type
 
 from .constants import (
@@ -33,10 +35,10 @@ logger = logging.getLogger(__name__)
 class MarkupGenerator:
     def __init__(
         self,
-        config: DictConfig,
+        global_config: DictConfig,
         output_directory_path: Path,
     ) -> None:
-        self.config = config
+        self.global_config = global_config
 
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
@@ -104,6 +106,18 @@ class MarkupGenerator:
 
         content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown_content = frontmatter.parse(content)
+
+        slide_config = None
+        if metadata:
+            slide_config = deepcopy(self.global_config)
+            for key in FRONTMATTER_ALLOWED_KEYS:
+                if key in metadata:
+                    OmegaConf.update(slide_config, key, metadata[key])
+            logger.debug(f"Detected frontmatter, used config:")
+            logger.debug(OmegaConf.to_yaml(slide_config, resolve=True))
+        else:
+            slide_config = self.global_config
+
         markdown_content = emojize(markdown_content, language="alias")
 
         # Get the relative path of reveal.js
@@ -118,12 +132,12 @@ class MarkupGenerator:
             walk_up=True,
         )
 
-        revealjs_config = self.config.revealjs
+        revealjs_config = slide_config.revealjs
 
         # Copy the theme CSS
 
         relative_theme_path = None
-        if theme := self.config.slides.theme:
+        if theme := slide_config.slides.theme:
             relative_theme_path = self.__copy_theme(
                 output_markup_path,
                 theme,
@@ -133,7 +147,7 @@ class MarkupGenerator:
         # Copy the highlight CSS
 
         relative_highlight_theme_path = None
-        if theme := self.config.slides.highlight_theme:
+        if theme := slide_config.slides.highlight_theme:
             relative_highlight_theme_path = self.__copy_theme(
                 output_markup_path,
                 theme,
@@ -143,18 +157,18 @@ class MarkupGenerator:
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.slides.favicon:
+        if favicon := slide_config.slides.favicon:
             relative_favicon_path = self.__copy_favicon(output_markup_path, favicon)
 
         # Retrieve the 3rd party plugins
 
-        plugins = self.config.plugins
+        plugins = slide_config.plugins
 
         # Generate the markup from markdown
 
         # Refresh the templates here, so they have effect when live reloading
         slideshow_template = None
-        if template_config := self.config.slides.template:
+        if template_config := slide_config.slides.template:
             slideshow_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
@@ -163,10 +177,10 @@ class MarkupGenerator:
         markdown_data_options = {
             key: value
             for key, value in {
-                "data-separator": self.config.slides.separator,
-                "data-separator-vertical": self.config.slides.separator_vertical,
-                "data-separator-notes": self.config.slides.separator_notes,
-                "data-charset": self.config.slides.charset,
+                "data-separator": slide_config.slides.separator,
+                "data-separator-vertical": slide_config.slides.separator_vertical,
+                "data-separator-notes": slide_config.slides.separator_notes,
+                "data-charset": slide_config.slides.charset,
             }.items()
             if value
         }
@@ -187,21 +201,21 @@ class MarkupGenerator:
 
         self.__copy_local_files(md_file, md_root_path, markdown_content)
 
-        return metadata, output_markup_path
+        return metadata.get("title"), output_markup_path
 
     def __process_markdown_directory(self, md_root_path: Path) -> None:
         md_root_path = md_root_path.resolve(strict=True)
         logger.debug(f'Processing markdown directory at "{md_root_path.absolute()}"')
         slideshows = []
         for md_file in md_root_path.glob("**/*.md"):
-            (metadata, output_markup_path) = self.__process_markdown_file(
+            (title_for_index, output_markup_path) = self.__process_markdown_file(
                 md_file,
                 md_root_path,
             )
 
             slideshows.append(
                 {
-                    "title": metadata.get("title", md_file.stem),
+                    "title": title_for_index if title_for_index else md_file.stem,
                     "location": output_markup_path.relative_to(
                         self.output_directory_path,
                     ),
@@ -217,25 +231,25 @@ class MarkupGenerator:
         # Copy the theme
 
         relative_theme_path = None
-        if theme := self.config.index.theme:
+        if theme := self.global_config.index.theme:
             relative_theme_path = self.__copy_theme(index_path, theme)
 
         # Copy the favicon
 
         relative_favicon_path = None
-        if favicon := self.config.index.favicon:
+        if favicon := self.global_config.index.favicon:
             relative_favicon_path = self.__copy_favicon(index_path, favicon)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
-        if template_config := self.config.index.template:
+        if template_config := self.global_config.index.template:
             index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
         else:
             index_template = DEFAULT_INDEX_TEMPLATE
 
         content = index_template.render(
             favicon=relative_favicon_path,
-            title=self.config.index.title,
+            title=self.global_config.index.title,
             theme=relative_theme_path,
             slideshows=slideshows,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),

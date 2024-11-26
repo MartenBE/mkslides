@@ -120,6 +120,19 @@ plugins:
           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
 ```
 
+Default config:
+
+```yml
+index:
+    title: Index
+slides:
+    theme: black
+    highlight_theme: monokai
+revealjs:
+    history: true
+    slideNumber: c/t
+```
+
 ## Contributing
 
 You can run the tests with `poetry` and `pytest`:
