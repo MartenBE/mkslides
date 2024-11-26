@@ -1,8 +1,8 @@
-from copy import deepcopy
 import datetime
 import logging
 import shutil
 import time
+from copy import deepcopy
 from importlib import resources
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -15,7 +15,7 @@ from emoji import emojize
 from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
-from mkslides.config import FRONTMATTER_ALLOWED_KEYS, Config
+from mkslides.config import FRONTMATTER_ALLOWED_KEYS
 from mkslides.utils import get_url_type
 
 from .constants import (
@@ -113,7 +113,7 @@ class MarkupGenerator:
             for key in FRONTMATTER_ALLOWED_KEYS:
                 if key in metadata:
                     OmegaConf.update(slide_config, key, metadata[key])
-            logger.debug(f"Detected frontmatter, used config:")
+            logger.debug("Detected frontmatter, used config:")
             logger.debug(OmegaConf.to_yaml(slide_config, resolve=True))
         else:
             slide_config = self.global_config
@@ -222,7 +222,7 @@ class MarkupGenerator:
                 },
             )
 
-        slideshows = natsorted(slideshows, key=lambda x: x["location"])
+        slideshows = natsorted(slideshows, key=lambda x: str(x["location"]))
 
         logger.debug("Generating index")
 

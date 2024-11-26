@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 FRONTMATTER_ALLOWED_KEYS = ["slides", "revealjs", "plugins"]
 
+
 @dataclass
 class Index:
     favicon: Optional[str] = None
