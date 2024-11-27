@@ -178,6 +178,67 @@ Notes:
 - `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
 - The precedence is frontmatter > `mkslides.yml` > defaults.
 
+## Full help
+
+<!-- output-no-command -->
+```text
+Usage: mkslides [OPTIONS] COMMAND [ARGS]...
+
+  MkSlides - Slides with Markdown using the power of Reveal.js.
+
+Options:
+  -V, --version  Show the version and exit.
+  -v, --verbose  Enable verbose output
+  -h, --help     Show this message and exit.
+
+Commands:
+  build  Build the MkDocs documentation.
+  serve  Run the builtin development server.
+
+```
+<!-- /output-no-command -->
+
+<!-- output-build -->
+```text
+Usage: mkslides build [OPTIONS] FILENAME|PATH
+
+  Build the MkDocs documentation.
+
+  FILENAME|PATH is the path to the Markdown file, or the directory containing
+  Markdown files.
+
+Options:
+  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -d, --site-dir PATH         The directory to output the result of the slides
+                              build.
+  -s, --strict                Fail if a relative link cannot be resolved,
+                              otherwise just print a warning.
+  -h, --help                  Show this message and exit.
+
+```
+<!-- /output-build -->
+
+<!-- output-serve -->
+```text
+Usage: mkslides serve [OPTIONS] FILENAME|PATH
+
+  Run the builtin development server.
+
+  FILENAME|PATH is the path to the Markdown file, or the directory containing
+  Markdown files.
+
+Options:
+  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -s, --strict                Fail if a relative link cannot be resolved,
+                              otherwise just print a warning.
+  -a, --dev-addr <IP:PORT>    IP address and port to serve slides locally.
+  -o, --open                  Open the website in a Web browser after the
+                              initial build finishes.
+  -h, --help                  Show this message and exit.
+
+```
+<!-- /output-serve -->
+
 ## Contributing
 
 You can run the tests with `poetry` and `pytest`:

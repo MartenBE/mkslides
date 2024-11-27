@@ -104,6 +104,55 @@ mkslides serve -h
 
 ---
 
+## Full help for build
+
+<!-- output-build -->
+```text
+Usage: mkslides build [OPTIONS] FILENAME|PATH
+
+  Build the MkDocs documentation.
+
+  FILENAME|PATH is the path to the Markdown file, or the directory containing
+  Markdown files.
+
+Options:
+  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -d, --site-dir PATH         The directory to output the result of the slides
+                              build.
+  -s, --strict                Fail if a relative link cannot be resolved,
+                              otherwise just print a warning.
+  -h, --help                  Show this message and exit.
+
+```
+<!-- /output-build -->
+
+---
+
+## Full help for serve
+
+<!-- output-serve -->
+```text
+Usage: mkslides serve [OPTIONS] FILENAME|PATH
+
+  Run the builtin development server.
+
+  FILENAME|PATH is the path to the Markdown file, or the directory containing
+  Markdown files.
+
+Options:
+  -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
+  -s, --strict                Fail if a relative link cannot be resolved,
+                              otherwise just print a warning.
+  -a, --dev-addr <IP:PORT>    IP address and port to serve slides locally.
+  -o, --open                  Open the website in a Web browser after the
+                              initial build finishes.
+  -h, --help                  Show this message and exit.
+
+```
+<!-- /output-serve -->
+
+---
+
 ## Contributions
 
 - MkSlides is and always will be open source
