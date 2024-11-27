@@ -1,3 +1,7 @@
+revealjs:
+  menu:
+    openButton: true
+    openOnInit: true
 plugins:
   - name: RevealMermaid
     extra_javascript:

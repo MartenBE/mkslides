@@ -16,6 +16,7 @@ def test_plugins(setup_paths: Any) -> None:
         output_path / "someslides.html",
         [
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.css" />',
+            'menu: {"openButton": true, "openOnInit": true}',
             '<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.js"></script>',
             '<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js"></script>',
             '<script src="https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js"></script>',
