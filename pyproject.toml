@@ -95,6 +95,6 @@ select = ["ALL"]
 "tests/**/*.py" = [
     "INP001", # File `tests/test_preprocessors/replace_ats.py` is part of an implicit namespace package. Add an `__init__.py`.
 ]
-"output-to-docs.py" = [
+"cli-help-output-to-docs.py" = [
     "T201", # `print` found
 ]

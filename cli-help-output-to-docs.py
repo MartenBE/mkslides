@@ -18,7 +18,10 @@ serve_end = "<!-- /output-serve -->"
 
 
 def replace_content(
-    content: str, start_marker: str, end_marker: str, new_content: str,
+    content: str,
+    start_marker: str,
+    end_marker: str,
+    new_content: str,
 ) -> str:
     pattern = f"{start_marker}.*?{end_marker}"
     replacement = f"{start_marker}\n```text\n{new_content}\n```\n{end_marker}"
