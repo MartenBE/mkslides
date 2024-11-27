@@ -42,8 +42,8 @@ class Slides:
 @dataclass
 class Plugin:
     name: Optional[str] = None
-    extra_javascript: Optional[list[str]] = None
     extra_css: Optional[list[str]] = None
+    extra_javascript: Optional[list[str]] = None
 
 
 # For internal use only
