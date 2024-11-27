@@ -206,7 +206,7 @@ class MarkupGenerator:
             revealjs_path=relative_revealjs_path,
             markdown_data_options=markdown_data_options,
             markdown=markdown_content,
-            revealjs_config=revealjs_config,
+            revealjs_config=OmegaConf.to_container(revealjs_config),
             plugins=plugins,
         )
         self.__create_file(output_markup_path, markup)

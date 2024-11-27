@@ -77,57 +77,86 @@ Here's an example showcasing all possible options in the config file:
 ```yml
 # Configuration for the generated index page
 index:
-    # Title of the generated index page: string
-    title: example-title
     # Favicon of the generated index page: file path or public url to favicon
     # file
     favicon: ./example-index-favicon.ico
+
+    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    template: ./example.jinja
+
     # Theme of the generated index page: file path or public url to CSS file
     theme: example-index-theme.css
+
+    # Title of the generated index page: string
+    title: example-title
+
 # Configuration for the slides
 slides:
+    # Charset of the slides: string
+    # (see https://revealjs.com/markdown/#external-markdown)
+    charset: utf-8
+
     # Favicon of the slides: file path or public url to favicon file
     favicon: ./example-slides-favicon.ico
-    # Theme of the slides: file path to CSS file, public url to CSS file, or one
-    # of the reveal.js themes such as `black`, `white`, `league`, `solarized`,
-    # `dracula`, ... (see https://revealjs.com/themes/)
-    theme: example-slides-theme.css
+
     # Theme for syntax highlighting of code fragments on the slides: file path
     # to CSS file, public url to CSS file, or one of the highlight.js built-in
     # themes such as `monokai`, `obsidian`, `tokyo-night-dark`, `vs`, ...
     # (see https://highlightjs.org/examples)
     highlight_theme: example-slides-highlight-theme.css
+
     # Relative path to a python script containing a function
     # Callable[[str], str] named `preprocess`. For each Markdown file, the whole
     # file content is given to the function as a str. The returned string is
     # then further processed as the markdown to give to Reveal.js
     preprocess_script: tests/test_preprocessors/replace_ats.py
-    # Separator to determine end current/begin new slide: regexp
-    # (see https://revealjs.com/markdown/#external-markdown)
-    separator: ^\s*---\s*$
-    # Separator to determine end current/begin new vertical slide: regexp
-    # (see https://revealjs.com/markdown/#external-markdown)
-    separator_vertical: ^\s*-v-\s*$
+
     # Separator to determine notes of the slide: regexp
     # (see https://revealjs.com/markdown/#external-markdown)
     separator_notes: "^Notes?:"
-    # Charset of the slides: string
+
+    # Separator to determine end current/begin new vertical slide: regexp
     # (see https://revealjs.com/markdown/#external-markdown)
-    separator_charset: utf-8
+    separator_vertical: ^\s*-v-\s*$
+
+    # Separator to determine end current/begin new slide: regexp
+    # (see https://revealjs.com/markdown/#external-markdown)
+    separator: ^\s*---\s*$
+
+    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    template: ./example.jinja
+
+    # Theme of the slides: file path to CSS file, public url to CSS file, or one
+    # of the reveal.js themes such as `black`, `white`, `league`, `solarized`,
+    # `dracula`, ... (see https://revealjs.com/themes/)
+    theme: example-slides-theme.css
+
 # Options to be passed to reveal.js: options in yaml format, they will be
 # translated to JSON automatically (see https://revealjs.com/config/)
 revealjs:
     height: 1080
     width: 1920
     transition: fade
+
+    example_plugin:
+        example_plugin_option_A: true
+        example_plugin_option_B: qwerty
+
 # Plugins or additional CSS/JavaScript files for the slides. These are given as
 # a list.
 plugins:
     # Name of the plugin (optional, see plugin README): plugin id string
     # (see https://revealjs.com/creating-plugins/#registering-a-plugin)
+    - name: RevealExamplePlugin
+      # List of CSS files of the plugin (optional, see plugin README):
+      # public url to CSS file per entry
+      extra_css:
+          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluting/example.min.css
+      # List of JavaScript files of the plugin (optional, see plugin README):
+      # public url to JavaScript file per entry
+      extra_javascript:
+          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluting/example.min.js
     - name: RevealMermaid
-      # List of JavaScript files of the plugin: file path or public url to
-      # JavaScript file per entry
       extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
     - extra_javascript:
@@ -139,9 +168,11 @@ Default config (also used if no config file is present):
 ```yml
 index:
     title: Index
+    template: assets/templates/index.html.jinja # Comes with the pip package
 slides:
     theme: black
     highlight_theme: monokai
+    template: assets/templates/slides.html.jinja # Comes with the pip package
 revealjs:
     history: true
     slideNumber: c/t
