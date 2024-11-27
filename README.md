@@ -126,12 +126,19 @@ plugins:
     # Name of the plugin (optional, see plugin README): plugin id string
     # (see https://revealjs.com/creating-plugins/#registering-a-plugin)
     - name: RevealMermaid
-      # List of JavaScript files of the plugin: file path or public url to
-      # JavaScript file per entry
+      # List of JavaScript files of the plugin (optional, see plugin README):
+      # file path or public url to JavaScript file per entry
       extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
     - extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
+    - name: RevealMenu
+      extra_javascript:
+          - https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.js
+      # List of CSS files of the plugin (optional, see plugin README):
+      # file path or public url to CSS file per entry
+      extra_css:
+          - https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.css
 ```
 
 Default config (also used if no config file is present):

@@ -16,6 +16,14 @@
         {% if highlight_theme %}
             <link rel="stylesheet" href="{{ highlight_theme }}" />
         {% endif %}
+
+        {% for plugin in plugins %}
+            {% if plugin.extra_css %}
+                {% for css in plugin.extra_css %}
+                    <link rel="stylesheet" href="{{ css }}" />
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
     </head>
     <body>
         <div class="reveal">
@@ -43,9 +51,11 @@
 
         {% if plugins %}
             {% for plugin in plugins %}
-                {% for javascript in plugin.extra_javascript %}
-                    <script src="{{ javascript }}"></script>
-                {% endfor %}
+                {% if plugin.extra_javascript %}
+                    {% for javascript in plugin.extra_javascript %}
+                        <script src="{{ javascript }}"></script>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         {% endif %}
 
