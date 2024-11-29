@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from omegaconf import MISSING, DictConfig, OmegaConf
 
@@ -56,7 +56,7 @@ class Internal:
 class Config:
     index: Index = field(default_factory=Index)
     slides: Slides = field(default_factory=Slides)
-    revealjs: Dict[str, Any] = field(
+    revealjs: dict[str, Any] = field(
         default_factory=lambda: {
             "history": True,  # Necessary for back/forward buttons and livereload
             "slideNumber": "c/t",
