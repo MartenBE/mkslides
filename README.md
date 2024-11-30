@@ -270,11 +270,3 @@ Options:
 
 ```
 <!-- /output-serve -->
-
-## Contributing
-
-You can run the tests with `poetry` and `pytest`:
-
-```bash
-poetry run pytest
-```
