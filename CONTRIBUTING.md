@@ -1,6 +1,6 @@
 # Contributing guidelines
 
-Thank you very much for contributing! Every help is welcome :).
+Thank you very much for contributing! Every help is welcome :slightly_smiling_face:.
 
 ## Workflow
 
