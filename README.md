@@ -152,11 +152,11 @@ plugins:
       # List of CSS files of the plugin (optional, see plugin README):
       # public url to CSS file per entry
       extra_css:
-          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluting/example.min.css
+          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluging/example.min.css
       # List of JavaScript files of the plugin (optional, see plugin README):
       # public url to JavaScript file per entry
       extra_javascript:
-          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluting/example.min.js
+          - https://cdn.jsdelivr.net/npm/reveal.js-example-pluging/example.min.js
     - name: RevealMermaid
       extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
