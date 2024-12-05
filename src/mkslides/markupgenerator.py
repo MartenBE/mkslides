@@ -209,7 +209,7 @@ class MarkupGenerator:
             revealjs_config=OmegaConf.to_container(revealjs_config),
             plugins=plugins,
         )
-        self.__create_file(output_markup_path, markup)
+        self.__create_or_overwrite_file(output_markup_path, markup)
 
         # Copy local files
 
@@ -268,7 +268,7 @@ class MarkupGenerator:
             slideshows=slideshows,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
         )
-        self.__create_file(index_path, content)
+        self.__create_or_overwrite_file(index_path, content)
 
     def __copy_local_files(
         self,
@@ -350,14 +350,14 @@ class MarkupGenerator:
 
     ################################################################################
 
-    def __create_file(self, destination_path: Path, content: Any) -> None:
-        if destination_path.exists():
-            destination_path.write_text(content)
-            logger.debug(f"Overwritten: '{destination_path}'")
-        else:
-            destination_path.parent.mkdir(parents=True, exist_ok=True)
-            destination_path.write_text(content)
-            logger.debug(f"Created file '{destination_path}'")
+    def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
+        is_overwrite = destination_path.exists()
+
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+        destination_path.write_text(content, encoding="utf-8")
+
+        action = "Overwritten" if is_overwrite else "Created"
+        logger.debug(f"{action} file '{destination_path}'")
 
     def __copy_to_output(self, source_path: Path, destination_path: Path) -> Path:
         self.__copy(source_path, destination_path)
