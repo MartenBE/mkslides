@@ -45,7 +45,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
     - Local slides
     - Hosted slides on webserver
     - Slides generated automatically by CI/CD using Markdown files in GitHub/GitLab repo
-        - That's exactly what is happening [here](https://github.com/MartenBE/mkslides/blob/main/.github/workflows/publish.yml)!
+        - That's exactly what is happening [here](https://github.com/MartenBE/mkslides/blob/main/.github/workflows/test-deploy.yml)!
 
 ---
 
