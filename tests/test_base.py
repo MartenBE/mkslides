@@ -7,6 +7,9 @@ from tests.utils import (
     run_build_with_custom_input,
 )
 
+# The output can be seen manually by running the following command:
+#   poetry run mkslides build tests/test_files
+
 
 def test_process_directory_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
@@ -35,6 +38,7 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
             "test-1.txt",
             "test-2.txt",
             "test-(3).txt",
+            "video/demo.webm",
         ],
     )
 
@@ -79,6 +83,7 @@ def test_process_file_without_config(setup_paths: Any) -> None:
             "test-1.txt",
             "test-2.txt",
             "test-(3).txt",
+            "video/demo.webm",
         ],
     )
 
