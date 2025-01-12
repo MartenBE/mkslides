@@ -423,6 +423,10 @@ class MarkupGenerator:
             if not link.find_parents(["code", "pre"]):
                 found_links.add(link["src"])
 
+        for link in soup.find_all("source", src=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["src"])
+
         for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
             if match := HTML_BACKGROUND_IMAGE_REGEX.search(comment):
                 found_links.add(match.group("location"))

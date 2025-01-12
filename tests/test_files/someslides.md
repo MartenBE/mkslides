@@ -151,3 +151,12 @@ This should not throw an error:
 @
 
 ---
+
+## Video
+
+<video controls preload="metadata">
+    <source src="./video/demo.webm" type="video/webm"/>
+    Video not supported.
+</video>
+
+---
