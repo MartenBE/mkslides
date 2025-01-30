@@ -173,7 +173,7 @@ index:
 slides:
     theme: black
     highlight_theme: monokai
-    template: assets/templates/slides.html.jinja # Comes with the pip package
+    template: assets/templates/slideshow.html.jinja # Comes with the pip package
 revealjs:
     history: true
     slideNumber: c/t
