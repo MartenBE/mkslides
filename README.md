@@ -162,7 +162,15 @@ plugins:
           - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js
     - extra_javascript:
           - https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js
+
+# Static files to be copied to the output directory.
+# It maps paths relative to the directory containing the Markdown files
+# to paths relative to the output directory.
+static:
+    path/to/theme: theme
+    path/to/logo.png: images/logo.png
 ```
+
 
 Default config (also used if no config file is present):
 

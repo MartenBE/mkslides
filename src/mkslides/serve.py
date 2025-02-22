@@ -53,6 +53,7 @@ def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]
         should_watch(config.slides.theme, REVEALJS_THEMES_LIST),
         should_watch(config.slides.template),
     ]
+    paths_to_watch.extend(Path(path) for path in config.static.values())
 
     return [path for path in paths_to_watch if path]
 

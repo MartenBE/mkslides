@@ -1,0 +1,3 @@
+static:
+  test_files/file: file
+  test_files/dir: somewhere

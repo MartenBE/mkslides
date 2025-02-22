@@ -80,6 +80,8 @@ class MarkupGenerator:
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
 
+        self.__copy_static(self.global_config.static)
+
         if input_path.is_dir():
             self.__process_markdown_directory(input_path)
         else:
@@ -327,6 +329,13 @@ class MarkupGenerator:
         )
 
         return relative_theme_path
+
+    def __copy_static(self, static: dict[str, str]) -> None:
+        for src, dst in static.items():
+            src_path = Path(src).resolve(strict=True)
+
+            dst_path = self.output_directory_path / dst
+            self.__copy_to_output(src_path, dst_path)
 
     def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
         if get_url_type(favicon) == URLType.ABSOLUTE:

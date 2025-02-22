@@ -63,6 +63,7 @@ class Config:
         },
     )
     plugins: list[Plugin] = field(default_factory=list)
+    static: dict[str, str] = field(default_factory=dict)
     internal: Internal = field(default_factory=Internal)
 
 

@@ -27,6 +27,7 @@ def run_build_with_config(
     cwd: Path,
     output_path: Path,
     config_filename: str,
+    input_filename: str = "test_files",
 ) -> subprocess.CompletedProcess[str]:
     config_path = (cwd / "test_configs" / config_filename).resolve(strict=True)
     result = subprocess.run(
@@ -39,7 +40,7 @@ def run_build_with_config(
             output_path,
             "-f",
             config_path,
-            "test_files",
+            input_filename,
         ],
         cwd=cwd,
         capture_output=True,
