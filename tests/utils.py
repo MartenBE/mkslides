@@ -50,17 +50,17 @@ def run_build_with_config(
     return result
 
 
-def assert_files_exist(output_path: Path, files: list[str]) -> None:
-    for file in files:
-        file_path = (output_path / file).absolute()
-        assert file_path.exists(), f"{file_path} does not exist"
+def assert_files_exist(file: Path) -> None:
+    absolute_file = file.absolute()
+    assert absolute_file.exists(), f"{absolute_file} does not exist"
 
 
-def assert_html_contains(file_path: Path, expected_content: list[str]) -> None:
+def assert_html_contains(file_path: Path, expected_content: str) -> None:
     with file_path.open() as file:
         content = file.read()
-        for substring in expected_content:
-            assert substring in content, f"{substring} not found in {file_path}"
+        assert (
+            expected_content in content
+        ), f"{expected_content} not found in {file_path}"
 
 
 def assert_html_contains_regexp(file_path: Path, regexp: Pattern[str]) -> None:

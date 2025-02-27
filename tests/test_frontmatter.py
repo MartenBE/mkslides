@@ -14,27 +14,18 @@ def test_frontmatter_overrides_default(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     run_build(cwd, output_path)
 
-    assert_html_contains(
-        output_path / "index.html",
-        [
-            "<td>frontmatter title</td>",
-        ],
-    )
+    assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
 
-    assert_files_exist(
-        output_path,
-        [
-            "assets/solarized.css",
-            "assets/vs.css",
-        ],
-    )
+    assert_files_exist(output_path / "mkslides-assets/themes/solarized.css")
+    assert_files_exist(output_path / "mkslides-assets/themes/vs.css")
 
     assert_html_contains(
         output_path / "frontmatter.html",
-        [
-            '<link rel="stylesheet" href="assets/solarized.css" />',
-            '<link rel="stylesheet" href="assets/vs.css" />',
-        ],
+        '<link rel="stylesheet" href="mkslides-assets/themes/solarized.css" />',
+    )
+    assert_html_contains(
+        output_path / "frontmatter.html",
+        '<link rel="stylesheet" href="mkslides-assets/themes/vs.css" />',
     )
 
     assert_html_contains_regexp(
@@ -74,27 +65,18 @@ def test_frontmatter_overrides_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     run_build_with_config(cwd, output_path, "test_frontmatter_overrides_options.yml")
 
-    assert_html_contains(
-        output_path / "index.html",
-        [
-            "<td>frontmatter title</td>",
-        ],
-    )
+    assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
 
-    assert_files_exist(
-        output_path,
-        [
-            "assets/solarized.css",
-            "assets/vs.css",
-        ],
-    )
+    assert_files_exist(output_path / "mkslides-assets/themes/solarized.css")
+    assert_files_exist(output_path / "mkslides-assets/themes/vs.css")
 
     assert_html_contains(
         output_path / "frontmatter.html",
-        [
-            '<link rel="stylesheet" href="assets/solarized.css" />',
-            '<link rel="stylesheet" href="assets/vs.css" />',
-        ],
+        '<link rel="stylesheet" href="mkslides-assets/themes/solarized.css" />',
+    )
+    assert_html_contains(
+        output_path / "frontmatter.html",
+        '<link rel="stylesheet" href="mkslides-assets/themes/vs.css" />',
     )
 
     assert_html_contains_regexp(
