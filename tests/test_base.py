@@ -4,7 +4,6 @@ from tests.utils import (
     assert_files_exist,
     assert_html_contains,
     run_build,
-    run_build_with_custom_input,
 )
 
 # The output can be seen manually by running the following command:
@@ -18,10 +17,10 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.css")
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.js")
     assert_files_exist(
-        output_path / "mkslides-assets/reveal-js/plugin/markdown/markdown.js"
+        output_path / "mkslides-assets/reveal-js/plugin/markdown/markdown.js",
     )
     assert_files_exist(
-        output_path / "mkslides-assets/reveal-js/plugin/highlight/highlight.js"
+        output_path / "mkslides-assets/reveal-js/plugin/highlight/highlight.js",
     )
     assert_files_exist(output_path / "mkslides-assets/reveal-js/plugin/zoom/zoom.js")
     assert_files_exist(output_path / "mkslides-assets/themes/black.css")
@@ -66,6 +65,7 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
         output_path / "somefolder/someslides.html",
         '<link rel="stylesheet" href="../mkslides-assets/themes/monokai.css" />',
     )
+
 
 # def test_process_file_without_config(setup_paths: Any) -> None:
 #     cwd, output_path = setup_paths

@@ -37,6 +37,7 @@ class Slides:
     separator: Optional[str] = None
     template: Optional[str] = None
     theme: str = "black"
+    title: Optional[str] = None
 
 
 @dataclass

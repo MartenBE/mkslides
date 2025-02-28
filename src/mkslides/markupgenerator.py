@@ -5,17 +5,16 @@ import time
 from copy import deepcopy
 from dataclasses import dataclass
 from importlib import resources
-from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
 import frontmatter  # type: ignore[import-untyped]
-from jinja2 import Template
 from emoji import emojize
+from jinja2 import Template
 from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
-from mkslides.config import Config, FRONTMATTER_ALLOWED_KEYS
+from mkslides.config import FRONTMATTER_ALLOWED_KEYS
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
@@ -37,9 +36,8 @@ logger = logging.getLogger(__name__)
 class MdFileToProcess:
     source_path: Path
     destination_path: Path
-    slide_config: Config
+    slide_config: DictConfig
     markdown_content: str
-    title: str | None = None
 
 
 class MarkupGenerator:
@@ -83,9 +81,7 @@ class MarkupGenerator:
     ################################################################################
 
     def __create_or_clear_output_directory(self) -> None:
-        """
-        Clears or creates the output directory and copies reveal.js.
-        """
+        """Clear or create the output directory and copy reveal.js."""
         if self.output_directory_path.exists():
             shutil.rmtree(self.output_directory_path)
             logger.debug("Output directory already exists, deleted")
@@ -98,20 +94,23 @@ class MarkupGenerator:
 
     def __process_markdown_directory(self) -> None:
         logger.debug(
-            f"Processing markdown directory at '{self.md_root_path.absolute()}'"
+            f"Processing markdown directory at '{self.md_root_path.absolute()}'",
         )
 
         md_files = []
 
         for file in self.md_root_path.rglob("*"):
             if file.is_file():
-                file = file.resolve(strict=True)
-                if file.suffix == ".md":
-                    destination_path = self.output_directory_path / file.relative_to(
-                        self.md_root_path
-                    ).with_suffix(".html")
+                resolved_file = file.resolve(strict=True)
+                if resolved_file.suffix == ".md":
+                    destination_path = (
+                        self.output_directory_path
+                        / resolved_file.relative_to(
+                            self.md_root_path,
+                        ).with_suffix(".html")
+                    )
 
-                    content = file.read_text(encoding="utf-8-sig")
+                    content = resolved_file.read_text(encoding="utf-8-sig")
                     metadata, markdown_content = frontmatter.parse(content)
                     if self.preprocess_script_func:
                         markdown_content = self.preprocess_script_func(markdown_content)
@@ -122,23 +121,22 @@ class MarkupGenerator:
                     logger.debug(slide_config)
 
                     md_file_data = MdFileToProcess(
-                        source_path=file,
+                        source_path=resolved_file,
                         destination_path=destination_path,
                         slide_config=slide_config,
                         markdown_content=markdown_content,
-                        title=metadata.get("title", None),
                     )
 
                     md_files.append(md_file_data)
                 else:
                     self.__copy(
-                        file,
+                        resolved_file,
                         self.output_directory_path
                         / file.relative_to(self.md_root_path),
                     )
 
         templates, revealjs_themes, highlight_themes = self.__preprocess_slide_configs(
-            md_files
+            md_files,
         )
 
         for md_file_data in md_files:
@@ -152,22 +150,22 @@ class MarkupGenerator:
 
             relative_theme_path = None
             if slide_config.slides.theme in revealjs_themes:
-                relative_theme_path = revealjs_themes[
-                    slide_config.slides.theme
-                ].relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
+                relative_theme_path = str(
+                    revealjs_themes[slide_config.slides.theme].relative_to(
+                        md_file_data.destination_path.parent,
+                        walk_up=True,
+                    ),
                 )
             else:
                 relative_theme_path = slide_config.slides.theme
 
             relative_highlight_theme_path = None
             if slide_config.slides.highlight_theme in highlight_themes:
-                relative_highlight_theme_path = highlight_themes[
-                    slide_config.slides.highlight_theme
-                ].relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
+                relative_highlight_theme_path = str(
+                    highlight_themes[slide_config.slides.highlight_theme].relative_to(
+                        md_file_data.destination_path.parent,
+                        walk_up=True,
+                    ),
                 )
             else:
                 relative_highlight_theme_path = slide_config.slides.highlight_theme
@@ -204,7 +202,10 @@ class MarkupGenerator:
 
         self.__generate_index(md_files)
 
-    def __preprocess_slide_configs(self, md_files: list[MdFileToProcess]) -> tuple[
+    def __preprocess_slide_configs(
+        self,
+        md_files: list[MdFileToProcess],
+    ) -> tuple[
         dict[str, Template],
         dict[str, Path],
         dict[str, Path],
@@ -221,14 +222,14 @@ class MarkupGenerator:
             theme = md_file_data.slide_config.slides.theme
             if (
                 theme not in revealjs_themes
-                and not get_url_type(theme) == URLType.ABSOLUTE
+                and get_url_type(theme) != URLType.ABSOLUTE
                 and not theme.endswith(".css")
             ):
                 with resources.as_file(
-                    REVEALJS_THEMES_RESOURCE.joinpath(theme)
+                    REVEALJS_THEMES_RESOURCE.joinpath(theme),
                 ) as builtin_theme_path:
                     theme_path = builtin_theme_path.with_suffix(".css").resolve(
-                        strict=True
+                        strict=True,
                     )
                     theme_output_path = self.output_themes_path / theme_path.name
                     self.__copy(theme_path, theme_output_path)
@@ -237,14 +238,14 @@ class MarkupGenerator:
             highlight_theme = md_file_data.slide_config.slides.highlight_theme
             if (
                 highlight_theme not in highlight_themes
-                and not get_url_type(highlight_theme) == URLType.ABSOLUTE
+                and get_url_type(highlight_theme) != URLType.ABSOLUTE
                 and not highlight_theme.endswith(".css")
             ):
                 with resources.as_file(
-                    HIGHLIGHTJS_THEMES_RESOURCE.joinpath(highlight_theme)
+                    HIGHLIGHTJS_THEMES_RESOURCE.joinpath(highlight_theme),
                 ) as builtin_theme_path:
                     theme_path = builtin_theme_path.with_suffix(".css").resolve(
-                        strict=True
+                        strict=True,
                     )
                     theme_output_path = self.output_themes_path / theme_path.name
                     self.__copy(theme_path, theme_output_path)
@@ -252,10 +253,8 @@ class MarkupGenerator:
 
         return templates, revealjs_themes, highlight_themes
 
-    def __generate_slide_config(self, metadata) -> DictConfig:
-        """
-        Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration.
-        """
+    def __generate_slide_config(self, metadata: dict[str, object]) -> DictConfig:
+        """Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration."""
         slide_config: DictConfig = deepcopy(self.global_config)
 
         if metadata:
@@ -270,13 +269,13 @@ class MarkupGenerator:
 
         slideshows = []
         for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
-            title = md_file.title or md_file.destination_path.stem
+            title = md_file.slide_config.slides.title or md_file.destination_path.stem
             location = md_file.destination_path.relative_to(self.output_directory_path)
             slideshows.append(
                 {
                     "title": title,
                     "location": location,
-                }
+                },
             )
 
         index_path = self.output_directory_path / "index.html"
@@ -284,8 +283,18 @@ class MarkupGenerator:
         # Copy the theme CSS
 
         relative_theme_path = None
-        if theme := self.global_config.index.theme:
-            if theme_output_path := self.__copy_theme(theme, REVEALJS_THEMES_RESOURCE):
+        theme = self.global_config.index.theme
+        if (
+            theme
+            and get_url_type(theme) != URLType.ABSOLUTE
+            and not theme.endswith(".css")
+        ):
+            with resources.as_file(
+                REVEALJS_THEMES_RESOURCE.joinpath(theme),
+            ) as builtin_theme_path:
+                theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
+                theme_output_path = self.output_themes_path / theme_path.name
+                self.__copy(theme_path, theme_output_path)
                 relative_theme_path = theme_output_path.relative_to(
                     index_path.parent,
                     walk_up=True,
@@ -308,9 +317,7 @@ class MarkupGenerator:
         self.__create_or_overwrite_file(index_path, content)
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
-        """
-        Create or overwrite a file with the given content.
-        """
+        """Create or overwrite a file with the given content."""
         is_overwrite = destination_path.exists()
 
         destination_path.parent.mkdir(parents=True, exist_ok=True)
@@ -320,9 +327,7 @@ class MarkupGenerator:
         logger.debug(f"{action} file '{destination_path}'")
 
     def __copy(self, source_path: Path, destination_path: Path) -> None:
-        """
-        Copy a file or directory from the source path to the destination path.
-        """
+        """Copy a file or directory from the source path to the destination path."""
         is_overwrite = destination_path.exists()
         is_directory = source_path.is_dir()
 
@@ -334,7 +339,7 @@ class MarkupGenerator:
             shutil.copy(source_path, destination_path)
 
         action = "Overwritten" if is_overwrite else "Copied"
-        type = "directory" if is_directory else "file"
+        file_or_directory = "directory" if is_directory else "file"
         logger.debug(
-            f"{action} {type} '{source_path.absolute()}' to '{destination_path.absolute()}'",
+            f"{action} {file_or_directory} '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )

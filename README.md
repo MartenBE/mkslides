@@ -132,6 +132,10 @@ slides:
     # `dracula`, ... (see https://revealjs.com/themes/)
     theme: example-slides-theme.css
 
+    # Title of the slides. If this is set for a slide, it will be used for the
+    # entry in the generated index HTML: string
+    title: example-title
+
 # Options to be passed to reveal.js: options in yaml format, they will be
 # translated to JSON automatically (see https://revealjs.com/config/)
 revealjs:
@@ -213,6 +217,7 @@ Notes:
 ## Full help
 
 <!-- output-no-command -->
+
 ```text
 Usage: mkslides [OPTIONS] COMMAND [ARGS]...
 
@@ -228,9 +233,11 @@ Commands:
   serve  Run the builtin development server.
 
 ```
+
 <!-- /output-no-command -->
 
 <!-- output-build -->
+
 ```text
 Usage: mkslides build [OPTIONS] FILENAME|PATH
 
@@ -248,9 +255,11 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-build -->
 
 <!-- output-serve -->
+
 ```text
 Usage: mkslides serve [OPTIONS] FILENAME|PATH
 
@@ -269,4 +278,5 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-serve -->
