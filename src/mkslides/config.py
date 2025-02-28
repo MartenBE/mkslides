@@ -133,7 +133,6 @@ def get_config(config_file: Path | None = None) -> DictConfig:
 
     assert OmegaConf.is_dict(config)
 
-    logger.debug("Used config:")
-    logger.debug(OmegaConf.to_yaml(config, resolve=True))
+    logger.debug(f"Used config:\n\n{OmegaConf.to_yaml(config, resolve=True)}")
 
     return config

@@ -1,9 +1,9 @@
 ---
-title: frontmatter title
 slides:
     theme: solarized
     highlight_theme: vs
     separator: <!--s-->
+    title: frontmatter title
 revealjs:
     height: 1080
     width: 1920

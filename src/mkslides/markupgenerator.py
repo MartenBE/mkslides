@@ -117,8 +117,6 @@ class MarkupGenerator:
                     markdown_content = emojize(markdown_content, language="alias")
 
                     slide_config = self.__generate_slide_config(metadata)
-                    logger.debug(metadata)
-                    logger.debug(slide_config)
 
                     md_file_data = MdFileToProcess(
                         source_path=resolved_file,

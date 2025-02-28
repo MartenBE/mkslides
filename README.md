@@ -187,11 +187,11 @@ It is also possible to override `slides`, `revealjs`, and `plugins` options on a
 
 ```md
 ---
-title: frontmatter title
 slides:
     theme: solarized
     highlight_theme: vs
     separator: <!--s-->
+    title: Frontmatter title.
 revealjs:
     height: 1080
     width: 1920
