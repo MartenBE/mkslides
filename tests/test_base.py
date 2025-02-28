@@ -6,13 +6,10 @@ from tests.utils import (
     run_build,
 )
 
-# The output can be seen manually by running the following command:
-#   poetry run mkslides build tests/test_files
-
 
 def test_process_directory_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    run_build(cwd, output_path)
+    run_build(cwd, "test_files", output_path, None)
 
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.css")
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.js")
