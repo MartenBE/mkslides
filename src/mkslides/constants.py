@@ -1,10 +1,13 @@
 import json
+import logging
 import re
 from importlib import metadata, resources
 from importlib.abc import Traversable
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape
+
+logger = logging.getLogger(__name__)
 
 ################################################################################
 
@@ -48,6 +51,7 @@ with REVEALJS_RESOURCE.joinpath("package.json").open(encoding="utf-8-sig") as f:
 HIGHLIGHTJS_RESOURCE = ASSETS_RESOURCE.joinpath("highlight.js")
 HIGHLIGHTJS_THEMES_RESOURCE = HIGHLIGHTJS_RESOURCE.joinpath("build", "styles")
 HIGHLIGHTJS_THEMES_LIST = gather_themes(HIGHLIGHTJS_THEMES_RESOURCE)
+
 HIGHLIGHTJS_THEMES_VERSION = None
 with HIGHLIGHTJS_RESOURCE.joinpath("build", "package.json").open(
     encoding="utf-8-sig",

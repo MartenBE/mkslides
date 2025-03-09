@@ -10,11 +10,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 ## Alfabet
 
--   A
--   B
--   C
--   D
--   E
+- A
+- B
+- C
+- D
+- E
 
 ---
 

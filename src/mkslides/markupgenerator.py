@@ -1,4 +1,3 @@
-import datetime
 import logging
 import shutil
 import time
@@ -11,7 +10,6 @@ from typing import Any
 import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
 from jinja2 import Template
-from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
@@ -20,13 +18,13 @@ from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
 from .constants import (
-    DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
+    HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
     LOCAL_JINJA2_ENVIRONMENT,
     OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
-    REVEALJS_THEMES_RESOURCE,
+    REVEALJS_THEMES_LIST,
 )
 
 logger = logging.getLogger(__name__)
@@ -57,8 +55,9 @@ class MarkupGenerator:
 
         self.output_assets_path = self.output_directory_path / OUTPUT_ASSETS_DIRNAME
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
-        self.output_themes_path = self.output_assets_path / "themes"
-        self.output_favicons_path = self.output_assets_path / "favicons"
+        self.output_highlightjs_themes_path = (
+            self.output_assets_path / "highlight-js-themes"
+        )
 
         self.strict = strict
 
@@ -91,6 +90,9 @@ class MarkupGenerator:
 
         with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
             self.__copy(revealjs_path, self.output_revealjs_path)
+
+        with resources.as_file(HIGHLIGHTJS_THEMES_RESOURCE) as highlightjs_themes_path:
+            self.__copy(highlightjs_themes_path, self.output_highlightjs_themes_path)
 
     def __process_markdown_directory(self) -> None:
         logger.debug(
@@ -133,9 +135,7 @@ class MarkupGenerator:
                         / file.relative_to(self.md_root_path),
                     )
 
-        templates, revealjs_themes, highlight_themes = self.__preprocess_slide_configs(
-            md_files,
-        )
+        templates = self.__load_templates(md_files)
 
         for md_file_data in md_files:
             slide_config = md_file_data.slide_config
@@ -146,29 +146,47 @@ class MarkupGenerator:
             else:
                 slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
-            relative_theme_path = None
-            if slide_config.slides.theme in revealjs_themes:
-                relative_theme_path = str(
-                    revealjs_themes[slide_config.slides.theme].relative_to(
-                        md_file_data.destination_path.parent,
-                        walk_up=True,
-                    ),
+            favicon = slide_config.slides.favicon
+            if favicon and get_url_type(favicon) != URLType.ABSOLUTE:
+                favicon_path = self.output_directory_path / favicon
+                favicon = favicon_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
                 )
-            else:
-                relative_theme_path = slide_config.slides.theme
 
-            relative_highlight_theme_path = None
-            if slide_config.slides.highlight_theme in highlight_themes:
-                relative_highlight_theme_path = str(
-                    highlight_themes[slide_config.slides.highlight_theme].relative_to(
-                        md_file_data.destination_path.parent,
-                        walk_up=True,
-                    ),
+            theme = slide_config.slides.theme
+            if theme in REVEALJS_THEMES_LIST:
+                theme_path = (
+                    self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
+                ).resolve(strict=True)
+                theme = theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
                 )
-            else:
-                relative_highlight_theme_path = slide_config.slides.highlight_theme
+            elif get_url_type(theme) != URLType.ABSOLUTE:
+                theme_path = self.output_directory_path / theme
+                theme = theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
 
-            relative_revealjs_path = self.output_revealjs_path.relative_to(
+            highlight_theme = slide_config.slides.highlight_theme
+            if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
+                highlight_theme_path = (
+                    self.output_highlightjs_themes_path / f"{highlight_theme}.css"
+                ).resolve(strict=True)
+                highlight_theme = highlight_theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+            elif get_url_type(highlight_theme) != URLType.ABSOLUTE:
+                highlight_theme_path = self.output_directory_path / highlight_theme
+                highlight_theme = highlight_theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+
+            revealjs_path = self.output_revealjs_path.relative_to(
                 md_file_data.destination_path.parent,
                 walk_up=True,
             )
@@ -186,10 +204,10 @@ class MarkupGenerator:
             }
 
             markup = slideshow_template.render(
-                favicon=slide_config.slides.favicon,
-                theme=relative_theme_path,
-                highlight_theme=relative_highlight_theme_path,
-                revealjs_path=relative_revealjs_path,
+                favicon=favicon,
+                theme=theme,
+                highlight_theme=highlight_theme,
+                revealjs_path=revealjs_path,
                 markdown_data_options=markdown_data_options,
                 markdown=md_file_data.markdown_content,
                 revealjs_config=OmegaConf.to_container(slide_config.revealjs),
@@ -198,58 +216,21 @@ class MarkupGenerator:
 
             self.__create_or_overwrite_file(md_file_data.destination_path, markup)
 
-        self.__generate_index(md_files)
+        # self.__generate_index(md_files)
 
-    def __preprocess_slide_configs(
-        self,
-        md_files: list[MdFileToProcess],
-    ) -> tuple[
-        dict[str, Template],
-        dict[str, Path],
-        dict[str, Path],
-    ]:
+    def __load_templates(
+        self, md_files: list[MdFileToProcess],
+    ) -> dict[str, Template]:
+        """Load Jinja 2 templates from the markdown files."""
         templates = {}
-        revealjs_themes = {}
-        highlight_themes = {}
+
         for md_file_data in md_files:
             template = md_file_data.slide_config.slides.template
             if template and template not in templates:
                 templates[template] = LOCAL_JINJA2_ENVIRONMENT.get_template(template)
                 logger.debug(f"Loaded custom template '{template}'")
 
-            theme = md_file_data.slide_config.slides.theme
-            if (
-                theme not in revealjs_themes
-                and get_url_type(theme) != URLType.ABSOLUTE
-                and not theme.endswith(".css")
-            ):
-                with resources.as_file(
-                    REVEALJS_THEMES_RESOURCE.joinpath(theme),
-                ) as builtin_theme_path:
-                    theme_path = builtin_theme_path.with_suffix(".css").resolve(
-                        strict=True,
-                    )
-                    theme_output_path = self.output_themes_path / theme_path.name
-                    self.__copy(theme_path, theme_output_path)
-                    revealjs_themes[theme] = theme_output_path
-
-            highlight_theme = md_file_data.slide_config.slides.highlight_theme
-            if (
-                highlight_theme not in highlight_themes
-                and get_url_type(highlight_theme) != URLType.ABSOLUTE
-                and not highlight_theme.endswith(".css")
-            ):
-                with resources.as_file(
-                    HIGHLIGHTJS_THEMES_RESOURCE.joinpath(highlight_theme),
-                ) as builtin_theme_path:
-                    theme_path = builtin_theme_path.with_suffix(".css").resolve(
-                        strict=True,
-                    )
-                    theme_output_path = self.output_themes_path / theme_path.name
-                    self.__copy(theme_path, theme_output_path)
-                    highlight_themes[highlight_theme] = theme_output_path
-
-        return templates, revealjs_themes, highlight_themes
+        return templates
 
     def __generate_slide_config(self, metadata: dict[str, object]) -> DictConfig:
         """Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration."""
@@ -262,57 +243,57 @@ class MarkupGenerator:
 
         return slide_config
 
-    def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
-        logger.debug("Generating index")
+    # def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
+    #     logger.debug("Generating index")
 
-        slideshows = []
-        for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
-            title = md_file.slide_config.slides.title or md_file.destination_path.stem
-            location = md_file.destination_path.relative_to(self.output_directory_path)
-            slideshows.append(
-                {
-                    "title": title,
-                    "location": location,
-                },
-            )
+    #     slideshows = []
+    #     for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
+    #         title = md_file.slide_config.slides.title or md_file.destination_path.stem
+    #         location = md_file.destination_path.relative_to(self.output_directory_path)
+    #         slideshows.append(
+    #             {
+    #                 "title": title,
+    #                 "location": location,
+    #             },
+    #         )
 
-        index_path = self.output_directory_path / "index.html"
+    #     index_path = self.output_directory_path / "index.html"
 
-        # Copy the theme CSS
+    #     # Copy the theme CSS
 
-        relative_theme_path = None
-        theme = self.global_config.index.theme
-        if (
-            theme
-            and get_url_type(theme) != URLType.ABSOLUTE
-            and not theme.endswith(".css")
-        ):
-            with resources.as_file(
-                REVEALJS_THEMES_RESOURCE.joinpath(theme),
-            ) as builtin_theme_path:
-                theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
-                theme_output_path = self.output_themes_path / theme_path.name
-                self.__copy(theme_path, theme_output_path)
-                relative_theme_path = theme_output_path.relative_to(
-                    index_path.parent,
-                    walk_up=True,
-                )
+    #     relative_theme_path = None
+    #     theme = self.global_config.index.theme
+    #     if (
+    #         theme
+    #         and get_url_type(theme) != URLType.ABSOLUTE
+    #         and not theme.endswith(".css")
+    #     ):
+    #         with resources.as_file(
+    #             REVEALJS_THEMES_RESOURCE.joinpath(theme),
+    #         ) as builtin_theme_path:
+    #             theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
+    #             theme_output_path = self.output_themes_path / theme_path.name
+    #             self.__copy(theme_path, theme_output_path)
+    #             relative_theme_path = theme_output_path.relative_to(
+    #                 index_path.parent,
+    #                 walk_up=True,
+    #             )
 
-        # Refresh the templates here, so they have effect when live reloading
-        index_template = None
-        if template_config := self.global_config.index.template:
-            index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
-        else:
-            index_template = DEFAULT_INDEX_TEMPLATE
+    #     # Refresh the templates here, so they have effect when live reloading
+    #     index_template = None
+    #     if template_config := self.global_config.index.template:
+    #         index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
+    #     else:
+    #         index_template = DEFAULT_INDEX_TEMPLATE
 
-        content = index_template.render(
-            favicon=self.global_config.index.favicon,
-            title=self.global_config.index.title,
-            theme=relative_theme_path,
-            slideshows=slideshows,
-            build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
-        )
-        self.__create_or_overwrite_file(index_path, content)
+    #     content = index_template.render(
+    #         favicon=self.global_config.index.favicon,
+    #         title=self.global_config.index.title,
+    #         theme=relative_theme_path,
+    #         slideshows=slideshows,
+    #         build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
+    #     )
+    #     self.__create_or_overwrite_file(index_path, content)
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
         """Create or overwrite a file with the given content."""
