@@ -4,23 +4,33 @@ from typing import Any
 from tests.utils import (
     assert_html_contains,
     assert_html_contains_regexp,
-    run_build_with_config,
+    run_build,
 )
 
 
 def test_plugins(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    run_build_with_config(cwd, output_path, "test_plugins.yml")
+    run_build(cwd, "test_files", output_path, "test_configs/test_plugins.yml")
 
     assert_html_contains(
         output_path / "someslides.html",
-        [
-            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.css" />',
-            'menu: {"openButton": true, "openOnInit": true}',
-            '<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.js"></script>',
-            '<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js"></script>',
-            '<script src="https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js"></script>',
-        ],
+        '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.css" />',
+    )
+    assert_html_contains(
+        output_path / "someslides.html",
+        'menu: {"openButton": true, "openOnInit": true}',
+    )
+    assert_html_contains(
+        output_path / "someslides.html",
+        '<script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.min.js"></script>',
+    )
+    assert_html_contains(
+        output_path / "someslides.html",
+        '<script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js"></script>',
+    )
+    assert_html_contains(
+        output_path / "someslides.html",
+        '<script src="https://cdn.jsdelivr.net/npm/reveal-plantuml/dist/reveal-plantuml.min.js"></script>',
     )
 
     assert_html_contains_regexp(

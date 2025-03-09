@@ -14,6 +14,5 @@ def build(
     output_path: Path,
     strict: bool,
 ) -> None:
-    markup_generator = MarkupGenerator(config, output_path, strict)
-    markup_generator.create_or_clear_output_directory()
-    markup_generator.process_markdown(input_path)
+    markup_generator = MarkupGenerator(config, input_path, output_path, strict)
+    markup_generator.process_markdown()

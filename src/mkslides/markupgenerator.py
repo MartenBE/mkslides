@@ -1,18 +1,15 @@
-import datetime
 import logging
 import shutil
 import time
 from copy import deepcopy
+from dataclasses import dataclass
 from importlib import resources
-from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any
 
 import frontmatter  # type: ignore[import-untyped]
-import markdown
-from bs4 import BeautifulSoup, Comment
 from emoji import emojize
-from natsort import natsorted
+from jinja2 import Template
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
@@ -21,34 +18,46 @@ from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
 from .constants import (
-    DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
+    HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
-    HTML_BACKGROUND_IMAGE_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
+    OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
-    REVEALJS_THEMES_RESOURCE,
+    REVEALJS_THEMES_LIST,
 )
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class MdFileToProcess:
+    source_path: Path
+    destination_path: Path
+    slide_config: DictConfig
+    markdown_content: str
 
 
 class MarkupGenerator:
     def __init__(
         self,
         global_config: DictConfig,
+        md_root_path: Path,
         output_directory_path: Path,
         strict: bool,
     ) -> None:
         self.global_config = global_config
-
+        self.md_root_path = md_root_path.resolve(strict=True)
         self.output_directory_path = output_directory_path.resolve(strict=False)
         logger.info(
             f"Output directory: '{self.output_directory_path.absolute()}'",
         )
 
-        self.output_assets_path = self.output_directory_path / "assets"
+        self.output_assets_path = self.output_directory_path / OUTPUT_ASSETS_DIRNAME
         self.output_revealjs_path = self.output_assets_path / "reveal-js"
+        self.output_highlightjs_themes_path = (
+            self.output_assets_path / "highlight-js-themes"
+        )
 
         self.strict = strict
 
@@ -58,43 +67,11 @@ class MarkupGenerator:
             else None
         )
 
-    def clear_output_directory(self) -> None:
-        for item in self.output_directory_path.iterdir():
-            if item.is_file():
-                item.unlink()
-            elif item.is_dir():
-                shutil.rmtree(item)
-        logger.debug("Output directory cleared")
-
-    def create_or_clear_output_directory(self) -> None:
-        if self.output_directory_path.exists():
-            self.clear_output_directory()
-        else:
-            self.output_directory_path.mkdir(parents=True, exist_ok=True)
-            logger.debug("Output directory created")
-
-        with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
-            self.__copy(revealjs_path, self.output_revealjs_path)
-
-    def process_markdown(self, input_path: Path) -> None:
+    def process_markdown(self) -> None:
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
-
-        if input_path.is_dir():
-            self.__process_markdown_directory(input_path)
-        else:
-            _, output_markup_path = self.__process_markdown_file(
-                input_path,
-                input_path.parent,
-            )
-            original_output_markup_path = output_markup_path
-
-            if output_markup_path.stem != "index":
-                output_markup_path.rename(output_markup_path.with_stem("index"))
-                logger.debug(
-                    f"Renamed '{original_output_markup_path.absolute()}' to '{output_markup_path.absolute()}' as it was the only Markdown file",
-                )
-
+        self.__create_or_clear_output_directory()
+        self.__process_markdown_directory()
         end_time = time.perf_counter()
         logger.info(
             f"Finished processing markdown in {end_time - start_time:.2f} seconds",
@@ -102,255 +79,224 @@ class MarkupGenerator:
 
     ################################################################################
 
-    def __process_markdown_file(
-        self,
-        md_file: Path,
-        md_root_path: Path,
-    ) -> tuple[dict, Path]:
-        md_file = md_file.resolve(strict=True)
-        md_root_path = md_root_path.resolve(strict=True)
+    def __create_or_clear_output_directory(self) -> None:
+        """Clear or create the output directory and copy reveal.js."""
+        if self.output_directory_path.exists():
+            shutil.rmtree(self.output_directory_path)
+            logger.debug("Output directory already exists, deleted")
 
-        logger.debug(f"Processing markdown file at '{md_file.absolute()}'")
+        self.output_directory_path.mkdir(parents=True, exist_ok=True)
+        logger.debug("Output directory created")
 
-        # Retrieve the frontmatter metadata and the markdown content
+        with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
+            self.__copy(revealjs_path, self.output_revealjs_path)
 
-        content = md_file.read_text(encoding="utf-8-sig")
-        metadata, markdown_content = frontmatter.parse(content)
+        with resources.as_file(HIGHLIGHTJS_THEMES_RESOURCE) as highlightjs_themes_path:
+            self.__copy(highlightjs_themes_path, self.output_highlightjs_themes_path)
 
-        if self.preprocess_script_func:
-            markdown_content = self.preprocess_script_func(markdown_content)
-            logger.debug("Preprocessed markdown content with {preprocess_script_func}")
+    def __process_markdown_directory(self) -> None:
+        logger.debug(
+            f"Processing markdown directory at '{self.md_root_path.absolute()}'",
+        )
 
-        slide_config = None
+        md_files = []
+
+        for file in self.md_root_path.rglob("*"):
+            if file.is_file():
+                resolved_file = file.resolve(strict=True)
+                if resolved_file.suffix == ".md":
+                    destination_path = (
+                        self.output_directory_path
+                        / resolved_file.relative_to(
+                            self.md_root_path,
+                        ).with_suffix(".html")
+                    )
+
+                    content = resolved_file.read_text(encoding="utf-8-sig")
+                    metadata, markdown_content = frontmatter.parse(content)
+                    if self.preprocess_script_func:
+                        markdown_content = self.preprocess_script_func(markdown_content)
+                    markdown_content = emojize(markdown_content, language="alias")
+
+                    slide_config = self.__generate_slide_config(metadata)
+
+                    md_file_data = MdFileToProcess(
+                        source_path=resolved_file,
+                        destination_path=destination_path,
+                        slide_config=slide_config,
+                        markdown_content=markdown_content,
+                    )
+
+                    md_files.append(md_file_data)
+                else:
+                    self.__copy(
+                        resolved_file,
+                        self.output_directory_path
+                        / file.relative_to(self.md_root_path),
+                    )
+
+        templates = self.__load_templates(md_files)
+
+        for md_file_data in md_files:
+            slide_config = md_file_data.slide_config
+
+            slideshow_template = None
+            if template_config := slide_config.slides.template:
+                slideshow_template = templates[template_config]
+            else:
+                slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
+
+            favicon = slide_config.slides.favicon
+            if favicon and get_url_type(favicon) != URLType.ABSOLUTE:
+                favicon_path = self.output_directory_path / favicon
+                favicon = favicon_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+
+            theme = slide_config.slides.theme
+            if theme in REVEALJS_THEMES_LIST:
+                theme_path = (
+                    self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
+                ).resolve(strict=True)
+                theme = theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+            elif get_url_type(theme) != URLType.ABSOLUTE:
+                theme_path = self.output_directory_path / theme
+                theme = theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+
+            highlight_theme = slide_config.slides.highlight_theme
+            if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
+                highlight_theme_path = (
+                    self.output_highlightjs_themes_path / f"{highlight_theme}.css"
+                ).resolve(strict=True)
+                highlight_theme = highlight_theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+            elif get_url_type(highlight_theme) != URLType.ABSOLUTE:
+                highlight_theme_path = self.output_directory_path / highlight_theme
+                highlight_theme = highlight_theme_path.relative_to(
+                    md_file_data.destination_path.parent,
+                    walk_up=True,
+                )
+
+            revealjs_path = self.output_revealjs_path.relative_to(
+                md_file_data.destination_path.parent,
+                walk_up=True,
+            )
+
+            # https://revealjs.com/markdown/#external-markdown
+            markdown_data_options = {
+                key: value
+                for key, value in {
+                    "data-separator": slide_config.slides.separator,
+                    "data-separator-vertical": slide_config.slides.separator_vertical,
+                    "data-separator-notes": slide_config.slides.separator_notes,
+                    "data-charset": slide_config.slides.charset,
+                }.items()
+                if value
+            }
+
+            markup = slideshow_template.render(
+                favicon=favicon,
+                theme=theme,
+                highlight_theme=highlight_theme,
+                revealjs_path=revealjs_path,
+                markdown_data_options=markdown_data_options,
+                markdown=md_file_data.markdown_content,
+                revealjs_config=OmegaConf.to_container(slide_config.revealjs),
+                plugins=slide_config.plugins,
+            )
+
+            self.__create_or_overwrite_file(md_file_data.destination_path, markup)
+
+        # self.__generate_index(md_files)
+
+    def __load_templates(
+        self, md_files: list[MdFileToProcess],
+    ) -> dict[str, Template]:
+        """Load Jinja 2 templates from the markdown files."""
+        templates = {}
+
+        for md_file_data in md_files:
+            template = md_file_data.slide_config.slides.template
+            if template and template not in templates:
+                templates[template] = LOCAL_JINJA2_ENVIRONMENT.get_template(template)
+                logger.debug(f"Loaded custom template '{template}'")
+
+        return templates
+
+    def __generate_slide_config(self, metadata: dict[str, object]) -> DictConfig:
+        """Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration."""
+        slide_config: DictConfig = deepcopy(self.global_config)
+
         if metadata:
-            slide_config = deepcopy(self.global_config)
             for key in FRONTMATTER_ALLOWED_KEYS:
                 if key in metadata:
                     OmegaConf.update(slide_config, key, metadata[key])
-            logger.debug("Detected frontmatter, used config:")
-            logger.debug(OmegaConf.to_yaml(slide_config, resolve=True))
-        else:
-            slide_config = self.global_config
 
-        markdown_content = emojize(markdown_content, language="alias")
+        return slide_config
 
-        # Get the relative path of reveal.js
+    # def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
+    #     logger.debug("Generating index")
 
-        output_markup_path = self.output_directory_path / md_file.relative_to(
-            md_root_path,
-        )
+    #     slideshows = []
+    #     for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
+    #         title = md_file.slide_config.slides.title or md_file.destination_path.stem
+    #         location = md_file.destination_path.relative_to(self.output_directory_path)
+    #         slideshows.append(
+    #             {
+    #                 "title": title,
+    #                 "location": location,
+    #             },
+    #         )
 
-        output_markup_path = output_markup_path.with_suffix(".html")
-        relative_revealjs_path = self.output_revealjs_path.relative_to(
-            output_markup_path.parent,
-            walk_up=True,
-        )
+    #     index_path = self.output_directory_path / "index.html"
 
-        revealjs_config = slide_config.revealjs
+    #     # Copy the theme CSS
 
-        # Copy the theme CSS
+    #     relative_theme_path = None
+    #     theme = self.global_config.index.theme
+    #     if (
+    #         theme
+    #         and get_url_type(theme) != URLType.ABSOLUTE
+    #         and not theme.endswith(".css")
+    #     ):
+    #         with resources.as_file(
+    #             REVEALJS_THEMES_RESOURCE.joinpath(theme),
+    #         ) as builtin_theme_path:
+    #             theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
+    #             theme_output_path = self.output_themes_path / theme_path.name
+    #             self.__copy(theme_path, theme_output_path)
+    #             relative_theme_path = theme_output_path.relative_to(
+    #                 index_path.parent,
+    #                 walk_up=True,
+    #             )
 
-        relative_theme_path = None
-        if theme := slide_config.slides.theme:
-            relative_theme_path = self.__copy_theme(
-                output_markup_path,
-                theme,
-                REVEALJS_THEMES_RESOURCE,
-            )
+    #     # Refresh the templates here, so they have effect when live reloading
+    #     index_template = None
+    #     if template_config := self.global_config.index.template:
+    #         index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
+    #     else:
+    #         index_template = DEFAULT_INDEX_TEMPLATE
 
-        # Copy the highlight CSS
-
-        relative_highlight_theme_path = None
-        if theme := slide_config.slides.highlight_theme:
-            relative_highlight_theme_path = self.__copy_theme(
-                output_markup_path,
-                theme,
-                HIGHLIGHTJS_THEMES_RESOURCE,
-            )
-
-        # Copy the favicon
-
-        relative_favicon_path = None
-        if favicon := slide_config.slides.favicon:
-            relative_favicon_path = self.__copy_favicon(output_markup_path, favicon)
-
-        # Retrieve the 3rd party plugins
-
-        plugins = slide_config.plugins
-
-        # Generate the markup from markdown
-
-        # Refresh the templates here, so they have effect when live reloading
-        slideshow_template = None
-        if template_config := slide_config.slides.template:
-            slideshow_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
-        else:
-            slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
-
-        # https://revealjs.com/markdown/#external-markdown
-        markdown_data_options = {
-            key: value
-            for key, value in {
-                "data-separator": slide_config.slides.separator,
-                "data-separator-vertical": slide_config.slides.separator_vertical,
-                "data-separator-notes": slide_config.slides.separator_notes,
-                "data-charset": slide_config.slides.charset,
-            }.items()
-            if value
-        }
-
-        markup = slideshow_template.render(
-            favicon=relative_favicon_path,
-            theme=relative_theme_path,
-            highlight_theme=relative_highlight_theme_path,
-            revealjs_path=relative_revealjs_path,
-            markdown_data_options=markdown_data_options,
-            markdown=markdown_content,
-            revealjs_config=OmegaConf.to_container(revealjs_config),
-            plugins=plugins,
-        )
-        self.__create_or_overwrite_file(output_markup_path, markup)
-
-        # Copy local files
-
-        self.__copy_local_files(md_file, md_root_path, markdown_content)
-
-        return metadata.get("title"), output_markup_path
-
-    def __process_markdown_directory(self, md_root_path: Path) -> None:
-        md_root_path = md_root_path.resolve(strict=True)
-        logger.debug(f"Processing markdown directory at '{md_root_path.absolute()}'")
-        slideshows = []
-        for md_file in md_root_path.glob("**/*.md"):
-            (title_for_index, output_markup_path) = self.__process_markdown_file(
-                md_file,
-                md_root_path,
-            )
-
-            slideshows.append(
-                {
-                    "title": title_for_index if title_for_index else md_file.stem,
-                    "location": output_markup_path.relative_to(
-                        self.output_directory_path,
-                    ),
-                },
-            )
-
-        slideshows = natsorted(slideshows, key=lambda x: str(x["location"]))
-
-        logger.debug("Generating index")
-
-        index_path = self.output_directory_path / "index.html"
-
-        # Copy the theme
-
-        relative_theme_path = None
-        if theme := self.global_config.index.theme:
-            relative_theme_path = self.__copy_theme(index_path, theme)
-
-        # Copy the favicon
-
-        relative_favicon_path = None
-        if favicon := self.global_config.index.favicon:
-            relative_favicon_path = self.__copy_favicon(index_path, favicon)
-
-        # Refresh the templates here, so they have effect when live reloading
-        index_template = None
-        if template_config := self.global_config.index.template:
-            index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
-        else:
-            index_template = DEFAULT_INDEX_TEMPLATE
-
-        content = index_template.render(
-            favicon=relative_favicon_path,
-            title=self.global_config.index.title,
-            theme=relative_theme_path,
-            slideshows=slideshows,
-            build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
-        )
-        self.__create_or_overwrite_file(index_path, content)
-
-    def __copy_local_files(
-        self,
-        md_file: Path,
-        md_root_path: Path,
-        markdown_content: str,
-    ) -> None:
-        links = self.__find_all_links(markdown_content)
-        for link in links:
-            if get_url_type(link) == URLType.RELATIVE:
-                try:
-                    local_file_path = Path(md_file.parent, link).resolve(strict=True)
-                    self.__copy_to_output_relative_to_md_root(
-                        local_file_path,
-                        md_root_path,
-                    )
-                except FileNotFoundError as e:
-                    message = f"Local file '{link}' mentioned in '{md_file}' not found."
-                    if self.strict:
-                        # https://docs.astral.sh/ruff/rules/raise-without-from-inside-except/
-                        raise FileNotFoundError(message) from e
-                    logger.warning(message)
-
-    def __copy_theme(
-        self,
-        file_using_theme_path: Path,
-        theme: str,
-        default_theme_resource: Traversable | None = None,
-    ) -> Path | str:
-        if get_url_type(theme) == URLType.ABSOLUTE:
-            logger.debug(
-                f"Using theme '{theme}' from an absolute URL, no copy necessary",
-            )
-            return theme
-
-        theme_path = None
-        if not theme.endswith(".css"):
-            assert default_theme_resource is not None
-            with resources.as_file(
-                default_theme_resource.joinpath(theme),
-            ) as builtin_theme_path:
-                theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
-                logger.debug(
-                    f"Using built-in theme '{theme}' from '{theme_path.absolute()}'",
-                )
-        else:
-            theme_path = Path(theme).resolve(strict=True)
-            logger.debug(f"Using theme '{theme_path.absolute()}'")
-
-        theme_output_path = self.output_assets_path / theme_path.name
-        self.__copy_to_output(theme_path, theme_output_path)
-
-        relative_theme_path = theme_output_path.relative_to(
-            file_using_theme_path.parent,
-            walk_up=True,
-        )
-
-        return relative_theme_path
-
-    def __copy_favicon(self, file_using_favicon_path: Path, favicon: str) -> Path | str:
-        if get_url_type(favicon) == URLType.ABSOLUTE:
-            logger.debug(
-                f"Using favicon '{favicon}' from an absolute URL, no copy necessary",
-            )
-            return favicon
-
-        favicon_path = Path(favicon).resolve(strict=True)
-        logger.debug(f"Using favicon '{favicon_path.absolute()}'")
-
-        favicon_output_path = self.output_assets_path / favicon_path.name
-        self.__copy_to_output(favicon_path, favicon_output_path)
-
-        relative_favicon_path = favicon_output_path.relative_to(
-            file_using_favicon_path.parent,
-            walk_up=True,
-        )
-
-        return relative_favicon_path
-
-    ################################################################################
+    #     content = index_template.render(
+    #         favicon=self.global_config.index.favicon,
+    #         title=self.global_config.index.title,
+    #         theme=relative_theme_path,
+    #         slideshows=slideshows,
+    #         build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
+    #     )
+    #     self.__create_or_overwrite_file(index_path, content)
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
+        """Create or overwrite a file with the given content."""
         is_overwrite = destination_path.exists()
 
         destination_path.parent.mkdir(parents=True, exist_ok=True)
@@ -359,76 +305,20 @@ class MarkupGenerator:
         action = "Overwritten" if is_overwrite else "Created"
         logger.debug(f"{action} file '{destination_path}'")
 
-    def __copy_to_output(self, source_path: Path, destination_path: Path) -> Path:
-        self.__copy(source_path, destination_path)
-        relative_path = destination_path.relative_to(self.output_directory_path)
-        return relative_path
-
-    def __copy_to_output_relative_to_md_root(
-        self,
-        source_path: Path,
-        md_root_path: Path,
-    ) -> Path | None:
-        source_path = source_path.resolve(strict=True)
-        if not source_path.is_relative_to(md_root_path):
-            logger.warning(
-                f"'{source_path.absolute()}' is outside the markdown root directory, skipped!",
-            )
-            return None
-
-        relative_path = source_path.relative_to(md_root_path)
-        destination_path = self.output_directory_path / relative_path
-
-        self.__copy(source_path, destination_path)
-
-        return relative_path
-
     def __copy(self, source_path: Path, destination_path: Path) -> None:
-        if source_path.is_dir():
-            self.__copy_tree(source_path, destination_path)
+        """Copy a file or directory from the source path to the destination path."""
+        is_overwrite = destination_path.exists()
+        is_directory = source_path.is_dir()
+
+        destination_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if is_directory:
+            shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
         else:
-            self.__copy_file(source_path, destination_path)
+            shutil.copy(source_path, destination_path)
 
-    def __copy_tree(self, source_path: Path, destination_path: Path) -> None:
-        overwrite = destination_path.exists()
-        destination_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
-
-        action = "Overwritten" if overwrite else "Copied"
+        action = "Overwritten" if is_overwrite else "Copied"
+        file_or_directory = "directory" if is_directory else "file"
         logger.debug(
-            f"{action} directory '{source_path.absolute()}' to '{destination_path.absolute()}'",
+            f"{action} {file_or_directory} '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )
-
-    def __copy_file(self, source_path: Path, destination_path: Path) -> None:
-        overwrite = destination_path.exists()
-        destination_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(source_path, destination_path)
-
-        action = "Overwritten" if overwrite else "Copied"
-        logger.debug(
-            f"{action} file '{source_path.absolute()}' to '{destination_path.absolute()}'",
-        )
-
-    def __find_all_links(self, markdown_content: str) -> set[str]:
-        html_content = markdown.markdown(markdown_content, extensions=["extra"])
-        soup = BeautifulSoup(html_content, "html.parser")
-
-        found_links = set()
-
-        for link in soup.find_all("a", href=True):
-            if not link.find_parents(["code", "pre"]):
-                found_links.add(link["href"])
-
-        for link in soup.find_all("img", src=True):
-            if not link.find_parents(["code", "pre"]):
-                found_links.add(link["src"])
-
-        for link in soup.find_all("source", src=True):
-            if not link.find_parents(["code", "pre"]):
-                found_links.add(link["src"])
-
-        for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
-            if match := HTML_BACKGROUND_IMAGE_REGEX.search(comment):
-                found_links.add(match.group("location"))
-
-        return found_links

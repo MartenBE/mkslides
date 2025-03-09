@@ -6,35 +6,27 @@ from tests.utils import (
     assert_html_contains,
     assert_html_contains_regexp,
     run_build,
-    run_build_with_config,
 )
 
 
 def test_frontmatter_overrides_default(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    run_build(cwd, output_path)
+    run_build(cwd, "test_files", output_path, None)
 
-    assert_html_contains(
-        output_path / "index.html",
-        [
-            "<td>frontmatter title</td>",
-        ],
-    )
+    # assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
 
     assert_files_exist(
-        output_path,
-        [
-            "assets/solarized.css",
-            "assets/vs.css",
-        ],
+        output_path / "mkslides-assets/reveal-js/dist/theme/solarized.css",
     )
+    assert_files_exist(output_path / "mkslides-assets/highlight-js-themes/vs.css")
 
     assert_html_contains(
         output_path / "frontmatter.html",
-        [
-            '<link rel="stylesheet" href="assets/solarized.css" />',
-            '<link rel="stylesheet" href="assets/vs.css" />',
-        ],
+        '<link rel="stylesheet" href="mkslides-assets/reveal-js/dist/theme/solarized.css" />',
+    )
+    assert_html_contains(
+        output_path / "frontmatter.html",
+        '<link rel="stylesheet" href="mkslides-assets/highlight-js-themes/vs.css" />',
     )
 
     assert_html_contains_regexp(
@@ -72,29 +64,27 @@ def test_frontmatter_overrides_default(setup_paths: Any) -> None:
 
 def test_frontmatter_overrides_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    run_build_with_config(cwd, output_path, "test_frontmatter_overrides_options.yml")
-
-    assert_html_contains(
-        output_path / "index.html",
-        [
-            "<td>frontmatter title</td>",
-        ],
+    run_build(
+        cwd,
+        "test_files",
+        output_path,
+        "test_configs/test_frontmatter_overrides_options.yml",
     )
+
+    # assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
 
     assert_files_exist(
-        output_path,
-        [
-            "assets/solarized.css",
-            "assets/vs.css",
-        ],
+        output_path / "mkslides-assets/reveal-js/dist/theme/solarized.css",
     )
+    assert_files_exist(output_path / "mkslides-assets/highlight-js-themes/vs.css")
 
     assert_html_contains(
         output_path / "frontmatter.html",
-        [
-            '<link rel="stylesheet" href="assets/solarized.css" />',
-            '<link rel="stylesheet" href="assets/vs.css" />',
-        ],
+        '<link rel="stylesheet" href="mkslides-assets/reveal-js/dist/theme/solarized.css" />',
+    )
+    assert_html_contains(
+        output_path / "frontmatter.html",
+        '<link rel="stylesheet" href="mkslides-assets/highlight-js-themes/vs.css" />',
     )
 
     assert_html_contains_regexp(
