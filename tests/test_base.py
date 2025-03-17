@@ -1,3 +1,4 @@
+import subprocess
 from typing import Any
 
 from tests.utils import (
@@ -61,6 +62,57 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     )
 
 
+def test_prevent_overwrite(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    file1_path = output_path / "test" / "test.md"
+    file1_path.parent.mkdir(parents=True, exist_ok=True)
+    file1_path.write_text("# Test 1")
+
+    file2_path = output_path / "test" / "test2" / "test2.md"
+    file2_path.parent.mkdir(parents=True, exist_ok=True)
+    file2_path.write_text("# Test 2")
+
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-d",
+            output_path,
+            file1_path.parent,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 1
+
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-d",
+            output_path,
+            file2_path.parent,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 1
+
+    assert_files_exist(
+        output_path,
+        [
+            "test/test.md",
+            "test/test2/test2.md",
+        ],
+    )
+
+
 def test_process_file_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     run_build_with_custom_input(cwd, output_path, "test_files/someslides.md")
@@ -87,6 +139,6 @@ def test_process_file_without_config(setup_paths: Any) -> None:
         ],
     )
 
-    assert not (
-        output_path / "someslides.html"
-    ).exists(), "someslides.html should not exist"
+    assert not (output_path / "someslides.html").exists(), (
+        "someslides.html should not exist"
+    )
