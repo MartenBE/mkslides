@@ -139,6 +139,6 @@ def test_process_file_without_config(setup_paths: Any) -> None:
         ],
     )
 
-    assert not (output_path / "someslides.html").exists(), (
-        "someslides.html should not exist"
-    )
+    assert not (
+        output_path / "someslides.html"
+    ).exists(), "someslides.html should not exist"
