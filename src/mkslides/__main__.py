@@ -79,7 +79,7 @@ def cli(verbose: bool) -> None:
     "-d",
     "--site-dir",
     type=click.Path(path_type=Path),
-    help="The directory to output the result of the slides build.",
+    help="The directory to output the result of the slides build. All files are removed from the site dir before building.",
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
