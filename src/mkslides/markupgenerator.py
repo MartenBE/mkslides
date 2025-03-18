@@ -123,16 +123,15 @@ class MarkupGenerator:
             slide_config = self.global_config
 
         # Check if markdown file needs preprocessing
-        preprocess_script = slide_config.slides.preprocess_script
-        if preprocess_script:
-            preprocess_script_func = load_preprocessing_function(preprocess_script)
-            if preprocess_script_func is not None:
+
+        if preprocess_script := slide_config.slides.preprocess_script:
+            if preprocess_script_func := load_preprocessing_function(preprocess_script):
                 markdown_content = preprocess_script_func(markdown_content)
                 logger.debug(
                     f"Preprocessed markdown content with '{preprocess_script}'",
                 )
             else:
-                logger.debug(
+                logger.error(
                     f"Failed to load preprocessing function from '{preprocess_script}'",
                 )
 
