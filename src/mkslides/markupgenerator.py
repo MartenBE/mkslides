@@ -52,12 +52,6 @@ class MarkupGenerator:
 
         self.strict = strict
 
-        self.preprocess_script_func = (
-            load_preprocessing_function(self.global_config.slides.preprocess_script)
-            if self.global_config.slides.preprocess_script
-            else None
-        )
-
     def clear_output_directory(self) -> None:
         for item in self.output_directory_path.iterdir():
             if item.is_file():
@@ -117,10 +111,6 @@ class MarkupGenerator:
         content = md_file.read_text(encoding="utf-8-sig")
         metadata, markdown_content = frontmatter.parse(content)
 
-        if self.preprocess_script_func:
-            markdown_content = self.preprocess_script_func(markdown_content)
-            logger.debug("Preprocessed markdown content with {preprocess_script_func}")
-
         slide_config = None
         if metadata:
             slide_config = deepcopy(self.global_config)
@@ -131,6 +121,19 @@ class MarkupGenerator:
             logger.debug(OmegaConf.to_yaml(slide_config, resolve=True))
         else:
             slide_config = self.global_config
+
+        # Check if markdown file needs preprocessing
+
+        if preprocess_script := slide_config.slides.preprocess_script:
+            if preprocess_script_func := load_preprocessing_function(preprocess_script):
+                markdown_content = preprocess_script_func(markdown_content)
+                logger.debug(
+                    f"Preprocessed markdown content with '{preprocess_script}'",
+                )
+            else:
+                logger.error(
+                    f"Failed to load preprocessing function from '{preprocess_script}'",
+                )
 
         markdown_content = emojize(markdown_content, language="alias")
 
