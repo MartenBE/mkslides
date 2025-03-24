@@ -113,12 +113,14 @@ class MarkupGenerator:
                     )
 
                     content = resolved_file.read_text(encoding="utf-8-sig")
-                    metadata, markdown_content = frontmatter.parse(content)
+                    frontmatter_metadata, markdown_content = frontmatter.parse(content)
                     if self.preprocess_script_func:
                         markdown_content = self.preprocess_script_func(markdown_content)
                     markdown_content = emojize(markdown_content, language="alias")
 
-                    slide_config = self.__generate_slide_config(metadata)
+                    slide_config = self.__generate_slide_config(
+                        resolved_file, frontmatter_metadata,
+                    )
 
                     md_file_data = MdFileToProcess(
                         source_path=resolved_file,
@@ -219,7 +221,8 @@ class MarkupGenerator:
         # self.__generate_index(md_files)
 
     def __load_templates(
-        self, md_files: list[MdFileToProcess],
+        self,
+        md_files: list[MdFileToProcess],
     ) -> dict[str, Template]:
         """Load Jinja 2 templates from the markdown files."""
         templates = {}
@@ -232,14 +235,24 @@ class MarkupGenerator:
 
         return templates
 
-    def __generate_slide_config(self, metadata: dict[str, object]) -> DictConfig:
+    def __generate_slide_config(
+        self, source_path: Path, metadata: dict[str, object],
+    ) -> DictConfig:
         """Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration."""
         slide_config: DictConfig = deepcopy(self.global_config)
 
-        if metadata:
-            for key in FRONTMATTER_ALLOWED_KEYS:
-                if key in metadata:
-                    OmegaConf.update(slide_config, key, metadata[key])
+        if not metadata:
+            return slide_config
+
+        for key in FRONTMATTER_ALLOWED_KEYS:
+            if key in metadata:
+                value = metadata[key]
+
+                # The path should be resolved relative to the source file, not the current working directory
+                if isinstance(value, Path):
+                    if get_url_type(str(value)) == URLType.RELATIVE:
+                        value = (source_path.parent / value).resolve(strict=True)
+                OmegaConf.update(slide_config, key, value)
 
         return slide_config
 

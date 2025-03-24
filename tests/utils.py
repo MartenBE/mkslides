@@ -55,9 +55,9 @@ def assert_files_exist(file: Path) -> None:
 def assert_html_contains(file_path: Path, expected_content: str) -> None:
     with file_path.open() as file:
         content = file.read()
-        assert (
-            expected_content in content
-        ), f"{expected_content} not found in {file_path}"
+        assert expected_content in content, (
+            f"{expected_content} not found in {file_path}"
+        )
 
 
 def assert_html_contains_regexp(file_path: Path, regexp: Pattern[str]) -> None:
