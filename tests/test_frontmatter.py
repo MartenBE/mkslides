@@ -118,3 +118,47 @@ def test_frontmatter_overrides_options(setup_paths: Any) -> None:
             re.VERBOSE | re.DOTALL,
         ),
     )
+
+
+def test_frontmatter_paths_are_relative_to_mdfile(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    run_build(cwd, "test_files", output_path, None)
+
+    assert_html_contains(
+        output_path / "frontmatter-local-files.html",
+        '<link rel="icon" href="assets/favicon.ico">',
+    )
+    assert_html_contains(
+        output_path / "frontmatter-local-files.html",
+        '<link rel="stylesheet" href="assets/theme.css" />',
+    )
+    assert_html_contains(
+        output_path / "frontmatter-local-files.html",
+        '<link rel="stylesheet" href="assets/highlight-theme.css" />',
+    )
+
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files.html",
+        '<link rel="icon" href="../assets/favicon.ico">',
+    )
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files.html",
+        '<link rel="stylesheet" href="../assets/theme.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files.html",
+        '<link rel="stylesheet" href="../assets/highlight-theme.css" />',
+    )
+
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files-2.html",
+        '<link rel="icon" href="favicon-2.ico">',
+    )
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files-2.html",
+        '<link rel="stylesheet" href="theme-2.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder" / "frontmatter-local-files-2.html",
+        '<link rel="stylesheet" href="highlight-theme-2.css" />',
+    )

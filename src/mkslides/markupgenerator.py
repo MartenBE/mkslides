@@ -94,12 +94,10 @@ class MarkupGenerator:
         with resources.as_file(HIGHLIGHTJS_THEMES_RESOURCE) as highlightjs_themes_path:
             self.__copy(highlightjs_themes_path, self.output_highlightjs_themes_path)
 
-    def __process_markdown_directory(self) -> None:
-        logger.debug(
-            f"Processing markdown directory at '{self.md_root_path.absolute()}'",
-        )
-
+    def __scan_files(self) -> tuple[list[MdFileToProcess], list[Path]]:
+        """Scan the markdown directory for markdown files and other files."""
         md_files = []
+        non_md_files = []
 
         for file in self.md_root_path.rglob("*"):
             if file.is_file():
@@ -119,7 +117,8 @@ class MarkupGenerator:
                     markdown_content = emojize(markdown_content, language="alias")
 
                     slide_config = self.__generate_slide_config(
-                        resolved_file, frontmatter_metadata,
+                        destination_path,
+                        frontmatter_metadata,
                     )
 
                     md_file_data = MdFileToProcess(
@@ -131,11 +130,22 @@ class MarkupGenerator:
 
                     md_files.append(md_file_data)
                 else:
-                    self.__copy(
-                        resolved_file,
-                        self.output_directory_path
-                        / file.relative_to(self.md_root_path),
-                    )
+                    non_md_files.append(resolved_file)
+
+        return md_files, non_md_files
+
+    def __process_markdown_directory(self) -> None:
+        logger.debug(
+            f"Processing markdown directory at '{self.md_root_path.absolute()}'",
+        )
+
+        md_files, non_md_files = self.__scan_files()
+
+        for file in non_md_files:
+            self.__copy(
+                file,
+                self.output_directory_path / file.relative_to(self.md_root_path),
+            )
 
         templates = self.__load_templates(md_files)
 
@@ -147,46 +157,6 @@ class MarkupGenerator:
                 slideshow_template = templates[template_config]
             else:
                 slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
-
-            favicon = slide_config.slides.favicon
-            if favicon and get_url_type(favicon) != URLType.ABSOLUTE:
-                favicon_path = self.output_directory_path / favicon
-                favicon = favicon_path.relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
-                )
-
-            theme = slide_config.slides.theme
-            if theme in REVEALJS_THEMES_LIST:
-                theme_path = (
-                    self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
-                ).resolve(strict=True)
-                theme = theme_path.relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
-                )
-            elif get_url_type(theme) != URLType.ABSOLUTE:
-                theme_path = self.output_directory_path / theme
-                theme = theme_path.relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
-                )
-
-            highlight_theme = slide_config.slides.highlight_theme
-            if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
-                highlight_theme_path = (
-                    self.output_highlightjs_themes_path / f"{highlight_theme}.css"
-                ).resolve(strict=True)
-                highlight_theme = highlight_theme_path.relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
-                )
-            elif get_url_type(highlight_theme) != URLType.ABSOLUTE:
-                highlight_theme_path = self.output_directory_path / highlight_theme
-                highlight_theme = highlight_theme_path.relative_to(
-                    md_file_data.destination_path.parent,
-                    walk_up=True,
-                )
 
             revealjs_path = self.output_revealjs_path.relative_to(
                 md_file_data.destination_path.parent,
@@ -206,9 +176,9 @@ class MarkupGenerator:
             }
 
             markup = slideshow_template.render(
-                favicon=favicon,
-                theme=theme,
-                highlight_theme=highlight_theme,
+                favicon=slide_config.slides.favicon,
+                theme=slide_config.slides.theme,
+                highlight_theme=slide_config.slides.highlight_theme,
                 revealjs_path=revealjs_path,
                 markdown_data_options=markdown_data_options,
                 markdown=md_file_data.markdown_content,
@@ -236,23 +206,81 @@ class MarkupGenerator:
         return templates
 
     def __generate_slide_config(
-        self, source_path: Path, metadata: dict[str, object],
+        self,
+        destination_path: Path,
+        frontmatter_metadata: dict[str, object],
     ) -> DictConfig:
         """Generate the slide configuration by merging the metadata retrieved from the frontmatter of the markdown and the global configuration."""
         slide_config: DictConfig = deepcopy(self.global_config)
 
-        if not metadata:
-            return slide_config
+        if frontmatter_metadata:
+            for key in FRONTMATTER_ALLOWED_KEYS:
+                if key in frontmatter_metadata:
+                    OmegaConf.update(slide_config, key, frontmatter_metadata[key])
 
-        for key in FRONTMATTER_ALLOWED_KEYS:
-            if key in metadata:
-                value = metadata[key]
+        theme = slide_config.slides.theme
+        if theme:
+            if theme in REVEALJS_THEMES_LIST:
+                # The theme is a built-in theme
+                slide_config.slides.theme = str(
+                    (
+                        self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
+                    ).relative_to(destination_path.parent, walk_up=True)
+                )
+            elif get_url_type(theme) == URLType.RELATIVE:
+                is_theme_from_frontmatter = (
+                    "slides" in frontmatter_metadata
+                    and isinstance(frontmatter_metadata["slides"], dict)
+                    and "theme" in frontmatter_metadata["slides"]
+                    and frontmatter_metadata["slides"]["theme"]
+                )
+                if not is_theme_from_frontmatter:
+                    # The theme is a relative path in the global config
+                    slide_config.slides.theme = str(
+                        (self.output_directory_path / theme).relative_to(
+                            destination_path.parent, walk_up=True
+                        )
+                    )
 
-                # The path should be resolved relative to the source file, not the current working directory
-                if isinstance(value, Path):
-                    if get_url_type(str(value)) == URLType.RELATIVE:
-                        value = (source_path.parent / value).resolve(strict=True)
-                OmegaConf.update(slide_config, key, value)
+        highlight_theme = slide_config.slides.highlight_theme
+        if highlight_theme:
+            if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
+                # The highlight theme is a built-in theme
+                slide_config.slides.highlight_theme = str(
+                    (
+                        self.output_highlightjs_themes_path / f"{highlight_theme}.css"
+                    ).relative_to(destination_path.parent, walk_up=True)
+                )
+            elif get_url_type(highlight_theme) == URLType.RELATIVE:
+                is_highlight_theme_from_frontmatter = (
+                    "slides" in frontmatter_metadata
+                    and isinstance(frontmatter_metadata["slides"], dict)
+                    and "highlight_theme" in frontmatter_metadata["slides"]
+                    and frontmatter_metadata["slides"]["highlight_theme"]
+                )
+                if not is_highlight_theme_from_frontmatter:
+                    # The highlight theme is a relative path in the global config
+                    slide_config.slides.highlight_theme = str(
+                        (self.output_directory_path / highlight_theme).relative_to(
+                            destination_path.parent, walk_up=True
+                        )
+                    )
+
+        favicon = slide_config.slides.favicon
+        if favicon and get_url_type(favicon) == URLType.RELATIVE:
+            is_favicon_from_frontmatter = (
+                "slides" in frontmatter_metadata
+                and isinstance(frontmatter_metadata["slides"], dict)
+                and "favicon" in frontmatter_metadata["slides"]
+                and frontmatter_metadata["slides"]["favicon"]
+            )
+            if not is_favicon_from_frontmatter:
+                # The favicon is a relative path in the global config
+                slide_config.slides.favicon = str(
+                    (self.output_directory_path / favicon).relative_to(
+                        destination_path.parent, walk_up=True
+                    )
+                )
 
         return slide_config
 
