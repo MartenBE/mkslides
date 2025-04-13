@@ -106,14 +106,12 @@ mkslides serve -h
 ## Full help for build
 
 <!-- output-build -->
-
 ```text
-Usage: mkslides build [OPTIONS] FILENAME|PATH
+Usage: mkslides build [OPTIONS] PATH
 
-  Build the MkDocs documentation.
+  Build the MkSlides documentation.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -124,7 +122,6 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-build -->
 
 ---
@@ -132,14 +129,12 @@ Options:
 ## Full help for serve
 
 <!-- output-serve -->
-
 ```text
-Usage: mkslides serve [OPTIONS] FILENAME|PATH
+Usage: mkslides serve [OPTIONS] PATH
 
   Run the builtin development server.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -151,7 +146,6 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-serve -->
 
 ---

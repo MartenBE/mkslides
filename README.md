@@ -233,7 +233,6 @@ Notes:
 ## Full help
 
 <!-- output-no-command -->
-
 ```text
 Usage: mkslides [OPTIONS] COMMAND [ARGS]...
 
@@ -249,18 +248,15 @@ Commands:
   serve  Run the builtin development server.
 
 ```
-
 <!-- /output-no-command -->
 
 <!-- output-build -->
-
 ```text
-Usage: mkslides build [OPTIONS] FILENAME|PATH
+Usage: mkslides build [OPTIONS] PATH
 
   Build the MkSlides documentation.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -271,18 +267,15 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-build -->
 
 <!-- output-serve -->
-
 ```text
-Usage: mkslides serve [OPTIONS] FILENAME|PATH
+Usage: mkslides serve [OPTIONS] PATH
 
   Run the builtin development server.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -294,5 +287,4 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-serve -->
