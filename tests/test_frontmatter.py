@@ -13,7 +13,7 @@ def test_frontmatter_overrides_default(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     run_build(cwd, "test_files", output_path, None)
 
-    assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
+    assert_html_contains(output_path / "index.html", "<span class=\"node-title\">frontmatter title</span>")
 
     assert_files_exist(
         output_path / "mkslides-assets/reveal-js/dist/theme/solarized.css",
@@ -71,7 +71,7 @@ def test_frontmatter_overrides_options(setup_paths: Any) -> None:
         "test_configs/test_frontmatter_overrides_options.yml",
     )
 
-    assert_html_contains(output_path / "index.html", "<td>frontmatter title</td>")
+    assert_html_contains(output_path / "index.html", "<span class=\"node-title\">frontmatter title</span>")
 
     assert_files_exist(
         output_path / "mkslides-assets/reveal-js/dist/theme/solarized.css",

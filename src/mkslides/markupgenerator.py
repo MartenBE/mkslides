@@ -252,7 +252,6 @@ class MarkupGenerator:
                     and frontmatter_metadata["slides"]["highlight_theme"]
                 )
                 if not is_highlight_theme_from_frontmatter:
-                    # The highlight theme is a relative path in the global config
                     slide_config.slides.highlight_theme = str(
                         (self.output_directory_path / highlight_theme).relative_to(
                             destination_path.parent, walk_up=True
