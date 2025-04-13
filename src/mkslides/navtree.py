@@ -42,7 +42,7 @@ class NavTree:
         self.root_path = root_path
 
     def from_json(self, json_data) -> None:
-        assert isinstance(json_data, list), "json data must be a list"
+        assert isinstance(json_data, list), f"json data must be a list"
 
         for item in json_data:
             node = self.__node_from_json_dict(item)
@@ -92,21 +92,16 @@ class NavTree:
             assert node
 
             node.title = md_file.slide_config.slides.title or md_file.source_path.stem
-            print(md_file.slide_config)
             node.url = md_file.destination_path
 
+    def to_dict(self) -> list:
+        return [self.__node_to_dict(node) for node in self.root_nodes]
 
-# TODO simulate following warnings:
-#
-# INFO    -  Cleaning site directory
-# INFO    -  Building documentation to directory: /tmp/test/site
-# INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
-#              - 1.md
-#              - 2.md
-#              - 3.md
-#              - some/4.md
-#              - some/5.md
-# WARNING -  A reference to 'index.md' is included in the 'nav' configuration, which is not found in the documentation files.
-# WARNING -  A reference to 'about.md' is included in the 'nav' configuration, which is not found in the documentation files.
-# INFO    -  Documentation built in 0.06 seconds
-#
+    def __node_to_dict(self, node: Node) -> dict:
+        if node.represents_file():
+            return {node.title: node.url}
+
+        return {node.title: [self.__node_to_dict(child) for child in node.children]}
+
+
+

@@ -16,6 +16,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
 from mkslides.mdfiletoprocess import MdFileToProcess
+from mkslides.navtree import NavTree
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
@@ -72,8 +73,6 @@ class MarkupGenerator:
         logger.info(
             f"Finished processing markdown in {end_time - start_time:.2f} seconds",
         )
-
-    ################################################################################
 
     def __create_or_clear_output_directory(self) -> None:
         """Clear or create the output directory and copy reveal.js."""
@@ -218,7 +217,6 @@ class MarkupGenerator:
         theme = slide_config.slides.theme
         if theme:
             if theme in REVEALJS_THEMES_LIST:
-                # The theme is a built-in theme
                 slide_config.slides.theme = str(
                     (
                         self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
@@ -232,7 +230,6 @@ class MarkupGenerator:
                     and frontmatter_metadata["slides"]["theme"]
                 )
                 if not is_theme_from_frontmatter:
-                    # The theme is a relative path in the global config
                     slide_config.slides.theme = str(
                         (self.output_directory_path / theme).relative_to(
                             destination_path.parent, walk_up=True
@@ -242,7 +239,6 @@ class MarkupGenerator:
         highlight_theme = slide_config.slides.highlight_theme
         if highlight_theme:
             if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
-                # The highlight theme is a built-in theme
                 slide_config.slides.highlight_theme = str(
                     (
                         self.output_highlightjs_themes_path / f"{highlight_theme}.css"
@@ -272,7 +268,6 @@ class MarkupGenerator:
                 and frontmatter_metadata["slides"]["favicon"]
             )
             if not is_favicon_from_frontmatter:
-                # The favicon is a relative path in the global config
                 slide_config.slides.favicon = str(
                     (self.output_directory_path / favicon).relative_to(
                         destination_path.parent, walk_up=True
@@ -284,17 +279,27 @@ class MarkupGenerator:
     def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
         logger.debug("Generating index")
 
-        # md_files_tree = self.__build_tree(md_files)
-        slideshows = []
-        for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
-            title = md_file.slide_config.slides.title or md_file.destination_path.stem
-            location = md_file.destination_path.relative_to(self.output_directory_path)
-            slideshows.append(
-                {
-                    "title": title,
-                    "location": location,
-                },
-            )
+        navtree = NavTree(self.output_directory_path)
+        if self.global_config.index.nav:
+            nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
+            navtree.from_json(nav_from_config)
+            logger.debug(f"Loaded navigation from config {navtree.to_dict()}")
+            # TODO simulate following warnings:
+            #
+            # INFO    -  Cleaning site directory
+            # INFO    -  Building documentation to directory: /tmp/test/site
+            # INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
+            #              - 1.md
+            #              - 2.md
+            #              - 3.md
+            #              - some/4.md
+            #              - some/5.md
+            # WARNING -  A reference to 'index.md' is included in the 'nav' configuration, which is not found in the documentation files.
+            # WARNING -  A reference to 'about.md' is included in the 'nav' configuration, which is not found in the documentation files.
+            # INFO    -  Documentation built in 0.06 seconds
+            #
+        else:
+            navtree.from_md_files(md_files)
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
@@ -309,20 +314,10 @@ class MarkupGenerator:
             favicon=self.global_config.index.favicon,
             title=self.global_config.index.title,
             theme=self.global_config.index.theme,
-            slideshows=slideshows,
+            nav_root_nodes=navtree.root_nodes,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
         )
         self.__create_or_overwrite_file(index_path, content)
-
-    def __build_tree(self, md_files: list[MdFileToProcess]) -> dict:
-        tree = {}
-        for md_file in md_files:
-            path = md_file.destination_path.relative_to(self.output_directory_path)
-            parts = path.parts  # tuple of path segments
-        #     node = tree
-        #     for part in parts:
-        #         node = node.setdefault(part, {})
-        # return tree
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
         """Create or overwrite a file with the given content."""

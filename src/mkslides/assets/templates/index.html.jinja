@@ -1,3 +1,23 @@
+{% macro render_node(node) %}
+<li>
+    {% if node.represents_file() %}
+        {{ node.title }}:
+        <a href="{{ node.url }}" target="_blank" title="View slides">slides</a>,
+        <a href="{{ node.url }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>,
+        <a href="{{ node.url }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
+    {% endif %}
+
+    {% if node.represents_folder() %}
+        {{ node.title }}
+        <ul>
+            {% for child in node.children %}
+                {{ render_node(child) }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
+{% endmacro %}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,44 +33,15 @@
         {% endif %}
 
         <title>{{ title }}</title>
-        <style>
-            table {
-                border-collapse: collapse;
-            }
-
-            th, td {
-                border: 1px solid lightgrey;
-                padding: 0.5em 1em 0.5em 1em;
-            }
-        </style>
     </head>
     <body>
         <h1>{{ title }}</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th colspan="3">Links</th>
-                </tr>
-            </thead>
-            <tbody>
-            {%+ for s in slideshows %}
-                <tr>
-                    <td>{{ s.title }}</td>
-                    <td>
-                        <a href="{{ s.location }}" target="_blank" title="View slides">slides</a>
-                    </td>
-                    <td>
-                        <a href="{{ s.location }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>
-                    </td>
-                    <td>
-                        <a href="{{ s.location }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
-                    </td>
-                </tr>
+        <ul>
+            {% for node in nav_root_nodes %}
+                {{ render_node(node) }}
             {% endfor %}
-            </tbody>
-        </table>
+        </ul>
 
         <p>
             Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
@@ -58,3 +49,4 @@
         </p>
     </body>
 </html>
+

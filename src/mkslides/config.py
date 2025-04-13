@@ -24,6 +24,7 @@ class Index:
     template: Optional[str] = None
     theme: Optional[str] = None
     title: str = "Index"
+    nav: Optional[list[Any]] = None
 
 
 @dataclass
