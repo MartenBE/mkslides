@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from omegaconf import OmegaConf
-
 from mkslides.mdfiletoprocess import MdFileToProcess
 
 
@@ -9,20 +7,20 @@ class Node:
     def __init__(self, title: str) -> None:
         self.title: str = title
         self.__url: Path | None = None
-        self.children: list["Node"] = []
+        self.children: list[Node] = []
 
     @property
-    def url(self):
+    def url(self) -> Path | None:
         return self.__url
 
     @url.setter
-    def url(self, value):
+    def url(self, value: Path | None) -> None:
         if value:
             self.__url = value.with_suffix(".html")
 
     def represents_file(self) -> bool:
         self.__check_representation()
-        return self.url != None
+        return self.url is not None
 
     def represents_folder(self) -> bool:
         self.__check_representation()
@@ -30,10 +28,12 @@ class Node:
 
     def __check_representation(self) -> None:
         if self.url and len(self.children) != 0:
-            raise ValueError("Node cannot represent both a file and a folder")
+            msg = "Node cannot represent both a file and a folder"
+            raise ValueError(msg)
 
         if not self.url and len(self.children) == 0:
-            raise ValueError("Node must represent either a file or a folder")
+            msg = "Node must represent either a file or a folder"
+            raise ValueError(msg)
 
 
 class NavTree:
@@ -41,8 +41,8 @@ class NavTree:
         self.root_nodes: list[Node] = []
         self.root_path = root_path
 
-    def from_json(self, json_data) -> None:
-        assert isinstance(json_data, list), f"json data must be a list"
+    def from_json(self, json_data: list) -> None:
+        assert isinstance(json_data, list), "json data must be a list"
 
         for item in json_data:
             node = self.__node_from_json_dict(item)
@@ -54,29 +54,31 @@ class NavTree:
             node = Node(title)
             node.url = self.root_path / json_data
             return node
-        elif isinstance(json_data, dict):
+        if isinstance(json_data, dict):
             assert len(json_data.keys()) == 1, "json dict must have one key"
 
-            title, content = list(json_data.items())[0]
+            title, content = next(iter(json_data.items()))
             if isinstance(content, str):
                 node = Node(title)
                 node.url = self.root_path / content
                 return node
-            elif isinstance(content, list):
+            if isinstance(content, list):
                 node = Node(title)
                 for item in content:
                     child_node = self.__node_from_json_dict(item)
                     node.children.append(child_node)
                 return node
-            else:
-                raise ValueError("json dict must have a string or list as value")
-        else:
-            raise ValueError("json data must be a string or dict")
+
+            msg = "json dict must have a string or list as value"
+            raise ValueError(msg)
+
+        msg = "json data must be a string or dict"
+        raise ValueError(msg)
 
     def from_md_files(self, md_files: list[MdFileToProcess]) -> None:
         for md_file in md_files:
             relative_destination_path = md_file.destination_path.relative_to(
-                self.root_path
+                self.root_path,
             )
             parts = relative_destination_path.parts
 
@@ -102,6 +104,3 @@ class NavTree:
             return {node.title: node.url}
 
         return {node.title: [self.__node_to_dict(child) for child in node.children]}
-
-
-

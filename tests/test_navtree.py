@@ -1,18 +1,20 @@
 import json
-from pathlib import Path
 from typing import Any
 
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, ListConfig, OmegaConf
 
 from mkslides.config import Config
 from mkslides.mdfiletoprocess import MdFileToProcess
 from mkslides.navtree import NavTree
 
+# ruff: noqa: PLR0915, PLR2004
+
 
 def test_navtree_from_json(setup_paths: Any) -> None:
     _, output_path = setup_paths
 
-    json_data = json.loads("""
+    json_data = json.loads(
+        """
     [
         {
             "Home": "index.md"
@@ -40,7 +42,8 @@ def test_navtree_from_json(setup_paths: Any) -> None:
         "disclaimer.md",
         "./extras/info.md"
     ]
-    """)
+    """,
+    )
 
     tree = NavTree(output_path)
     tree.from_json(json_data)
@@ -119,13 +122,15 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "index.md",
             destination_path=output_path / "index.html",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(
-                    """
-                    slides:
-                        title: "Home"
-                    """
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(
+                        """
+                        slides:
+                            title: "Home"
+                        """,
+                    ),
                 ),
             ),
             markdown_content="",
@@ -133,13 +138,15 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "writing-your-docs.md",
             destination_path=output_path / "writing-your-docs.html",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(
-                    """
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(
+                        """
                     slides:
                         title: "Writing your docs"
-                    """
+                    """,
+                    ),
                 ),
             ),
             markdown_content="",
@@ -147,13 +154,15 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "styling-your-docs.md",
             destination_path=output_path / "styling-your-docs.html",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(
-                    """
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(
+                        """
                     slides:
                         title: "Styling your docs"
-                    """
+                    """,
+                    ),
                 ),
             ),
             markdown_content="",
@@ -161,13 +170,15 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "dev" / "license.md",
             destination_path=output_path / "dev" / "license.html",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(
-                    """
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(
+                        """
                     slides:
                         title: "License"
-                    """
+                    """,
+                    ),
                 ),
             ),
             markdown_content="",
@@ -175,13 +186,15 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "dev" / "notes" / "release-notes.md",
             destination_path=output_path / "dev" / "notes" / "release-notes.html",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(
-                    """
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(
+                        """
                     slides:
                         title: "Release Notes"
-                    """
+                    """,
+                    ),
                 ),
             ),
             markdown_content="",
@@ -189,18 +202,22 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         MdFileToProcess(
             source_path=cwd / "disclaimer.md",
             destination_path=output_path / "disclaimer.md",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(),
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(),
+                ),
             ),
             markdown_content="",
         ),
         MdFileToProcess(
             source_path=cwd / "extras" / "info.md",
             destination_path=output_path / "extras" / "info.md",
-            slide_config=OmegaConf.merge(
-                config,
-                OmegaConf.create(),
+            slide_config=type_safe_config(
+                OmegaConf.merge(
+                    config,
+                    OmegaConf.create(),
+                ),
             ),
             markdown_content="",
         ),
@@ -279,3 +296,11 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
     assert not info_node.represents_folder()
     assert info_node.url == output_path / "extras" / "info.html"
     assert len(info_node.children) == 0
+
+
+def type_safe_config(config: ListConfig | DictConfig) -> DictConfig:
+    if not isinstance(config, DictConfig):
+        msg = f"Expected DictConfig, got {type(config)}"
+        raise TypeError(msg)
+
+    return config

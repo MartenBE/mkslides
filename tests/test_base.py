@@ -62,34 +62,3 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
         output_path / "somefolder/someslides.html",
         '<link rel="stylesheet" href="../mkslides-assets/highlight-js-themes/monokai.css" />',
     )
-
-
-# def test_process_file_without_config(setup_paths: Any) -> None:
-#     cwd, output_path = setup_paths
-#     run_build_with_custom_input(cwd, output_path, "test_files/someslides.md")
-#
-#     assert_files_exist(
-#         output_path,
-#         [
-#             "mkslides-assets/reveal-js/dist/reveal.css",
-#             "mkslides-assets/reveal-js/dist/reveal.js",
-#             "mkslides-assets/reveal-js/plugin/markdown/markdown.js",
-#             "mkslides-assets/reveal-js/plugin/highlight/highlight.js",
-#             "mkslides-assets/reveal-js/plugin/zoom/zoom.js",
-#             "mkslides-assets/black.css",
-#             "mkslides-assets/monokai.css",
-#             "index.html",
-#             "img/example-1.png",
-#             "img/example-2.png",
-#             "img/example-3.png",
-#             "img/example-(7).png",
-#             "test-1.txt",
-#             "test-2.txt",
-#             "test-(3).txt",
-#             "video/demo.webm",
-#         ],
-#     )
-#
-#     assert not (
-#         output_path / "someslides.html"
-#     ).exists(), "someslides.html should not exist"

@@ -3,7 +3,6 @@ import logging
 import shutil
 import time
 from copy import deepcopy
-from dataclasses import dataclass
 from importlib import resources
 from pathlib import Path
 from typing import Any
@@ -11,7 +10,6 @@ from typing import Any
 import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
 from jinja2 import Template
-from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
@@ -220,7 +218,7 @@ class MarkupGenerator:
                 slide_config.slides.theme = str(
                     (
                         self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
-                    ).relative_to(destination_path.parent, walk_up=True)
+                    ).relative_to(destination_path.parent, walk_up=True),
                 )
             elif get_url_type(theme) == URLType.RELATIVE:
                 is_theme_from_frontmatter = (
@@ -232,8 +230,9 @@ class MarkupGenerator:
                 if not is_theme_from_frontmatter:
                     slide_config.slides.theme = str(
                         (self.output_directory_path / theme).relative_to(
-                            destination_path.parent, walk_up=True
-                        )
+                            destination_path.parent,
+                            walk_up=True,
+                        ),
                     )
 
         highlight_theme = slide_config.slides.highlight_theme
@@ -242,7 +241,7 @@ class MarkupGenerator:
                 slide_config.slides.highlight_theme = str(
                     (
                         self.output_highlightjs_themes_path / f"{highlight_theme}.css"
-                    ).relative_to(destination_path.parent, walk_up=True)
+                    ).relative_to(destination_path.parent, walk_up=True),
                 )
             elif get_url_type(highlight_theme) == URLType.RELATIVE:
                 is_highlight_theme_from_frontmatter = (
@@ -254,8 +253,9 @@ class MarkupGenerator:
                 if not is_highlight_theme_from_frontmatter:
                     slide_config.slides.highlight_theme = str(
                         (self.output_directory_path / highlight_theme).relative_to(
-                            destination_path.parent, walk_up=True
-                        )
+                            destination_path.parent,
+                            walk_up=True,
+                        ),
                     )
 
         favicon = slide_config.slides.favicon
@@ -269,8 +269,9 @@ class MarkupGenerator:
             if not is_favicon_from_frontmatter:
                 slide_config.slides.favicon = str(
                     (self.output_directory_path / favicon).relative_to(
-                        destination_path.parent, walk_up=True
-                    )
+                        destination_path.parent,
+                        walk_up=True,
+                    ),
                 )
 
         return slide_config
@@ -283,7 +284,7 @@ class MarkupGenerator:
             nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
             navtree.from_json(nav_from_config)
             logger.debug(f"Loaded navigation from config {navtree.to_dict()}")
-            # TODO simulate following warnings:
+            # TODO: simulate following warnings:
             #
             # INFO    -  Cleaning site directory
             # INFO    -  Building documentation to directory: /tmp/test/site

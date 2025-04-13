@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 
 @dataclass
