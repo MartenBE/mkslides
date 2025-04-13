@@ -44,7 +44,7 @@ E.g. when your Markdown files are located in the `docs/` folder:
 mkslides build docs/
 ```
 
-E.g. when you have a single Markdown file called `test.md`:
+E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
 
 ```bash
 mkslides build test.md
@@ -52,9 +52,13 @@ mkslides build test.md
 
 ## Live preview
 
+E.g. when your Markdown files are located in the `docs/` folder:
+
 ```bash
 mkslides serve docs/
 ```
+
+E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
 
 ```bash
 mkslides serve test.md
@@ -90,6 +94,18 @@ index:
 
     # Title of the generated index page: string
     title: example-title
+
+    # Navigation section describing how to structure the slides on the index
+    # page. This is similar to the `nav` option from MkDocs: list[any]
+    nav:
+        - Example: example1.md
+        - "Example 2": somewhere/example1.md
+        - example3.md
+        - somewhere/example4.md
+        - "More examples":
+            - example5.md
+            - "Much more examples":
+                - "Last example": somewhere/much/more/examples/example6.md
 
 # Configuration for the slides
 slides:
@@ -229,7 +245,7 @@ Options:
   -h, --help     Show this message and exit.
 
 Commands:
-  build  Build the MkDocs documentation.
+  build  Build the MkSlides documentation.
   serve  Run the builtin development server.
 
 ```
@@ -241,7 +257,7 @@ Commands:
 ```text
 Usage: mkslides build [OPTIONS] FILENAME|PATH
 
-  Build the MkDocs documentation.
+  Build the MkSlides documentation.
 
   FILENAME|PATH is the path to the Markdown file, or the directory containing
   Markdown files.

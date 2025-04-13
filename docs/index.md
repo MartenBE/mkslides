@@ -36,8 +36,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
 ## Usage
 
 - Input
-    - Markdown **file**
-    - or **directory** with multiple (nested) Markdown files
+    - **directory** with multiple (nested) Markdown files
 - Output
     - Directory with static HTML slides
         - Includes an index.html page with links to each slideshow when the input was a directory
@@ -86,13 +85,13 @@ pip install mkslides
 - Generate the static HTML files:
 
 ```bash
-mkslides build [OPTIONS] FILENAME|PATH
+mkslides build [OPTIONS] PATH
 ```
 
 - Or open a live preview while editing the markdown files:
 
 ```bash
-mkslides serve [OPTIONS] FILENAME|PATH
+mkslides serve [OPTIONS] PATH
 ```
 
 - In case you need help or want to know more:

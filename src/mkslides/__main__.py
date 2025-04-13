@@ -97,7 +97,7 @@ def build_command(
     strict: bool,
 ) -> None:
     """
-    Build the MkDocs documentation.
+    Build the MkSlides documentation.
 
     PATH is the path to the directory containing Markdown files.
     """
