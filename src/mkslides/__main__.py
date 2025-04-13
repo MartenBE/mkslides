@@ -1,6 +1,7 @@
 import logging
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 import click
 from omegaconf import OmegaConf
@@ -25,13 +26,19 @@ logger.addHandler(RichHandler(show_path=False))
 ################################################################################
 
 files_argument_data = {
-    "metavar": "FILENAME|PATH",
-    "type": click.Path(exists=True, resolve_path=True, path_type=Path),
+    "metavar": "PATH",
+    "type": click.Path(
+        file_okay=False,
+        dir_okay=True,
+        exists=True,
+        resolve_path=True,
+        path_type=Path,
+    ),
 }
 
 config_file_argument_data = {
     "metavar": "FILENAME",
-    "type": click.Path(exists=True, resolve_path=True, path_type=Path),
+    "type": click.Path(dir_okay=False, exists=True, resolve_path=True, path_type=Path),
     "help": "Provide a specific MkSlides-Reveal config file.",
 }
 
@@ -85,14 +92,14 @@ def cli(verbose: bool) -> None:
 @click.option("-s", "--strict", **strict_argument_data)  # type: ignore[arg-type]
 def build_command(
     files: Path,
-    config_file: Path | None,
+    config_file: Optional[Path],
     site_dir: str,
     strict: bool,
 ) -> None:
     """
     Build the MkDocs documentation.
 
-    FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
+    PATH is the path to the directory containing Markdown files.
     """
     logger.debug("Command: build")
 
@@ -125,7 +132,7 @@ def build_command(
 )
 def serve_command(
     files: Path,
-    config_file: Path | None,
+    config_file: Optional[Path],
     strict: bool,
     dev_addr: str,
     open_in_browser: bool,
@@ -133,7 +140,7 @@ def serve_command(
     """
     Run the builtin development server.
 
-    FILENAME|PATH is the path to the Markdown file, or the directory containing Markdown files.
+    PATH is the path to the directory containing Markdown files.
     """
     logger.debug("Command: serve")
 

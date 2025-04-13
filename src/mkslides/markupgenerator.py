@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 from importlib import resources
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
@@ -199,6 +199,98 @@ class MarkupGenerator:
 
         return templates
 
+    def __generate_theme_url(
+        self,
+        destination_path: Path,
+        slide_config: DictConfig,
+        frontmatter_metadata: dict[str, object],
+    ) -> Optional[str]:
+        theme = slide_config.slides.theme
+
+        if theme is None:
+            return None
+
+        if theme in REVEALJS_THEMES_LIST:
+            return str(
+                (
+                    self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
+                ).relative_to(destination_path.parent, walk_up=True),
+            )
+
+        if get_url_type(theme) != URLType.RELATIVE or (
+            "slides" in frontmatter_metadata
+            and isinstance(frontmatter_metadata["slides"], dict)
+            and "theme" in frontmatter_metadata["slides"]
+            and frontmatter_metadata["slides"]["theme"]
+        ):
+            return theme
+
+        return str(
+            (self.output_directory_path / theme).relative_to(
+                destination_path.parent,
+                walk_up=True,
+            ),
+        )
+
+    def __generate_highlight_theme_url(
+        self,
+        destination_path: Path,
+        slide_config: DictConfig,
+        frontmatter_metadata: dict[str, object],
+    ) -> Optional[str]:
+        highlight_theme = slide_config.slides.highlight_theme
+
+        if highlight_theme is None:
+            return None
+
+        if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
+            return str(
+                (
+                    self.output_highlightjs_themes_path / f"{highlight_theme}.css"
+                ).relative_to(destination_path.parent, walk_up=True),
+            )
+
+        if get_url_type(highlight_theme) != URLType.RELATIVE or (
+            "slides" in frontmatter_metadata
+            and isinstance(frontmatter_metadata["slides"], dict)
+            and "highlight_theme" in frontmatter_metadata["slides"]
+            and frontmatter_metadata["slides"]["highlight_theme"]
+        ):
+            return highlight_theme
+
+        return str(
+            (self.output_directory_path / highlight_theme).relative_to(
+                destination_path.parent,
+                walk_up=True,
+            ),
+        )
+
+    def __generate_favicon_url(
+        self,
+        destination_path: Path,
+        slide_config: DictConfig,
+        frontmatter_metadata: dict[str, object],
+    ) -> Optional[str]:
+        favicon = slide_config.slides.favicon
+
+        if favicon is None:
+            return None
+
+        if get_url_type(favicon) != URLType.RELATIVE or (
+            "slides" in frontmatter_metadata
+            and isinstance(frontmatter_metadata["slides"], dict)
+            and "favicon" in frontmatter_metadata["slides"]
+            and frontmatter_metadata["slides"]["favicon"]
+        ):
+            return favicon
+
+        return str(
+            (self.output_directory_path / favicon).relative_to(
+                destination_path.parent,
+                walk_up=True,
+            ),
+        )
+
     def __generate_slide_config(
         self,
         destination_path: Path,
@@ -212,67 +304,23 @@ class MarkupGenerator:
                 if key in frontmatter_metadata:
                     OmegaConf.update(slide_config, key, frontmatter_metadata[key])
 
-        theme = slide_config.slides.theme
-        if theme:
-            if theme in REVEALJS_THEMES_LIST:
-                slide_config.slides.theme = str(
-                    (
-                        self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
-                    ).relative_to(destination_path.parent, walk_up=True),
-                )
-            elif get_url_type(theme) == URLType.RELATIVE:
-                is_theme_from_frontmatter = (
-                    "slides" in frontmatter_metadata
-                    and isinstance(frontmatter_metadata["slides"], dict)
-                    and "theme" in frontmatter_metadata["slides"]
-                    and frontmatter_metadata["slides"]["theme"]
-                )
-                if not is_theme_from_frontmatter:
-                    slide_config.slides.theme = str(
-                        (self.output_directory_path / theme).relative_to(
-                            destination_path.parent,
-                            walk_up=True,
-                        ),
-                    )
+        slide_config.slides.theme = self.__generate_theme_url(
+            destination_path,
+            slide_config,
+            frontmatter_metadata,
+        )
 
-        highlight_theme = slide_config.slides.highlight_theme
-        if highlight_theme:
-            if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
-                slide_config.slides.highlight_theme = str(
-                    (
-                        self.output_highlightjs_themes_path / f"{highlight_theme}.css"
-                    ).relative_to(destination_path.parent, walk_up=True),
-                )
-            elif get_url_type(highlight_theme) == URLType.RELATIVE:
-                is_highlight_theme_from_frontmatter = (
-                    "slides" in frontmatter_metadata
-                    and isinstance(frontmatter_metadata["slides"], dict)
-                    and "highlight_theme" in frontmatter_metadata["slides"]
-                    and frontmatter_metadata["slides"]["highlight_theme"]
-                )
-                if not is_highlight_theme_from_frontmatter:
-                    slide_config.slides.highlight_theme = str(
-                        (self.output_directory_path / highlight_theme).relative_to(
-                            destination_path.parent,
-                            walk_up=True,
-                        ),
-                    )
+        slide_config.slides.highlight_theme = self.__generate_highlight_theme_url(
+            destination_path,
+            slide_config,
+            frontmatter_metadata,
+        )
 
-        favicon = slide_config.slides.favicon
-        if favicon and get_url_type(favicon) == URLType.RELATIVE:
-            is_favicon_from_frontmatter = (
-                "slides" in frontmatter_metadata
-                and isinstance(frontmatter_metadata["slides"], dict)
-                and "favicon" in frontmatter_metadata["slides"]
-                and frontmatter_metadata["slides"]["favicon"]
-            )
-            if not is_favicon_from_frontmatter:
-                slide_config.slides.favicon = str(
-                    (self.output_directory_path / favicon).relative_to(
-                        destination_path.parent,
-                        walk_up=True,
-                    ),
-                )
+        slide_config.slides.favicon = self.__generate_favicon_url(
+            destination_path,
+            slide_config,
+            frontmatter_metadata,
+        )
 
         return slide_config
 
@@ -282,6 +330,7 @@ class MarkupGenerator:
         navtree = NavTree(self.output_directory_path)
         if self.global_config.index.nav:
             nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
+            assert isinstance(nav_from_config, list), "nav must be a list"
             navtree.from_json(nav_from_config)
             logger.debug(f"Loaded navigation from config {navtree.to_dict()}")
             # TODO: simulate following warnings:

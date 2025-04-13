@@ -1,13 +1,14 @@
 import subprocess
 from pathlib import Path
 from re import Pattern
+from typing import Optional
 
 
 def run_build(
     cwd: Path,
     input_filename: str,
     output_path: Path,
-    config_filename: str | None,
+    config_filename: Optional[str],
 ) -> subprocess.CompletedProcess[str]:
     input_path = (cwd / input_filename).resolve(strict=True)
 

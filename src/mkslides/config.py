@@ -115,7 +115,7 @@ def validate(config: DictConfig) -> None:
         Path(config.slides.theme).resolve(strict=True)
 
 
-def get_config(config_file: Path | None = None) -> DictConfig:
+def get_config(config_file: Optional[Path] = None) -> DictConfig:
     config = OmegaConf.structured(Config)
 
     if not config_file and DEFAULT_CONFIG_LOCATION.exists():
