@@ -52,6 +52,7 @@ class Plugin:
 class Internal:
     config_path: Optional[Path] = MISSING
 
+
 @dataclass
 class Config:
     index: Index = field(default_factory=Index)

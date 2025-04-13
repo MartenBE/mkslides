@@ -2,7 +2,7 @@ import json
 import logging
 import re
 from importlib import metadata, resources
-from importlib.abc import Traversable
+from importlib.resources.abc import Traversable
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, PackageLoader, select_autoescape

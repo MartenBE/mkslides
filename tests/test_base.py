@@ -22,7 +22,7 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     assert_files_exist(output_path / "mkslides-assets/reveal-js/plugin/zoom/zoom.js")
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/theme/black.css")
     assert_files_exist(output_path / "mkslides-assets/highlight-js-themes/monokai.css")
-    # assert_files_exist(output_path / "index.html")
+    assert_files_exist(output_path / "index.html")
     assert_files_exist(output_path / "someslides.html")
     assert_files_exist(output_path / "somefolder/someslides.html")
     assert_files_exist(output_path / "img/example-1.png")

@@ -1,3 +1,4 @@
+import datetime
 import logging
 import shutil
 import time
@@ -10,14 +11,17 @@ from typing import Any
 import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
 from jinja2 import Template
+from natsort import natsorted
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
+from mkslides.mdfiletoprocess import MdFileToProcess
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
 from .constants import (
+    DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
     HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
@@ -28,14 +32,6 @@ from .constants import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class MdFileToProcess:
-    source_path: Path
-    destination_path: Path
-    slide_config: DictConfig
-    markdown_content: str
 
 
 class MarkupGenerator:
@@ -120,6 +116,7 @@ class MarkupGenerator:
                         destination_path,
                         frontmatter_metadata,
                     )
+                    assert slide_config
 
                     md_file_data = MdFileToProcess(
                         source_path=resolved_file,
@@ -188,7 +185,7 @@ class MarkupGenerator:
 
             self.__create_or_overwrite_file(md_file_data.destination_path, markup)
 
-        # self.__generate_index(md_files)
+        self.__generate_index(md_files)
 
     def __load_templates(
         self,
@@ -284,57 +281,48 @@ class MarkupGenerator:
 
         return slide_config
 
-    # def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
-    #     logger.debug("Generating index")
+    def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
+        logger.debug("Generating index")
 
-    #     slideshows = []
-    #     for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
-    #         title = md_file.slide_config.slides.title or md_file.destination_path.stem
-    #         location = md_file.destination_path.relative_to(self.output_directory_path)
-    #         slideshows.append(
-    #             {
-    #                 "title": title,
-    #                 "location": location,
-    #             },
-    #         )
+        # md_files_tree = self.__build_tree(md_files)
+        slideshows = []
+        for md_file in natsorted(md_files, key=lambda x: str(x.destination_path)):
+            title = md_file.slide_config.slides.title or md_file.destination_path.stem
+            location = md_file.destination_path.relative_to(self.output_directory_path)
+            slideshows.append(
+                {
+                    "title": title,
+                    "location": location,
+                },
+            )
 
-    #     index_path = self.output_directory_path / "index.html"
+        # Refresh the templates here, so they have effect when live reloading
+        index_template = None
+        if template_config := self.global_config.index.template:
+            index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
+        else:
+            index_template = DEFAULT_INDEX_TEMPLATE
 
-    #     # Copy the theme CSS
+        index_path = self.output_directory_path / "index.html"
 
-    #     relative_theme_path = None
-    #     theme = self.global_config.index.theme
-    #     if (
-    #         theme
-    #         and get_url_type(theme) != URLType.ABSOLUTE
-    #         and not theme.endswith(".css")
-    #     ):
-    #         with resources.as_file(
-    #             REVEALJS_THEMES_RESOURCE.joinpath(theme),
-    #         ) as builtin_theme_path:
-    #             theme_path = builtin_theme_path.with_suffix(".css").resolve(strict=True)
-    #             theme_output_path = self.output_themes_path / theme_path.name
-    #             self.__copy(theme_path, theme_output_path)
-    #             relative_theme_path = theme_output_path.relative_to(
-    #                 index_path.parent,
-    #                 walk_up=True,
-    #             )
+        content = index_template.render(
+            favicon=self.global_config.index.favicon,
+            title=self.global_config.index.title,
+            theme=self.global_config.index.theme,
+            slideshows=slideshows,
+            build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
+        )
+        self.__create_or_overwrite_file(index_path, content)
 
-    #     # Refresh the templates here, so they have effect when live reloading
-    #     index_template = None
-    #     if template_config := self.global_config.index.template:
-    #         index_template = LOCAL_JINJA2_ENVIRONMENT.get_template(template_config)
-    #     else:
-    #         index_template = DEFAULT_INDEX_TEMPLATE
-
-    #     content = index_template.render(
-    #         favicon=self.global_config.index.favicon,
-    #         title=self.global_config.index.title,
-    #         theme=relative_theme_path,
-    #         slideshows=slideshows,
-    #         build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
-    #     )
-    #     self.__create_or_overwrite_file(index_path, content)
+    def __build_tree(self, md_files: list[MdFileToProcess]) -> dict:
+        tree = {}
+        for md_file in md_files:
+            path = md_file.destination_path.relative_to(self.output_directory_path)
+            parts = path.parts  # tuple of path segments
+        #     node = tree
+        #     for part in parts:
+        #         node = node.setdefault(part, {})
+        # return tree
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
         """Create or overwrite a file with the given content."""
