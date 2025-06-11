@@ -4,6 +4,66 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
+---
+
+:warning: First, test if the bug isn't related by [reveal.js (upstream)](https://github.com/hakimel/reveal.js/). See if you can reproduce the bug in the snippet below:
+
+```html
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reset.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.css " />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/theme/white.min.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/plugin/markdown/markdown.min.js"></script>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section data-markdown>
+                    <textarea data-template>
+
+                        # Title page
+
+                        ---
+
+                        ## Slide 1
+
+                        A paragraph with some text and a [link](https://google.com).
+
+                        ---
+                        ## Slide 2
+
+                        A list:
+
+                        - Item 1
+                        - Item 2
+                        - Item 3
+
+                        ---
+
+                        ## Slide 3
+
+                        Some more text.
+
+                        ---
+
+                    </textarea>
+                </section>
+            </div>
+        </div>
+
+        <script>
+            Reveal.initialize({
+                plugins: [RevealMarkdown],
+            });
+        </script>
+    </body>
+</html>
+```
+
+If the bus is already present here, then it has nothing to do with mkslides. Please create an issue upstream instead of here.
 
 ---
 
