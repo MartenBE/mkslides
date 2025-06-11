@@ -6,7 +6,11 @@ labels: ''
 assignees: ''
 ---
 
-:warning: First, test if the bug isn't related by [reveal.js (upstream)](https://github.com/hakimel/reveal.js/). See if you can reproduce the bug in the snippet below:
+<details>
+
+<summary>
+    :warning: First, test if the bug isn't related by [reveal.js (upstream)](https://github.com/hakimel/reveal.js/). See if you can reproduce the bug in the snippet below (uncollapse this section to view it):
+</summary>
 
 ```html
 <html>
@@ -64,6 +68,9 @@ assignees: ''
 ```
 
 If the bus is already present here, then it has nothing to do with mkslides. Please create an issue upstream instead of here.
+Otherwise, leave the proof here for review in the code block above and continue filling in this issue.
+
+</details>
 
 ---
 
