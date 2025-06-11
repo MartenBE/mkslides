@@ -9,7 +9,7 @@ assignees: ''
 <details>
 
 <summary>
-    :warning: First, test if the bug isn't related by [reveal.js (upstream)](https://github.com/hakimel/reveal.js/). See if you can reproduce the bug in the snippet below (uncollapse this section to view it):
+    :warning: First, test if the bug isn't related to reveal.js upstream at https://github.com/hakimel/reveal.js/. See if you can reproduce the bug in the snippet below:
 </summary>
 
 ```html
