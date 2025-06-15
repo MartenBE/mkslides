@@ -65,8 +65,8 @@
                     {% endfor %}
                 {% endif %}
                 plugins: [
+                    RevealMarkdown, // Must come before the other plugins so they can hook into the generated HTML.
                     RevealHighlight,
-                    RevealMarkdown,
                     RevealMath.KaTeX,
                     RevealNotes,
                     RevealSearch,
