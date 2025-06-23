@@ -82,5 +82,24 @@
                 ],
             });
         </script>
+        <script>
+        // Navigation with mouse clicks
+        document.addEventListener('mousedown', function(event) {
+            // Prevent anything if alt key is pressed (to still be able to zoom in and out)
+            if (event.altKey) return;
+            // Prevent triggering navigation on links, buttons, and form elements
+            if (event.target.closest('a, button, input, textarea, select, [contenteditable]')) return;
+            if (event.button === 0) { // Left click
+                Reveal.next();
+                event.preventDefault();
+            } else if (event.button === 2) { // Right click
+                Reveal.prev();
+                event.preventDefault();
+            }
+        });
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+        </script>
     </body>
 </html>
