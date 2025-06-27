@@ -67,8 +67,11 @@ assignees: ''
 </html>
 ```
 
-If the bus is already present here, then it has nothing to do with mkslides. Please create an issue upstream instead of here.
+If the bug is already present here, then it has nothing to do with mkslides. Please create an issue upstream instead of here.
 Otherwise, leave the proof here for review in the code block above and continue filling in this issue.
+Check the following item:
+
+- [ ] I could not reproduce the bug using the minimal snippet.
 
 </details>
 
