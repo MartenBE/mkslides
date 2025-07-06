@@ -66,7 +66,7 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     assert_html_contains(
         output_path / "indentation.html",
         [
-"""<textarea data-template>
+            """<textarea data-template>
 # Test
 
 ```text
@@ -156,6 +156,6 @@ def test_process_file_without_config(setup_paths: Any) -> None:
         ],
     )
 
-    assert not (
-        output_path / "someslides.html"
-    ).exists(), "someslides.html should not exist"
+    assert not (output_path / "someslides.html").exists(), (
+        "someslides.html should not exist"
+    )
