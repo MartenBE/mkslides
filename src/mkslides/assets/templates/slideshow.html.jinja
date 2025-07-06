@@ -33,8 +33,9 @@
                     {{ key }}="{{ value }}"
                 {% endfor %}
                 >
+                    <!-- The markdown must be placed to the whole left to prevent indentation issues like https://github.com/MartenBE/mkslides/issues/52 -->
                     <textarea data-template>
-                        {{ markdown }}
+{{ markdown }}
                     </textarea>
                 </section>
             </div>
