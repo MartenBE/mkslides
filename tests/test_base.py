@@ -26,7 +26,9 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
             "assets/reveal-js/plugin/zoom/zoom.js",
             "assets/black.css",
             "assets/monokai.css",
+            "frontmatter.html",
             "index.html",
+            "indentation.html",
             "someslides.html",
             "somefolder/someslides.html",
             "img/example-1.png",
@@ -58,6 +60,21 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
             '<link rel="stylesheet" href="../assets/reveal-js/dist/reveal.css" />',
             '<link rel="stylesheet" href="../assets/black.css" />',
             '<link rel="stylesheet" href="../assets/monokai.css" />',
+        ],
+    )
+
+    assert_html_contains(
+        output_path / "indentation.html",
+        [
+"""<textarea data-template>
+# Test
+
+```text
+                       : this line starts with 23 space characters
+                        : this line starts with 24 space characters
+
+```
+""",
         ],
     )
 
