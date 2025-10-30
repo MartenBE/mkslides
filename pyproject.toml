@@ -67,16 +67,18 @@ ignore = [
     "ANN401",   # Dynamically typed expressions (typing.Any) are disallowed
     "D100",     # Missing docstring in public module
     "D101",     # Missing docstring in public class
-    "D103",     # Missing docstring in public function
     "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
     "D104",     # Missing docstring in public package"
     "D107",     # Missing docstring in `__init__`
     "D203",     # one-blank-line-before-class
     "D212",     # multi-line-summary-first-line
     "E501",     # Line too long
+    "ERA001",   # Found commented-out code
     "FA100",    # Add `from __future__ import annotations` to simplify `typing.Optional`
     "FA102",    # Missing `from __future__ import annotations`, but uses PEP 585 collection
     "FBT001",   # Boolean-typed positional argument in function definition
+    "FIX002",   # Line contains TODO, consider resolving the issue
     "G004",     # Logging statement uses f-string"
     "PLR0913",  # Too many arguments in function definition
     "RET504",   # Unnecessary assignment to `...` before `return` statement

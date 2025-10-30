@@ -1,5 +1,0 @@
-slides:
-  charset: utf-8
-  separator: ^\s*---\s*$
-  separator_vertical: ^\s*-v-\s*$
-  separator_notes: "^Notes?:"

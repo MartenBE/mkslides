@@ -1,7 +1,6 @@
 import logging
 import tempfile
 from pathlib import Path
-from typing import Optional
 
 import click
 from omegaconf import OmegaConf
@@ -92,7 +91,7 @@ def cli(verbose: bool) -> None:
 @click.option("-s", "--strict", **strict_argument_data)  # type: ignore[arg-type]
 def build_command(
     files: Path,
-    config_file: Optional[Path],
+    config_file: Path | None,
     site_dir: str,
     strict: bool,
 ) -> None:
@@ -132,7 +131,7 @@ def build_command(
 )
 def serve_command(
     files: Path,
-    config_file: Optional[Path],
+    config_file: Path | None,
     strict: bool,
     dev_addr: str,
     open_in_browser: bool,

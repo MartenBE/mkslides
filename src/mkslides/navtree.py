@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 
 from mkslides.mdfiletoprocess import MdFileToProcess
 
@@ -7,15 +6,15 @@ from mkslides.mdfiletoprocess import MdFileToProcess
 class Node:
     def __init__(self, title: str) -> None:
         self.title: str = title
-        self.__url: Optional[Path] = None
+        self.__url: Path | None = None
         self.children: list[Node] = []
 
     @property
-    def url(self) -> Optional[Path]:
+    def url(self) -> Path | None:
         return self.__url
 
     @url.setter
-    def url(self, value: Optional[Path]) -> None:
+    def url(self, value: Path | None) -> None:
         if value:
             self.__url = value.with_suffix(".html")
 

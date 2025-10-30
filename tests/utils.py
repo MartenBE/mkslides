@@ -1,40 +1,31 @@
 import subprocess
 from pathlib import Path
 from re import Pattern
-from typing import Optional
 
 
-def run_build(
+def __run_build_generic(
     cwd: Path,
-    input_filename: str,
+    input_path: Path,
     output_path: Path,
-    config_filename: Optional[str],
+    config_path: Path | None,
+    *,
+    strict: bool = False,
 ) -> subprocess.CompletedProcess[str]:
-    input_path = (cwd / input_filename).resolve(strict=True)
+    command = [
+        "mkslides",
+        "-v",
+        "build",
+        "-d",
+        str(output_path),
+    ]
 
-    if config_filename:
-        config_path = (cwd / config_filename).resolve(strict=True)
-        command = [
-            "mkslides",
-            "-v",
-            "build",
-            "-s",
-            "-d",
-            str(output_path),
-            "-f",
-            str(config_path),
-            str(input_path),
-        ]
-    else:
-        command = [
-            "mkslides",
-            "-v",
-            "build",
-            "-s",
-            "-d",
-            str(output_path),
-            str(input_path),
-        ]
+    if strict:
+        command.insert(3, "-s")  # Insert -s after "build"
+
+    if config_path:
+        command.extend(["-f", str(config_path)])
+
+    command.append(str(input_path))
 
     result = subprocess.run(
         command,
@@ -44,8 +35,25 @@ def run_build(
         check=False,
     )
     assert result.returncode == 0, result.stderr
-
     return result
+
+
+def run_build_strict(
+    cwd: Path,
+    input_path: Path,
+    output_path: Path,
+    config_path: Path | None,
+) -> subprocess.CompletedProcess[str]:
+    return __run_build_generic(cwd, input_path, output_path, config_path, strict=True)
+
+
+def run_build(
+    cwd: Path,
+    input_path: Path,
+    output_path: Path,
+    config_path: Path | None,
+) -> subprocess.CompletedProcess[str]:
+    return __run_build_generic(cwd, input_path, output_path, config_path, strict=False)
 
 
 def assert_files_exist(file: Path) -> None:
@@ -56,9 +64,9 @@ def assert_files_exist(file: Path) -> None:
 def assert_html_contains(file_path: Path, expected_content: str) -> None:
     with file_path.open() as file:
         content = file.read()
-        assert (
-            expected_content in content
-        ), f"{expected_content} not found in {file_path}"
+        assert expected_content in content, (
+            f"{expected_content} not found in {file_path}"
+        )
 
 
 def assert_html_contains_regexp(file_path: Path, regexp: Pattern[str]) -> None:

@@ -5,7 +5,7 @@ import time
 from copy import deepcopy
 from importlib import resources
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import frontmatter  # type: ignore[import-untyped]
 from emoji import emojize
@@ -204,7 +204,7 @@ class MarkupGenerator:
         destination_path: Path,
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
-    ) -> Optional[str]:
+    ) -> str | None:
         theme = slide_config.slides.theme
 
         if theme is None:
@@ -237,7 +237,7 @@ class MarkupGenerator:
         destination_path: Path,
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
-    ) -> Optional[str]:
+    ) -> str | None:
         highlight_theme = slide_config.slides.highlight_theme
 
         if highlight_theme is None:
@@ -270,7 +270,7 @@ class MarkupGenerator:
         destination_path: Path,
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
-    ) -> Optional[str]:
+    ) -> str | None:
         favicon = slide_config.slides.favicon
 
         if favicon is None:

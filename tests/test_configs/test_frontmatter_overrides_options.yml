@@ -1,8 +1,0 @@
-slides:
-    theme: beige
-    highlight_theme: 1c-light
-    separator: ---new-slide---
-revealjs:
-    height: 1024
-    width: 768
-    transition: convex
