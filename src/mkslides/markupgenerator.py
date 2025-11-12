@@ -17,7 +17,7 @@ from mkslides.mdfiletoprocess import MdFileToProcess
 from mkslides.navtree import NavTree
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
-from mkslides.utils import get_url_type
+from mkslides.utils import get_url_type, prettify_json
 
 from .constants import (
     DEFAULT_INDEX_TEMPLATE,
@@ -96,7 +96,7 @@ class MarkupGenerator:
             if file.is_file():
                 resolved_file = file.resolve(strict=True)
                 if resolved_file.suffix == ".md":
-                    destination_path = (
+                    relative_destination_path = (
                         self.output_directory_path
                         / resolved_file.relative_to(
                             self.md_root_path,
@@ -110,14 +110,14 @@ class MarkupGenerator:
                     markdown_content = emojize(markdown_content, language="alias")
 
                     slide_config = self.__generate_slide_config(
-                        destination_path,
+                        relative_destination_path,
                         frontmatter_metadata,
                     )
                     assert slide_config
 
                     md_file_data = MdFileToProcess(
                         source_path=resolved_file,
-                        destination_path=destination_path,
+                        relative_destination_path=relative_destination_path,
                         slide_config=slide_config,
                         markdown_content=markdown_content,
                     )
@@ -153,7 +153,7 @@ class MarkupGenerator:
                 slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
             revealjs_path = self.output_revealjs_path.relative_to(
-                md_file_data.destination_path.parent,
+                md_file_data.relative_destination_path.parent,
                 walk_up=True,
             )
 
@@ -180,7 +180,7 @@ class MarkupGenerator:
                 plugins=slide_config.plugins,
             )
 
-            self.__create_or_overwrite_file(md_file_data.destination_path, markup)
+            self.__create_or_overwrite_file(md_file_data.relative_destination_path, markup)
 
         self.__generate_index(md_files)
 
@@ -331,24 +331,16 @@ class MarkupGenerator:
         if self.global_config.index.nav:
             nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
             assert isinstance(nav_from_config, list), "nav must be a list"
-            navtree.from_json(nav_from_config)
-            logger.debug(f"Loaded navigation from config {navtree.to_dict()}")
-            # TODO: simulate following warnings:
-            #
-            # INFO    -  Cleaning site directory
-            # INFO    -  Building documentation to directory: /tmp/test/site
-            # INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
-            #              - 1.md
-            #              - 2.md
-            #              - 3.md
-            #              - some/4.md
-            #              - some/5.md
-            # WARNING -  A reference to 'index.md' is included in the 'nav' configuration, which is not found in the documentation files.
-            # WARNING -  A reference to 'about.md' is included in the 'nav' configuration, which is not found in the documentation files.
-            # INFO    -  Documentation built in 0.06 seconds
-            #
+            logger.debug("Generating navigation tree from config")
+            navtree.from_config_json(nav_from_config)
         else:
+            logger.debug("Generating navigation tree from markdown files")
             navtree.from_md_files(md_files)
+
+        logger.debug(
+            f"Generated navigation tree with root path {navtree.root_path.absolute()}"
+        )
+        logger.debug(f"Navigation tree:\n\n{prettify_json(navtree.to_json())}\n")
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
@@ -363,7 +355,7 @@ class MarkupGenerator:
             favicon=self.global_config.index.favicon,
             title=self.global_config.index.title,
             theme=self.global_config.index.theme,
-            nav_root_nodes=navtree.root_nodes,
+            # nav_root_nodes=navtree.root_nodes,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
         )
         self.__create_or_overwrite_file(index_path, content)

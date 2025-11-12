@@ -1,0 +1,16 @@
+# poetry run mkslides -v build tests/navtree/docs -f tests/navtree/navtree-config.yml
+index:
+  nav:
+    - someslides-1.md
+    - custom-file-name-1: someslides-2.md
+    - category-1:
+        - someslides-3.md
+    - category-2:
+        - someslides-4.md
+        - custom-file-name-2: someslides-5.md
+        - category-3:
+            - someslides-6.md
+            - custom-file-name-3: someslides-7.md
+    - category-4:
+        - someslides-8.md
+        - someslides-9.md

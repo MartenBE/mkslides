@@ -1,106 +1,135 @@
+import logging
 from pathlib import Path
+from treelib import Tree
 
 from mkslides.mdfiletoprocess import MdFileToProcess
 
-
-class Node:
-    def __init__(self, title: str) -> None:
-        self.title: str = title
-        self.__url: Path | None = None
-        self.children: list[Node] = []
-
-    @property
-    def url(self) -> Path | None:
-        return self.__url
-
-    @url.setter
-    def url(self, value: Path | None) -> None:
-        if value:
-            self.__url = value.with_suffix(".html")
-
-    def represents_file(self) -> bool:
-        self.__check_representation()
-        return self.url is not None
-
-    def represents_folder(self) -> bool:
-        self.__check_representation()
-        return len(self.children) > 0
-
-    def __check_representation(self) -> None:
-        if self.url and len(self.children) != 0:
-            msg = "Node cannot represent both a file and a folder"
-            raise ValueError(msg)
-
-        if not self.url and len(self.children) == 0:
-            msg = "Node must represent either a file or a folder"
-            raise ValueError(msg)
+logger = logging.getLogger(__name__)
 
 
 class NavTree:
     def __init__(self, root_path: Path) -> None:
-        self.root_nodes: list[Node] = []
         self.root_path = root_path
 
-    def from_json(self, json_data: list) -> None:
-        assert isinstance(json_data, list), "json data must be a list"
-
-        for item in json_data:
-            node = self.__node_from_json_dict(item)
-            self.root_nodes.append(node)
-
-    def __node_from_json_dict(self, json_data: dict | str) -> Node:
-        if isinstance(json_data, str):
-            title = Path(json_data).stem
-            node = Node(title)
-            node.url = self.root_path / json_data
-            return node
-        if isinstance(json_data, dict):
-            assert len(json_data.keys()) == 1, "json dict must have one key"
-
-            title, content = next(iter(json_data.items()))
-            if isinstance(content, str):
-                node = Node(title)
-                node.url = self.root_path / content
-                return node
-            if isinstance(content, list):
-                node = Node(title)
-                for item in content:
-                    child_node = self.__node_from_json_dict(item)
-                    node.children.append(child_node)
-                return node
-
-            msg = "json dict must have a string or list as value"
-            raise ValueError(msg)
-
-        msg = "json data must be a string or dict"
-        raise ValueError(msg)
+        # Relative path as str is the index, title as str the data.
+        self.tree = Tree()
+        self.tree.create_node(identifier="root", data="Root")
 
     def from_md_files(self, md_files: list[MdFileToProcess]) -> None:
         for md_file in md_files:
-            relative_destination_path = md_file.destination_path.relative_to(
-                self.root_path,
+            relative_destination_path = md_file.relative_destination_path.relative_to(
+                self.root_path
             )
             parts = relative_destination_path.parts
 
-            node_list = self.root_nodes
-            node = None
+            path_relative_destination_path = Path()
+            parent_node_id = self.tree.root
             for part in parts:
-                node = next((n for n in node_list if n.title == part), None)
-                if node is None:
-                    node = Node(part)
-                    node_list.append(node)
-                node_list = node.children
+                path_relative_destination_path /= part
+                node_id = str(path_relative_destination_path)
+                node_data = md_file.source_path.stem
 
-            assert node
+                if not node_id in self.tree:
+                    self.tree.create_node(
+                        identifier=node_id,
+                        parent=parent_node_id,
+                        data=node_data,
+                    )
 
-            node.title = md_file.slide_config.slides.title or md_file.source_path.stem
-            node.url = md_file.destination_path
+                parent_node_id = node_id
 
-    def to_dict(self) -> list:
-        return [self.__node_to_dict(node) for node in self.root_nodes]
+    def from_config_json(self, json_data: list) -> None:
+        assert isinstance(json_data, list), "json data must be a list"
 
-    def __node_to_dict(self, node: Node) -> dict:
-        if node.represents_file():
-            return {node.title: node.url}
+        for item in json_data:
+            self.__node_from_config_json(
+                item,
+                self.root_path,
+                self.root_path,
+                self.tree.root,
+            )
 
-        return {node.title: [self.__node_to_dict(child) for child in node.children]}
+    def __node_from_config_json(
+        self,
+        json_data: dict | str,
+        current_actual_path: Path,
+        current_virtual_path: Path,
+        parent_node_id: str,
+    ) -> None:
+
+        # leaf node
+        #
+        # - filename.md
+        #
+        if isinstance(json_data, str):
+            destination_path = (current_actual_path / json_data).with_suffix(".html")
+            node_id = str(destination_path.relative_to(self.root_path))
+            node_data = destination_path.stem
+
+            self.tree.create_node(
+                identifier=node_id,
+                parent=parent_node_id,
+                data=node_data,
+            )
+
+        # category or leaf node with custom file name
+        elif isinstance(json_data, dict):
+            assert len(json_data.keys()) == 1, "json dict must have one key"
+
+            title, content = next(iter(json_data.items()))
+
+            # leaf node with custom name
+            #
+            # - custom-file-name: filename.md
+            #
+            if isinstance(content, str):
+                destination_path = (current_actual_path / content).with_suffix(".html")
+                node_id = str(destination_path.relative_to(self.root_path))
+                node_data = title
+
+                self.tree.create_node(
+                    identifier=node_id,
+                    parent=parent_node_id,
+                    data=node_data,
+                )
+
+            # category node
+            #
+            # - category:
+            #   - ...
+            #
+            elif isinstance(content, list):
+                node_id = str(
+                    f"{(current_virtual_path / title).relative_to(self.root_path)} (virtual node)"
+                )
+                node_data = title
+
+                self.tree.create_node(
+                    identifier=node_id,
+                    parent=parent_node_id,
+                )
+
+                for item in content:
+                    self.__node_from_config_json(
+                        item,
+                        current_actual_path,
+                        current_virtual_path,
+                        node_id,
+                    )
+
+            else:
+                msg = f"json dict must have a string or list as value, but value is of {type(content)}"
+                raise ValueError(msg)
+
+        else:
+            msg = (
+                f"json data must be a string or dict, but is of type {type(json_data)}"
+            )
+
+            raise ValueError(msg)
+
+    def to_json(self) -> dict:
+        if not self.tree:
+            return {}
+
+        return self.tree.to_json(with_data=True)
