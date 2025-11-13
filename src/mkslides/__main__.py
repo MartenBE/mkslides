@@ -27,7 +27,7 @@ logger.addHandler(RichHandler(show_path=False))
 files_argument_data = {
     "metavar": "PATH",
     "type": click.Path(
-        file_okay=False,
+        file_okay=True,
         dir_okay=True,
         exists=True,
         resolve_path=True,

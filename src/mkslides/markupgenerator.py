@@ -66,8 +66,17 @@ class MarkupGenerator:
     def process_markdown(self) -> None:
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
+
         self.__create_or_clear_output_directory()
-        self.__process_markdown_directory()
+
+        if self.md_root_path.is_file():
+            assert (
+                self.md_root_path.suffix == ".md"
+            ), "md_root_path must be a markdown file"
+            self.__process_markdown_file()
+        else:
+            self.__process_markdown_directory()
+
         end_time = time.perf_counter()
         logger.info(
             f"Finished processing markdown in {end_time - start_time:.2f} seconds",
@@ -90,51 +99,77 @@ class MarkupGenerator:
 
     def scan_files(self) -> tuple[list[MdFileToProcess], list[Path]]:
         """Scan the markdown directory for markdown files and other files."""
-        md_files = []
-        non_md_files = []
+        md_files: list[MdFileToProcess] = []
+        non_md_files: list[Path] = []
 
         for file in self.md_root_path.rglob("*"):
             if file.is_file():
                 resolved_file = file.resolve(strict=True)
-                if resolved_file.suffix == ".md":
-                    relative_destination_path = (
+                if resolved_file.suffix.lower() == ".md":
+                    destination_path = (
                         self.output_directory_path
-                        / resolved_file.relative_to(
-                            self.md_root_path,
-                        ).with_suffix(".html")
+                        / resolved_file.relative_to(self.md_root_path).with_suffix(
+                            ".html"
+                        )
                     )
 
-                    content = resolved_file.read_text(encoding="utf-8-sig")
-                    frontmatter_metadata, markdown_content = frontmatter.parse(content)
-                    if self.preprocess_script_func:
-                        markdown_content = self.preprocess_script_func(markdown_content)
-                    markdown_content = emojize(markdown_content, language="alias")
-
-                    slide_config = self.__generate_slide_config(
-                        relative_destination_path,
-                        frontmatter_metadata,
-                    )
-                    assert slide_config
-
-                    md_file_data = MdFileToProcess(
-                        source_path=resolved_file,
-                        relative_destination_path=relative_destination_path,
-                        slide_config=slide_config,
-                        markdown_content=markdown_content,
+                    md_files.append(
+                        self.__create_md_file_to_process(
+                            source_path=resolved_file,
+                            destination_path=destination_path,
+                        ),
                     )
 
-                    md_files.append(md_file_data)
                 else:
                     non_md_files.append(resolved_file)
 
         return md_files, non_md_files
+
+    def __create_md_file_to_process(
+        self,
+        source_path: Path,
+        destination_path: Path,
+    ) -> MdFileToProcess:
+        """Create an MdFileToProcess instance from a markdown file."""
+        content = source_path.read_text(encoding="utf-8-sig")
+        frontmatter_metadata, markdown_content = frontmatter.parse(content)
+
+        if self.preprocess_script_func:
+            markdown_content = self.preprocess_script_func(markdown_content)
+
+        markdown_content = emojize(markdown_content, language="alias")
+
+        slide_config = self.__generate_slide_config(
+            destination_path,
+            frontmatter_metadata,
+        )
+        assert slide_config
+
+        return MdFileToProcess(
+            source_path=source_path,
+            destination_path=destination_path,
+            slide_config=slide_config,
+            markdown_content=markdown_content,
+        )
+
+    def __process_markdown_file(self) -> None:
+        logger.debug(f"Processing markdown file at '{self.md_root_path.absolute()}'")
+
+        destination_path = self.output_directory_path / "index.html"
+        md_file_data = self.__create_md_file_to_process(
+            source_path=self.md_root_path,
+            destination_path=destination_path,
+        )
+
+        templates = self.__load_templates([md_file_data])
+        self.__render_slideshows([md_file_data], templates)
 
     def __process_markdown_directory(self) -> None:
         logger.debug(
             f"Processing markdown directory at '{self.md_root_path.absolute()}'",
         )
 
-        md_files, non_md_files = self.scan_files()
+        md_files, non_md_files = self.__scan_files()
 
         for file in non_md_files:
             self.__copy(
@@ -143,7 +178,15 @@ class MarkupGenerator:
             )
 
         templates = self.__load_templates(md_files)
+        self.__render_slideshows(md_files, templates)
+        self.__generate_index(md_files)
 
+    def __render_slideshows(
+        self,
+        md_files: list[MdFileToProcess],
+        templates: dict[str, Template],
+    ) -> None:
+        """Render all markdown files to HTML slideshows."""
         for md_file_data in md_files:
             slide_config = md_file_data.slide_config
 
@@ -154,7 +197,7 @@ class MarkupGenerator:
                 slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
             revealjs_path = self.output_revealjs_path.relative_to(
-                md_file_data.relative_destination_path.parent,
+                md_file_data.destination_path.parent,
                 walk_up=True,
             )
 
@@ -182,18 +225,16 @@ class MarkupGenerator:
             )
 
             self.__create_or_overwrite_file(
-                md_file_data.relative_destination_path,
+                md_file_data.destination_path,
                 markup,
             )
-
-        self.__generate_index(md_files)
 
     def __load_templates(
         self,
         md_files: list[MdFileToProcess],
     ) -> dict[str, Template]:
-        """Load Jinja 2 templates from the markdown files."""
-        templates = {}
+        """Load Jinja2 templates from the markdown files."""
+        templates: dict[str, Template] = {}
 
         for md_file_data in md_files:
             template = md_file_data.slide_config.slides.template
@@ -224,8 +265,7 @@ class MarkupGenerator:
         if get_url_type(theme) != URLType.RELATIVE or (
             "slides" in frontmatter_metadata
             and isinstance(frontmatter_metadata["slides"], dict)
-            and "theme" in frontmatter_metadata["slides"]
-            and frontmatter_metadata["slides"]["theme"]
+            and frontmatter_metadata["slides"].get("theme")
         ):
             return theme
 
@@ -257,8 +297,7 @@ class MarkupGenerator:
         if get_url_type(highlight_theme) != URLType.RELATIVE or (
             "slides" in frontmatter_metadata
             and isinstance(frontmatter_metadata["slides"], dict)
-            and "highlight_theme" in frontmatter_metadata["slides"]
-            and frontmatter_metadata["slides"]["highlight_theme"]
+            and frontmatter_metadata["slides"].get("highlight_theme")
         ):
             return highlight_theme
 
@@ -283,8 +322,7 @@ class MarkupGenerator:
         if get_url_type(favicon) != URLType.RELATIVE or (
             "slides" in frontmatter_metadata
             and isinstance(frontmatter_metadata["slides"], dict)
-            and "favicon" in frontmatter_metadata["slides"]
-            and frontmatter_metadata["slides"]["favicon"]
+            and frontmatter_metadata["slides"].get("favicon")
         ):
             return favicon
 
@@ -344,8 +382,10 @@ class MarkupGenerator:
         logger.debug(
             f"Generated navigation tree with input root path {navtree.input_root_path.absolute()} and output root path {navtree.output_root_path.absolute()}",
         )
-        navtree_json = json.dumps(json.loads(navtree.to_json()), indent=4)
-        logger.debug(f"Navigation tree:\n\n{navtree_json}\n")
+
+        if logger.isEnabledFor(logging.DEBUG):
+            navtree_json = json.dumps(json.loads(navtree.to_json()), indent=4)
+            logger.debug(f"Navigation tree:\n\n{navtree_json}\n")
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
