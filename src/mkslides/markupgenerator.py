@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import re
 import shutil
 import time
 from copy import deepcopy
@@ -25,7 +26,10 @@ from .constants import (
     DEFAULT_SLIDESHOW_TEMPLATE,
     HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
+    HTML_RELATIVE_SLIDESHOW_LINK_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
+    MD_EXTENSION_REGEX,
+    MD_RELATIVE_SLIDESHOW_LINK_REGEX,
     OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_LIST,
@@ -115,8 +119,8 @@ class MarkupGenerator:
 
                     md_files.append(
                         self.__create_md_file_to_process(
-                            source_path=resolved_file,
-                            destination_path=destination_path,
+                            resolved_file,
+                            destination_path,
                         ),
                     )
 
@@ -157,11 +161,12 @@ class MarkupGenerator:
 
         destination_path = self.output_directory_path / "index.html"
         md_file_data = self.__create_md_file_to_process(
-            source_path=self.md_root_path,
-            destination_path=destination_path,
+            self.md_root_path,
+            destination_path,
         )
 
         templates = self.__load_templates([md_file_data])
+        self.__handle_relative_slideshow_links([md_file_data])
         self.__render_slideshows([md_file_data], templates)
 
     def __process_markdown_directory(self) -> None:
@@ -178,6 +183,7 @@ class MarkupGenerator:
             )
 
         templates = self.__load_templates(md_files)
+        self.__handle_relative_slideshow_links(md_files)
         self.__render_slideshows(md_files, templates)
         self.__generate_index(md_files)
 
@@ -433,3 +439,54 @@ class MarkupGenerator:
         logger.debug(
             f"{action} {file_or_directory} '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )
+
+    def __is_relative(self, path: str) -> bool:
+        """Detect if a path is relative."""
+        return not path.startswith(("http://", "https://", "/"))
+
+    def __handle_relative_slideshow_links(
+        self,
+        md_file_data: list[MdFileToProcess],
+    ) -> dict[MdFileToProcess, list[tuple[str, str]]]:
+        """Update relative .md links to .html and return all converted (old, new) links."""
+        all_relative_slideshow_links = {}
+
+        for md_file in md_file_data:
+            content = md_file.markdown_content
+            relative_slideshow_links_in_md_file = []
+
+            def __md_replacer(match: re.Match) -> str:
+                location = match.group("location")
+
+                if not self.__is_relative(location):
+                    return match.group(0)
+
+                new_location = MD_EXTENSION_REGEX.sub(".html", location)
+
+                relative_slideshow_links_in_md_file.append(  # noqa: B023
+                    (location, new_location),
+                )
+
+                return match.group(0).replace(location, new_location)
+
+            def __html_replacer(match: re.Match) -> str:
+                location = match.group("location")
+
+                if not self.__is_relative(location):
+                    return match.group(0)
+
+                new_location = MD_EXTENSION_REGEX.sub(".html", location)
+
+                relative_slideshow_links_in_md_file.append(  # noqa: B023
+                    (location, new_location),
+                )
+
+                return match.group(0).replace(location, new_location)
+
+            content = MD_RELATIVE_SLIDESHOW_LINK_REGEX.sub(__md_replacer, content)
+            content = HTML_RELATIVE_SLIDESHOW_LINK_REGEX.sub(__html_replacer, content)
+
+            all_relative_slideshow_links[md_file] = relative_slideshow_links_in_md_file
+            md_file.markdown_content = content
+
+        return all_relative_slideshow_links

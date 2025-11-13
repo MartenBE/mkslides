@@ -35,6 +35,30 @@ HTML_BACKGROUND_IMAGE_REGEX = re.compile(
     re.VERBOSE,
 )
 
+MD_RELATIVE_SLIDESHOW_LINK_REGEX = re.compile(
+    r"""
+    \[(?P<alt_text>.*?)\]               # Alt text
+    \((?P<location>.+?\.[mM][dD])\)     # Image location
+    """,
+    re.VERBOSE,
+)
+
+HTML_RELATIVE_SLIDESHOW_LINK_REGEX = re.compile(
+    r"""
+    <a                                  # Start of the image
+    .+?                                 # Any attributes
+    href=                               # src attribute
+        (?P<delimiter>['\"])            # Delimiter
+        (?P<location>.+?\.[mM][dD])     # Image location
+        (?P=delimiter)                  # Delimiter
+    .*?                                 # Any attributes
+    >                                   # End of the image
+    """,
+    re.VERBOSE,
+)
+
+MD_EXTENSION_REGEX = re.compile(r"\.[mM][dD]$")
+
 VERSION = metadata.version(__package__)
 DEFAULT_CONFIG_LOCATION = Path("mkslides.yml")
 DEFAULT_OUTPUT_DIR = "site"
