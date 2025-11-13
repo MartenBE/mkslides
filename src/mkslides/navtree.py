@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+
 from treelib import Tree
 
 from mkslides.mdfiletoprocess import MdFileToProcess
@@ -13,23 +14,23 @@ class NavTree:
 
         # Relative path as str is the index, title as str the data.
         self.tree = Tree()
-        self.tree.create_node(identifier="root", data="Root")
+        self.tree.create_node(identifier="root")
 
     def from_md_files(self, md_files: list[MdFileToProcess]) -> None:
         for md_file in md_files:
             relative_destination_path = md_file.relative_destination_path.relative_to(
-                self.root_path
+                self.root_path,
             )
             parts = relative_destination_path.parts
 
             path_relative_destination_path = Path()
-            parent_node_id = self.tree.root
+            parent_node_id = str(self.tree.root)
             for part in parts:
                 path_relative_destination_path /= part
                 node_id = str(path_relative_destination_path)
                 node_data = md_file.source_path.stem
 
-                if not node_id in self.tree:
+                if node_id not in self.tree:
                     self.tree.create_node(
                         identifier=node_id,
                         parent=parent_node_id,
@@ -45,24 +46,21 @@ class NavTree:
             self.__node_from_config_json(
                 item,
                 self.root_path,
-                self.root_path,
-                self.tree.root,
+                str(self.tree.root),
             )
 
     def __node_from_config_json(
         self,
         json_data: dict | str,
-        current_actual_path: Path,
-        current_virtual_path: Path,
+        current_path: Path,
         parent_node_id: str,
     ) -> None:
-
         # leaf node
         #
         # - filename.md
         #
         if isinstance(json_data, str):
-            destination_path = (current_actual_path / json_data).with_suffix(".html")
+            destination_path = (current_path / json_data).with_suffix(".html")
             node_id = str(destination_path.relative_to(self.root_path))
             node_data = destination_path.stem
 
@@ -83,7 +81,7 @@ class NavTree:
             # - custom-file-name: filename.md
             #
             if isinstance(content, str):
-                destination_path = (current_actual_path / content).with_suffix(".html")
+                destination_path = (current_path / content).with_suffix(".html")
                 node_id = str(destination_path.relative_to(self.root_path))
                 node_data = title
 
@@ -99,34 +97,25 @@ class NavTree:
             #   - ...
             #
             elif isinstance(content, list):
-                node_id = str(
-                    f"{(current_virtual_path / title).relative_to(self.root_path)} (virtual node)"
-                )
+                destination_path = current_path / title
+                node_id = str(f"{destination_path.relative_to(self.root_path)}")
                 node_data = title
 
-                self.tree.create_node(
-                    identifier=node_id,
-                    parent=parent_node_id,
-                )
+                self.tree.create_node(identifier=node_id, parent=parent_node_id)
 
                 for item in content:
-                    self.__node_from_config_json(
-                        item,
-                        current_actual_path,
-                        current_virtual_path,
-                        node_id,
-                    )
+                    self.__node_from_config_json(item, destination_path, node_id)
 
             else:
                 msg = f"json dict must have a string or list as value, but value is of {type(content)}"
-                raise ValueError(msg)
+                raise TypeError(msg)
 
         else:
             msg = (
                 f"json data must be a string or dict, but is of type {type(json_data)}"
             )
 
-            raise ValueError(msg)
+            raise TypeError(msg)
 
     def to_json(self) -> dict:
         if not self.tree:

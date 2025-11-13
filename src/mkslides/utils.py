@@ -1,5 +1,3 @@
-import json
-
 from urllib.parse import urlparse
 
 from mkslides.urltype import URLType
@@ -26,7 +24,3 @@ def get_url_type(url: str) -> URLType:
         return URLType.ABSOLUTE
 
     return URLType.RELATIVE
-
-def prettify_json(json_data: str) -> str:
-    parsed = json.loads(json_data)
-    return json.dumps(parsed, indent=4)

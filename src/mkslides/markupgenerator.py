@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import shutil
 import time
@@ -17,7 +18,7 @@ from mkslides.mdfiletoprocess import MdFileToProcess
 from mkslides.navtree import NavTree
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
-from mkslides.utils import get_url_type, prettify_json
+from mkslides.utils import get_url_type
 
 from .constants import (
     DEFAULT_INDEX_TEMPLATE,
@@ -180,7 +181,10 @@ class MarkupGenerator:
                 plugins=slide_config.plugins,
             )
 
-            self.__create_or_overwrite_file(md_file_data.relative_destination_path, markup)
+            self.__create_or_overwrite_file(
+                md_file_data.relative_destination_path,
+                markup,
+            )
 
         self.__generate_index(md_files)
 
@@ -338,9 +342,10 @@ class MarkupGenerator:
             navtree.from_md_files(md_files)
 
         logger.debug(
-            f"Generated navigation tree with root path {navtree.root_path.absolute()}"
+            f"Generated navigation tree with root path {navtree.root_path.absolute()}",
         )
-        logger.debug(f"Navigation tree:\n\n{prettify_json(navtree.to_json())}\n")
+        navtree_json = json.dumps(navtree.to_json(), indent=4)
+        logger.debug(f"Navigation tree:\n\n{navtree_json}\n")
 
         # Refresh the templates here, so they have effect when live reloading
         index_template = None
