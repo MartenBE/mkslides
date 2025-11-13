@@ -1,4 +1,5 @@
 import logging
+import sys
 import tempfile
 from pathlib import Path
 
@@ -84,7 +85,7 @@ def cli(verbose: bool) -> None:
     "-d",
     "--site-dir",
     type=click.Path(path_type=Path),
-    help="The directory to output the result of the slides build.",
+    help="The directory to output the result of the slides build. All files are removed from the site dir before building.",
     metavar="PATH",
     default=DEFAULT_OUTPUT_DIR,
 )
@@ -104,6 +105,12 @@ def build_command(
 
     config = get_config(config_file)
     output_path = Path(site_dir).resolve(strict=False)
+
+    if files.is_relative_to(output_path):
+        logger.error(
+            f'Files "{files}" should not be within the site dir "{site_dir}" as this can mean the source files are overwritten by the output.',
+        )
+        sys.exit(1)
 
     build(config, files, output_path, strict)
 

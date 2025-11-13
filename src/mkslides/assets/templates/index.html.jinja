@@ -4,7 +4,8 @@
         <span class="node-title">{{ node.data }}</span>:
         <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a>,
         <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>,
-        <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
+        <a href="{{ node.identifier }}?print-pdf" target="_blank" title="Download as PDF">PDF</a>,
+        <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF with notes</a>
     {% else %}
         {{ node.data }}
         <ul>
@@ -43,7 +44,7 @@
 
         <p>
             Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
-            The PDF link generates a single-page document (including speaker notes) suitable for <a href="https://revealjs.com/pdf-export/" target="_blank">saving as a PDF for printing</a>.
+            The PDF links generate a single-page document suitable for <a href="https://revealjs.com/pdf-export/" target="_blank">saving as a PDF for printing</a>.
         </p>
     </body>
 </html>

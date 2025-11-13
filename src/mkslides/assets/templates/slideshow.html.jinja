@@ -33,18 +33,20 @@
                     {{ key }}="{{ value }}"
                 {% endfor %}
                 >
+                    <!-- The markdown must be placed to the whole left to prevent indentation issues like https://github.com/MartenBE/mkslides/issues/52 -->
                     <textarea data-template>
-                        {{ markdown }}
+{{ markdown }}
                     </textarea>
                 </section>
             </div>
         </div>
         <script src="{{ revealjs_path }}/dist/reveal.js"></script>
-        <script src="{{ revealjs_path }}/plugin/markdown/markdown.js"></script>
         <script src="{{ revealjs_path }}/plugin/highlight/highlight.js"></script>
-        <script src="{{ revealjs_path }}/plugin/zoom/zoom.js"></script>
-        <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
+        <script src="{{ revealjs_path }}/plugin/markdown/markdown.js"></script>
         <script src="{{ revealjs_path }}/plugin/math/math.js"></script>
+        <script src="{{ revealjs_path }}/plugin/notes/notes.js"></script>
+        <script src="{{ revealjs_path }}/plugin/search/search.js"></script>
+        <script src="{{ revealjs_path }}/plugin/zoom/zoom.js"></script>
 
         {% if plugins %}
             {% for plugin in plugins %}
@@ -64,11 +66,12 @@
                     {% endfor %}
                 {% endif %}
                 plugins: [
-                    RevealMarkdown,
+                    RevealMarkdown, // Must come before the other plugins so they can hook into the generated HTML.
                     RevealHighlight,
-                    RevealZoom,
+                    RevealMath.KaTeX,
                     RevealNotes,
-                    RevealMath,
+                    RevealSearch,
+                    RevealZoom,
 
                     {% if plugins %}
                         {% for plugin in plugins %}

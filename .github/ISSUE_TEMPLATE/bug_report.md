@@ -1,9 +1,80 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ""
-labels: ""
-assignees: ""
+title: ''
+labels: ''
+assignees: ''
+---
+
+<details>
+
+<summary>
+    :warning: First, test if the bug isn't related to reveal.js upstream at https://github.com/hakimel/reveal.js/. See if you can reproduce the bug in the snippet below:
+</summary>
+
+```html
+<html>
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reset.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.css " />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/theme/white.min.css" />
+
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/plugin/markdown/markdown.min.js"></script>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section data-markdown>
+                    <textarea data-template>
+
+                        # Title page
+
+                        ---
+
+                        ## Slide 1
+
+                        A paragraph with some text and a [link](https://google.com).
+
+                        ---
+                        ## Slide 2
+
+                        A list:
+
+                        - Item 1
+                        - Item 2
+                        - Item 3
+
+                        ---
+
+                        ## Slide 3
+
+                        Some more text.
+
+                        ---
+
+                    </textarea>
+                </section>
+            </div>
+        </div>
+
+        <script>
+            Reveal.initialize({
+                plugins: [RevealMarkdown],
+            });
+        </script>
+    </body>
+</html>
+```
+
+If the bug is already present here, then it has nothing to do with mkslides. Please create an issue upstream instead of here.
+Otherwise, leave the proof here for review in the code block above and continue filling in this issue.
+Check the following item:
+
+- [ ] I could not reproduce the bug using the minimal snippet.
+
+</details>
+
 ---
 
 **Describe the bug**

@@ -116,7 +116,8 @@ Usage: mkslides build [OPTIONS] PATH
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
   -d, --site-dir PATH         The directory to output the result of the slides
-                              build.
+                              build. All files are removed from the site dir
+                              before building.
   -s, --strict                Fail if a relative link cannot be resolved,
                               otherwise just print a warning.
   -h, --help                  Show this message and exit.

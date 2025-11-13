@@ -138,16 +138,24 @@ class MarkupGenerator:
         content = source_path.read_text(encoding="utf-8-sig")
         frontmatter_metadata, markdown_content = frontmatter.parse(content)
 
-        if self.preprocess_script_func:
-            markdown_content = self.preprocess_script_func(markdown_content)
-
-        markdown_content = emojize(markdown_content, language="alias")
-
         slide_config = self.__generate_slide_config(
             destination_path,
             frontmatter_metadata,
         )
         assert slide_config
+
+        markdown_content = emojize(markdown_content, language="alias")
+
+        if preprocess_script := slide_config.slides.preprocess_script:
+            if preprocess_script_func := load_preprocessing_function(preprocess_script):
+                markdown_content = preprocess_script_func(markdown_content)
+                logger.debug(
+                    f"Preprocessed markdown content with '{preprocess_script}'",
+                )
+            else:
+                logger.error(
+                    f"Failed to load preprocessing function from '{preprocess_script}'",
+                )
 
         return MdFileToProcess(
             source_path=source_path,
