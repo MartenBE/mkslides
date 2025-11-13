@@ -1,16 +1,14 @@
 {% macro render_node(node) %}
 <li>
-    {% if node.represents_file() %}
-        <span class="node-title">{{ node.title }}</span>:
-        <a href="{{ node.url }}" target="_blank" title="View slides">slides</a>,
-        <a href="{{ node.url }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>,
-        <a href="{{ node.url }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
-    {% endif %}
-
-    {% if node.represents_folder() %}
-        {{ node.title }}
+    {% if navtree.is_node_leaf(node.identifier) %}
+        <span class="node-data">{{ node.data }}</span>:
+        <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a>,
+        <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>,
+        <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>
+    {% else %}
+        {{ node.data }}
         <ul>
-            {% for child in node.children %}
+            {% for child in navtree.get_node_children(node.identifier) %}
                 {{ render_node(child) }}
             {% endfor %}
         </ul>
@@ -38,8 +36,7 @@
         <h1>{{ title }}</h1>
 
         <ul>
-            {% for node in navtree_nodes %}
-                hello
+            {% for node in navtree.get_node_children(navtree.tree.root) %}
                 {{ render_node(node) }}
             {% endfor %}
         </ul>

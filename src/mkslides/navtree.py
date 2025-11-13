@@ -30,12 +30,12 @@ class NavTree:
                 current_relative_source_path /= part
 
                 node_id = None
-                node_data = None
                 if (self.input_root_path / current_relative_source_path).is_dir():
                     node_id = str(current_relative_source_path)
                 else:
                     node_id = str(current_relative_source_path.with_suffix(".html"))
-                    node_data = md_file.source_path.stem
+
+                node_data = current_relative_source_path.stem
 
                 if node_id not in self.tree:
                     self.tree.create_node(
@@ -108,7 +108,11 @@ class NavTree:
                 node_id = str(f"{destination_path.relative_to(self.output_root_path)}")
                 node_data = title
 
-                self.tree.create_node(identifier=node_id, parent=parent_node_id)
+                self.tree.create_node(
+                    identifier=node_id,
+                    parent=parent_node_id,
+                    data=node_data,
+                )
 
                 for item in content:
                     self.__node_from_config_json(item, destination_path, node_id)
@@ -124,8 +128,14 @@ class NavTree:
 
             raise TypeError(msg)
 
-    def to_json(self) -> dict:
+    def is_node_leaf(self, node_id: str) -> bool:
+        return self.tree[node_id].is_leaf(self.tree.identifier)
+
+    def get_node_children(self, node_id: str) -> list:
+        return sorted(self.tree.children(node_id), key=lambda n: n.identifier)
+
+    def to_json(self) -> str:
         if not self.tree:
-            return {}
+            return "{}"
 
         return self.tree.to_json(with_data=True)
