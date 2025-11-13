@@ -1,4 +1,3 @@
-# poetry run mkslides -v build tests/navtree/docs -f tests/navtree/navtree-config.yml
 index:
   nav:
     - someslides-1.md

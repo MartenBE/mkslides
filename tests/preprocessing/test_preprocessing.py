@@ -1,7 +1,7 @@
 # TODO: Fix this test
 # def test_preprocessing(setup_paths: Any) -> None:
 #     cwd, output_path = setup_paths
-#     input_path = cwd / "preprocessing" / "docs"
+#     input_path = cwd / "preprocessing" / "slides"
 #     config_path = cwd / "preprocessing" / "preprocessing-config.yml"
 #     run_build_strict(cwd, input_path, output_path, config_path)
 

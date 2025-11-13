@@ -5,7 +5,7 @@ from tests.utils import assert_files_exist, assert_html_contains, run_build_stri
 
 def test_local_slideshow_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "themes" / "docs"
+    input_path = cwd / "themes" / "slides"
     config_path = cwd / "themes" / "local_slideshow_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -38,7 +38,7 @@ def test_local_slideshow_theme_path(setup_paths: Any) -> None:
 
 def test_absolute_url_slideshow_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "themes" / "docs"
+    input_path = cwd / "themes" / "slides"
     config_path = cwd / "themes" / "absolute_url_slideshow_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -71,7 +71,7 @@ def test_absolute_url_slideshow_theme_path(setup_paths: Any) -> None:
 
 def test_builtin_slideshow_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "themes" / "docs"
+    input_path = cwd / "themes" / "slides"
     config_path = cwd / "themes" / "builtin_slideshow_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -107,7 +107,7 @@ def test_builtin_slideshow_theme_path(setup_paths: Any) -> None:
 
 def test_local_index_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "themes" / "docs"
+    input_path = cwd / "themes" / "slides"
     config_path = cwd / "themes" / "local_index_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -119,7 +119,7 @@ def test_local_index_theme_path(setup_paths: Any) -> None:
 
 def test_absolute_url_index_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "themes" / "docs"
+    input_path = cwd / "themes" / "slides"
     config_path = cwd / "themes" / "absolute_url_index_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 

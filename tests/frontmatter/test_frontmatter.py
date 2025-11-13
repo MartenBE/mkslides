@@ -11,7 +11,7 @@ from tests.utils import (
 
 def test_frontmatter_overrides_default(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "frontmatter" / "docs"
+    input_path = cwd / "frontmatter" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
     assert_html_contains(
@@ -68,7 +68,7 @@ def test_frontmatter_overrides_default(setup_paths: Any) -> None:
 
 def test_frontmatter_overrides_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "frontmatter" / "docs"
+    input_path = cwd / "frontmatter" / "slides"
     config_path = cwd / "frontmatter" / "frontmatter_overrides_options-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -126,7 +126,7 @@ def test_frontmatter_overrides_options(setup_paths: Any) -> None:
 
 def test_frontmatter_paths_are_relative_to_mdfile(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "frontmatter" / "docs"
+    input_path = cwd / "frontmatter" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
     assert_html_contains(

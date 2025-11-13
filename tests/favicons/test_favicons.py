@@ -5,7 +5,7 @@ from tests.utils import assert_html_contains, run_build_strict
 
 def test_absolute_url_index_favicon_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "favicons" / "docs"
+    input_path = cwd / "favicons" / "slides"
     config_path = cwd / "favicons" / "absolute_url_index_favicon_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -17,7 +17,7 @@ def test_absolute_url_index_favicon_path(setup_paths: Any) -> None:
 
 def test_absolute_url_slideshow_favicon_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "favicons" / "docs"
+    input_path = cwd / "favicons" / "slides"
     config_path = cwd / "favicons" / "absolute_url_slideshow_favicon_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -34,7 +34,7 @@ def test_absolute_url_slideshow_favicon_path(setup_paths: Any) -> None:
 
 def test_local_index_favicon_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "favicons" / "docs"
+    input_path = cwd / "favicons" / "slides"
     config_path = cwd / "favicons" / "local_index_favicon_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -46,7 +46,7 @@ def test_local_index_favicon_path(setup_paths: Any) -> None:
 
 def test_local_slideshow_favicon_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "favicons" / "docs"
+    input_path = cwd / "favicons" / "slides"
     config_path = cwd / "favicons" / "local_slideshow_favicon_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 

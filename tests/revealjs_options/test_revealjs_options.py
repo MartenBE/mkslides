@@ -11,7 +11,7 @@ from tests.utils import (
 # Necessary for livereload to work properly
 def test_revealjs_default_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "revealjs_options" / "docs"
+    input_path = cwd / "revealjs_options" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
     assert_html_contains(output_path / "someslides-1.html", "history: true,")
@@ -19,7 +19,7 @@ def test_revealjs_default_options(setup_paths: Any) -> None:
 
 def test_revealjs_integer_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "revealjs_options" / "docs"
+    input_path = cwd / "revealjs_options" / "slides"
     config_path = cwd / "revealjs_options" / "revealjs_integer_options-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
@@ -42,7 +42,7 @@ def test_revealjs_integer_options(setup_paths: Any) -> None:
 
 def test_revealjs_string_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "revealjs_options" / "docs"
+    input_path = cwd / "revealjs_options" / "slides"
     config_path = cwd / "revealjs_options" / "revealjs_string_options-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 

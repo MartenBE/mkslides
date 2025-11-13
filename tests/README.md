@@ -25,5 +25,5 @@ The tests use a temporary directory (e.g. `/tmp` on Linux) to build the destinat
 However, sometimes you want to see what a test outputs. In that case, you can simulate the test by running following command from the root folder:
 
 ```bash
-poetry run mkslides -s -d site -v build tests/navtree/docs -f tests/navtree/navtree-config.yml
+poetry run mkslides -s -d site -v build tests/navtree/slides -f tests/navtree/navtree-config.yml
 ```

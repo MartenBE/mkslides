@@ -1,6 +1,6 @@
 ---
 slides:
-  preprocess_script: preprocessing/docs/scripts/replace_at_by_b.py
+  preprocess_script: preprocessing/slides/scripts/replace_at_by_b.py
 ---
 
 # Some slides

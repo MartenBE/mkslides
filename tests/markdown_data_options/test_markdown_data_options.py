@@ -6,7 +6,7 @@ from tests.utils import assert_html_contains_regexp, run_build_strict
 
 def test_revealjs_markdown_data_options(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "markdown_data_options" / "docs"
+    input_path = cwd / "markdown_data_options" / "slides"
     config_path = (
         cwd / "markdown_data_options" / "revealjs_markdown_data_options-config.yml"
     )

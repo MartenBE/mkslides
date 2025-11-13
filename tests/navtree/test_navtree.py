@@ -13,7 +13,7 @@ from mkslides.navtree import NavTree
 
 def test_navtree_from_md_files(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = (cwd / "navtree" / "docs").resolve(strict=True)
+    input_path = (cwd / "navtree" / "slides").resolve(strict=True)
     config = get_config(None)
 
     expected_tree_json = json.dumps(
@@ -89,7 +89,7 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
 
 def test_navtree_from_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = (cwd / "navtree" / "docs").resolve(strict=True)
+    input_path = (cwd / "navtree" / "slides").resolve(strict=True)
     config_path = (cwd / "navtree" / "navtree-config.yml").resolve(strict=True)
     config = get_config(config_path)
 

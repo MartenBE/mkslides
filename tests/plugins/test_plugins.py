@@ -10,7 +10,7 @@ from tests.utils import (
 
 def test_plugins(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "plugins" / "docs"
+    input_path = cwd / "plugins" / "slides"
     config_path = cwd / "plugins" / "plugins-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 

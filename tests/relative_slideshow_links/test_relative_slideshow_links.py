@@ -8,7 +8,7 @@ from tests.utils import (
 
 def test_process_directory_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "relative_slideshow_links" / "docs"
+    input_path = cwd / "relative_slideshow_links" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
     assert_html_contains(output_path / "someslides-1.html", "[](someslides-2.html)")
@@ -112,7 +112,7 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
 
 # def test_process_file_without_config(setup_paths: Any) -> None:
 #     cwd, output_path = setup_paths
-#     input_path = cwd / "strict" / "docs"
+#     input_path = cwd / "strict" / "slides"
 
 #     result = subprocess.run(
 #         [

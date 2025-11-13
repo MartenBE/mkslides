@@ -9,7 +9,7 @@ from tests.utils import (
 
 def test_process_directory_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = cwd / "baseline" / "docs"
+    input_path = cwd / "baseline" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
     assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.css")
