@@ -38,7 +38,8 @@
         <h1>{{ title }}</h1>
 
         <ul>
-            {% for node in nav_root_nodes %}
+            {% for node in navtree_nodes %}
+                hello
                 {{ render_node(node) }}
             {% endfor %}
         </ul>

@@ -88,7 +88,7 @@ class MarkupGenerator:
         with resources.as_file(HIGHLIGHTJS_THEMES_RESOURCE) as highlightjs_themes_path:
             self.__copy(highlightjs_themes_path, self.output_highlightjs_themes_path)
 
-    def __scan_files(self) -> tuple[list[MdFileToProcess], list[Path]]:
+    def scan_files(self) -> tuple[list[MdFileToProcess], list[Path]]:
         """Scan the markdown directory for markdown files and other files."""
         md_files = []
         non_md_files = []
@@ -134,7 +134,7 @@ class MarkupGenerator:
             f"Processing markdown directory at '{self.md_root_path.absolute()}'",
         )
 
-        md_files, non_md_files = self.__scan_files()
+        md_files, non_md_files = self.scan_files()
 
         for file in non_md_files:
             self.__copy(
@@ -331,7 +331,7 @@ class MarkupGenerator:
     def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
         logger.debug("Generating index")
 
-        navtree = NavTree(self.output_directory_path)
+        navtree = NavTree(self.md_root_path, self.output_directory_path)
         if self.global_config.index.nav:
             nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
             assert isinstance(nav_from_config, list), "nav must be a list"
@@ -342,9 +342,9 @@ class MarkupGenerator:
             navtree.from_md_files(md_files)
 
         logger.debug(
-            f"Generated navigation tree with root path {navtree.root_path.absolute()}",
+            f"Generated navigation tree with input root path {navtree.input_root_path.absolute()} and output root path {navtree.output_root_path.absolute()}",
         )
-        navtree_json = json.dumps(navtree.to_json(), indent=4)
+        navtree_json = json.dumps(json.loads(navtree.to_json()), indent=4)
         logger.debug(f"Navigation tree:\n\n{navtree_json}\n")
 
         # Refresh the templates here, so they have effect when live reloading
@@ -354,16 +354,17 @@ class MarkupGenerator:
         else:
             index_template = DEFAULT_INDEX_TEMPLATE
 
-        index_path = self.output_directory_path / "index.html"
-
         content = index_template.render(
             favicon=self.global_config.index.favicon,
             title=self.global_config.index.title,
             theme=self.global_config.index.theme,
-            # nav_root_nodes=navtree.root_nodes,
+            navtree=navtree.tree,
             build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
         )
-        self.__create_or_overwrite_file(index_path, content)
+        self.__create_or_overwrite_file(
+            self.output_directory_path / "index.html",
+            content,
+        )
 
     def __create_or_overwrite_file(self, destination_path: Path, content: Any) -> None:
         """Create or overwrite a file with the given content."""

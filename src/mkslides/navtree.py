@@ -9,8 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class NavTree:
-    def __init__(self, root_path: Path) -> None:
-        self.root_path = root_path
+    def __init__(self, input_root_path: Path, output_root_path: Path) -> None:
+        self.input_root_path = input_root_path
+        self.output_root_path = output_root_path
 
         # Relative path as str is the index, title as str the data.
         self.tree = Tree()
@@ -18,17 +19,23 @@ class NavTree:
 
     def from_md_files(self, md_files: list[MdFileToProcess]) -> None:
         for md_file in md_files:
-            relative_destination_path = md_file.relative_destination_path.relative_to(
-                self.root_path,
+            relative_source_path = md_file.source_path.relative_to(
+                self.input_root_path,
             )
-            parts = relative_destination_path.parts
+            parts = relative_source_path.parts
 
-            path_relative_destination_path = Path()
+            current_relative_source_path = Path()
             parent_node_id = str(self.tree.root)
             for part in parts:
-                path_relative_destination_path /= part
-                node_id = str(path_relative_destination_path)
-                node_data = md_file.source_path.stem
+                current_relative_source_path /= part
+
+                node_id = None
+                node_data = None
+                if (self.input_root_path / current_relative_source_path).is_dir():
+                    node_id = str(current_relative_source_path)
+                else:
+                    node_id = str(current_relative_source_path.with_suffix(".html"))
+                    node_data = md_file.source_path.stem
 
                 if node_id not in self.tree:
                     self.tree.create_node(
@@ -45,7 +52,7 @@ class NavTree:
         for item in json_data:
             self.__node_from_config_json(
                 item,
-                self.root_path,
+                self.output_root_path,
                 str(self.tree.root),
             )
 
@@ -61,7 +68,7 @@ class NavTree:
         #
         if isinstance(json_data, str):
             destination_path = (current_path / json_data).with_suffix(".html")
-            node_id = str(destination_path.relative_to(self.root_path))
+            node_id = str(destination_path.relative_to(self.output_root_path))
             node_data = destination_path.stem
 
             self.tree.create_node(
@@ -82,7 +89,7 @@ class NavTree:
             #
             if isinstance(content, str):
                 destination_path = (current_path / content).with_suffix(".html")
-                node_id = str(destination_path.relative_to(self.root_path))
+                node_id = str(destination_path.relative_to(self.output_root_path))
                 node_data = title
 
                 self.tree.create_node(
@@ -98,7 +105,7 @@ class NavTree:
             #
             elif isinstance(content, list):
                 destination_path = current_path / title
-                node_id = str(f"{destination_path.relative_to(self.root_path)}")
+                node_id = str(f"{destination_path.relative_to(self.output_root_path)}")
                 node_data = title
 
                 self.tree.create_node(identifier=node_id, parent=parent_node_id)
