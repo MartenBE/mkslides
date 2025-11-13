@@ -1,7 +1,7 @@
 {% macro render_node(node) %}
 <li>
     {% if navtree.is_node_leaf(node.identifier) %}
-        <span class="node-data">{{ node.data }}</span>:
+        <span class="node-title">{{ node.data }}</span>:
         <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a>,
         <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>,
         <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF</a>

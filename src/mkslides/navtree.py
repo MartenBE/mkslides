@@ -35,7 +35,12 @@ class NavTree:
                 else:
                     node_id = str(current_relative_source_path.with_suffix(".html"))
 
-                node_data = current_relative_source_path.stem
+                node_data = None
+                print(md_file.slide_config)
+                if md_file.slide_config.slides.title:
+                    node_data = md_file.slide_config.slides.title
+                else:
+                    node_data = current_relative_source_path.stem
 
                 if node_id not in self.tree:
                     self.tree.create_node(
