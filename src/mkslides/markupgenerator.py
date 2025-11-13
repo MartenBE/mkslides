@@ -70,9 +70,9 @@ class MarkupGenerator:
         self.__create_or_clear_output_directory()
 
         if self.md_root_path.is_file():
-            assert (
-                self.md_root_path.suffix == ".md"
-            ), "md_root_path must be a markdown file"
+            assert self.md_root_path.suffix == ".md", (
+                "md_root_path must be a markdown file"
+            )
             self.__process_markdown_file()
         else:
             self.__process_markdown_directory()
@@ -109,7 +109,7 @@ class MarkupGenerator:
                     destination_path = (
                         self.output_directory_path
                         / resolved_file.relative_to(self.md_root_path).with_suffix(
-                            ".html"
+                            ".html",
                         )
                     )
 
@@ -169,7 +169,7 @@ class MarkupGenerator:
             f"Processing markdown directory at '{self.md_root_path.absolute()}'",
         )
 
-        md_files, non_md_files = self.__scan_files()
+        md_files, non_md_files = self.scan_files()
 
         for file in non_md_files:
             self.__copy(
