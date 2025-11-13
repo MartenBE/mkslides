@@ -38,13 +38,13 @@ pip install mkslides
 
 ## Create static site
 
-E.g. when your Markdown files are located in the `docs/` folder:
+E.g. when your Markdown files are located in the `slides/` folder:
 
 ```bash
-mkslides build docs/
+mkslides build slides/
 ```
 
-E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
+E.g. when you have a single Markdown file called `test.md`:
 
 ```bash
 mkslides build test.md
@@ -52,10 +52,10 @@ mkslides build test.md
 
 ## Live preview
 
-E.g. when your Markdown files are located in the `docs/` folder:
+E.g. when your Markdown files are located in the `slides/` folder:
 
 ```bash
-mkslides serve docs/
+mkslides serve slides/
 ```
 
 E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
@@ -92,9 +92,6 @@ index:
     # Theme of the generated index page: file path or public url to CSS file
     theme: example-index-theme.css
 
-    # Title of the generated index page: string
-    title: example-title
-
     # Navigation section describing how to structure the slides on the index
     # page. This is similar to the `nav` option from MkDocs: list[any]
     nav:
@@ -106,6 +103,9 @@ index:
             - example5.md
             - "Much more examples":
                 - "Last example": somewhere/much/more/examples/example6.md
+
+    # Title of the generated index page: string
+    title: example-title
 
 # Configuration for the slides
 slides:
