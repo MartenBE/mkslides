@@ -259,11 +259,13 @@ Commands:
 <!-- output-build -->
 
 ```text
-Usage: mkslides build [OPTIONS] PATH
+Usage: mkslides build [OPTIONS] [PATH]
 
   Build the MkSlides documentation.
 
-  PATH is the path to the directory containing Markdown files.
+  PATH is the path to the directory containing Markdown files. This argument
+  is optional and will default to 'slides', or 'docs' if the first directory
+  doesn't exist.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -281,11 +283,13 @@ Options:
 <!-- output-serve -->
 
 ```text
-Usage: mkslides serve [OPTIONS] PATH
+Usage: mkslides serve [OPTIONS] [PATH]
 
   Run the builtin development server.
 
-  PATH is the path to the directory containing Markdown files.
+  PATH is the path to the directory containing Markdown files. This argument
+  is optional and will default to 'slides', or 'docs' if the first directory
+  doesn't exist.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.

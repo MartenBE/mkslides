@@ -61,6 +61,8 @@ MD_EXTENSION_REGEX = re.compile(r"\.[mM][dD]$")
 
 VERSION = metadata.version(__package__)
 DEFAULT_CONFIG_LOCATION = Path("mkslides.yml")
+DEFAULT_INPUT_DIR = "slides"
+DEFAULT_INPUT_DIR2 = "docs"
 DEFAULT_OUTPUT_DIR = "site"
 
 ASSETS_RESOURCE = resources.files(__package__).joinpath("assets")

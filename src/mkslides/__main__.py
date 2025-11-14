@@ -1,5 +1,4 @@
 import logging
-import sys
 import tempfile
 from pathlib import Path
 
@@ -13,6 +12,8 @@ from mkslides.utils import parse_ip_port
 from .build import build
 from .config import get_config
 from .constants import (
+    DEFAULT_INPUT_DIR,
+    DEFAULT_INPUT_DIR2,
     DEFAULT_OUTPUT_DIR,
     HIGHLIGHTJS_THEMES_VERSION,
     REVEALJS_VERSION,
@@ -25,8 +26,25 @@ logger.addHandler(RichHandler(show_path=False))
 
 ################################################################################
 
+
+def get_input_path(input_path: Path) -> Path:
+    if input_path is not None:
+        return input_path.resolve(strict=True)
+
+    if Path(DEFAULT_INPUT_DIR).is_dir():
+        return Path(DEFAULT_INPUT_DIR).resolve(strict=True)
+
+    if Path(DEFAULT_INPUT_DIR2).is_dir():
+        return Path(DEFAULT_INPUT_DIR2).resolve(strict=True)
+
+    msg = f'Neither "{DEFAULT_INPUT_DIR}" nor "{DEFAULT_INPUT_DIR2}" are an existing directory.'
+    raise FileNotFoundError(msg)
+
+
+################################################################################
+
 files_argument_data = {
-    "metavar": "PATH",
+    "metavar": "[PATH]",
     "type": click.Path(
         file_okay=True,
         dir_okay=True,
@@ -34,6 +52,7 @@ files_argument_data = {
         resolve_path=True,
         path_type=Path,
     ),
+    "required": False,
 }
 
 config_file_argument_data = {
@@ -99,20 +118,19 @@ def build_command(
     """
     Build the MkSlides documentation.
 
-    PATH is the path to the directory containing Markdown files.
+    PATH is the path to the directory containing Markdown files. This argument is optional and will default to 'slides', or 'docs' if the first directory doesn't exist.
     """
     logger.debug("Command: build")
 
     config = get_config(config_file)
+    input_path = get_input_path(files)
     output_path = Path(site_dir).resolve(strict=False)
 
-    if files.is_relative_to(output_path):
-        logger.error(
-            f'Files "{files}" should not be within the site dir "{site_dir}" as this can mean the source files are overwritten by the output.',
-        )
-        sys.exit(1)
+    if input_path.is_relative_to(output_path):
+        msg = f'Files "{input_path}" should not be within the site dir "{site_dir}" as this can mean the source files are overwritten by the output.'
+        raise ValueError(msg)
 
-    build(config, files, output_path, strict)
+    build(config, input_path, output_path, strict)
 
 
 # Serve Command ################################################################
@@ -146,11 +164,12 @@ def serve_command(
     """
     Run the builtin development server.
 
-    PATH is the path to the directory containing Markdown files.
+    PATH is the path to the directory containing Markdown files. This argument is optional and will default to 'slides', or 'docs' if the first directory doesn't exist.
     """
     logger.debug("Command: serve")
 
     config = get_config(config_file)
+    input_path = get_input_path(files)
     output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
     dev_ip, dev_port = parse_ip_port(dev_addr)
     serve_config = OmegaConf.structured(
@@ -164,7 +183,7 @@ def serve_command(
 
     serve(
         config,
-        files,
+        input_path,
         output_path,
         serve_config,
     )
