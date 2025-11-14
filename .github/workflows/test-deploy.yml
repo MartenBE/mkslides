@@ -37,7 +37,7 @@ jobs:
       # - run: poetry run ruff format --check
       - run: poetry run ruff check
       - run: poetry run mypy src/ tests/
-      - run: poetry run pytest --capture=no
+      - run: poetry run pytest
 
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
@@ -56,7 +56,7 @@ jobs:
           python-version: "3.x"
       - run: pip install poetry
       - run: poetry install --with dev
-      - run: poetry run mkslides build slides/index.md
+      - run: poetry run mkslides build
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ./site

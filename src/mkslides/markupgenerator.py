@@ -170,8 +170,7 @@ class MarkupGenerator:
             destination_path,
         )
 
-        templates = self.__load_templates([md_file_data])
-        self.__render_slideshows([md_file_data], templates)
+        self.__process_detected_markdown_files([md_file_data])
 
     def __process_markdown_directory(self) -> None:
         logger.debug(
@@ -180,15 +179,28 @@ class MarkupGenerator:
 
         md_files, non_md_files = self.scan_files()
 
-        for file in non_md_files:
-            self.__copy(
-                file,
-                self.output_directory_path / file.relative_to(self.md_root_path),
-            )
+        self.__process_detected_markdown_files(md_files, non_md_files)
+
+    def __process_detected_markdown_files(
+        self,
+        md_files: list,
+        non_md_files: list | None = None,
+    ) -> None:
+        if non_md_files:
+            for file in non_md_files:
+                destination_path = self.output_directory_path / file.relative_to(
+                    self.md_root_path,
+                )
+                self.__copy(file, destination_path)
 
         templates = self.__load_templates(md_files)
+
+        if len(md_files) == 1:
+            md_files[0].destination_path = self.output_directory_path / "index.html"
+        else:
+            self.__generate_index(md_files)
+
         self.__render_slideshows(md_files, templates)
-        self.__generate_index(md_files)
 
     def __render_slideshows(
         self,

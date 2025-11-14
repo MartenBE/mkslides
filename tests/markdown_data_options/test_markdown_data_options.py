@@ -13,7 +13,7 @@ def test_revealjs_markdown_data_options(setup_paths: Any) -> None:
     run_build_strict(cwd, input_path, output_path, config_path)
 
     assert_html_contains_regexp(
-        output_path / "someslides-1.html",
+        output_path / "index.html",
         re.compile(
             r"""
             <section\s+data-markdown

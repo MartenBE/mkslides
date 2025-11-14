@@ -15,5 +15,5 @@ def test_emojize(setup_paths: Any) -> None:
     input_path = cwd / "text" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
-    assert_html_contains(output_path / "someslides.html", "⚠️")
-    assert_html_contains(output_path / "someslides.html", "👍")
+    assert_html_contains(output_path / "someslides-1.html", "⚠️")
+    assert_html_contains(output_path / "someslides-1.html", "👍")

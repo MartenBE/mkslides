@@ -85,13 +85,13 @@ pip install mkslides
 - Generate the static HTML files:
 
 ```bash
-mkslides build [OPTIONS] PATH
+mkslides build [OPTIONS] [PATH]
 ```
 
 - Or open a live preview while editing the markdown files:
 
 ```bash
-mkslides serve [OPTIONS] PATH
+mkslides serve [OPTIONS] [PATH]
 ```
 
 - In case you need help or want to know more:
@@ -114,7 +114,9 @@ Usage: mkslides build [OPTIONS] [PATH]
 
   PATH is the path to the directory containing Markdown files. This argument
   is optional and will default to 'slides', or 'docs' if the first directory
-  doesn't exist.
+  doesn't exist. If PATH is a single Markdown file or a directory containing a
+  single Markdown file, it will always be processed into `index.html`
+  regardless the name of the Markdown file.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -142,7 +144,9 @@ Usage: mkslides serve [OPTIONS] [PATH]
 
   PATH is the path to the directory containing Markdown files. This argument
   is optional and will default to 'slides', or 'docs' if the first directory
-  doesn't exist.
+  doesn't exist. If PATH is a single Markdown file or a directory containing a
+  single Markdown file, it will always be processed into `index.html`
+  regardless the name of the Markdown file.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.

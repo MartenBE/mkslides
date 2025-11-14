@@ -14,7 +14,7 @@ def test_revealjs_default_options(setup_paths: Any) -> None:
     input_path = cwd / "revealjs_options" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
 
-    assert_html_contains(output_path / "someslides-1.html", "history: true,")
+    assert_html_contains(output_path / "index.html", "history: true,")
 
 
 def test_revealjs_integer_options(setup_paths: Any) -> None:
@@ -24,7 +24,7 @@ def test_revealjs_integer_options(setup_paths: Any) -> None:
     run_build_strict(cwd, input_path, output_path, config_path)
 
     assert_html_contains_regexp(
-        output_path / "someslides-1.html",
+        output_path / "index.html",
         re.compile(
             r"""
             Reveal\.initialize\({
@@ -47,7 +47,7 @@ def test_revealjs_string_options(setup_paths: Any) -> None:
     run_build_strict(cwd, input_path, output_path, config_path)
 
     assert_html_contains_regexp(
-        output_path / "someslides-1.html",
+        output_path / "index.html",
         re.compile(
             r"""
             Reveal\.initialize\({

@@ -56,9 +56,14 @@ def run_build(
     return __run_build_generic(cwd, input_path, output_path, config_path, strict=False)
 
 
-def assert_files_exist(file: Path) -> None:
+def assert_file_exist(file: Path) -> None:
     absolute_file = file.absolute()
     assert absolute_file.exists(), f"{absolute_file} does not exist"
+
+
+def assert_file_does_not_exist(file: Path) -> None:
+    absolute_file = file.absolute()
+    assert not absolute_file.exists(), f"{absolute_file} exists but should not"
 
 
 def assert_html_contains(file_path: Path, expected_content: str) -> None:

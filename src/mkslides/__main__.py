@@ -118,7 +118,12 @@ def build_command(
     """
     Build the MkSlides documentation.
 
-    PATH is the path to the directory containing Markdown files. This argument is optional and will default to 'slides', or 'docs' if the first directory doesn't exist.
+    PATH is the path to the directory containing Markdown files. This argument
+    is optional and will default to 'slides', or 'docs' if the first directory
+    doesn't exist.
+    If PATH is a single Markdown file or a directory containing a single
+    Markdown file, it will always be processed into `index.html` regardless the
+    name of the Markdown file.
     """
     logger.debug("Command: build")
 
@@ -164,7 +169,12 @@ def serve_command(
     """
     Run the builtin development server.
 
-    PATH is the path to the directory containing Markdown files. This argument is optional and will default to 'slides', or 'docs' if the first directory doesn't exist.
+    PATH is the path to the directory containing Markdown files. This argument
+    is optional and will default to 'slides', or 'docs' if the first directory
+    doesn't exist.
+    If PATH is a single Markdown file or a directory containing a single
+    Markdown file, it will always be processed into `index.html` regardless the
+    name of the Markdown file.
     """
     logger.debug("Command: serve")
 

@@ -1,6 +1,6 @@
 from typing import Any
 
-from tests.utils import assert_files_exist, assert_html_contains, run_build_strict
+from tests.utils import assert_file_exist, assert_html_contains, run_build_strict
 
 
 def test_local_slideshow_theme_path(setup_paths: Any) -> None:
@@ -101,7 +101,7 @@ def test_builtin_slideshow_theme_path(setup_paths: Any) -> None:
     config_path = cwd / "themes" / "builtin_slideshow_theme_path-config.yml"
     run_build_strict(cwd, input_path, output_path, config_path)
 
-    assert_files_exist(output_path / "mkslides-assets/reveal-js/dist/theme/simple.css")
+    assert_file_exist(output_path / "mkslides-assets/reveal-js/dist/theme/simple.css")
 
     assert_html_contains(
         output_path / "someslides-1.html",
