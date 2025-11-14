@@ -1,2 +1,2 @@
 slides:
-  preprocess_script: preprocessing/replace_at_by_a.py
+  preprocess_script: replace_at_by_a.py

@@ -59,3 +59,13 @@ def test_local_slideshow_favicon_path(setup_paths: Any) -> None:
         output_path / "somefolder/someslides-2.html",
         '<link rel="icon" href="../assets/favicon.ico">',
     )
+
+    assert_html_contains(
+        output_path / "somefolder/someslides-3.html",
+        '<link rel="icon" href="favicon-3.ico">',
+    )
+
+    assert_html_contains(
+        output_path / "somefolder/someslides-4.html",
+        '<link rel="icon" href="../assets-2/favicon-2.ico">',
+    )

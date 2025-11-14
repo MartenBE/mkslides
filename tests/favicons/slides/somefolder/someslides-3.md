@@ -1,3 +1,8 @@
+---
+slides:
+    favicon: favicon-3.ico
+---
+
 # Some slides
 
 ---

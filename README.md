@@ -1,6 +1,6 @@
 # MkSlides
 
-> Use `mkslides` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
+> Use `mkslides` to easily turn Markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
 
 [![PyPI](https://img.shields.io/pypi/v/mkslides)](https://pypi.org/project/mkslides/)
 [![test-deploy.yml](https://github.com/MartenBE/mkslides/actions/workflows/test-deploy.yml/badge.svg?branch=main)](https://github.com/MartenBE/mkslides/actions)
@@ -9,18 +9,18 @@
 
 ## Features
 
-- Build static HTML slideshow files from Markdown files.
-    - Turn a single Markdown file into a HTML slideshow.
-    - Turn a folder with Markdown files into a collection of HTML slideshows.
-- Publish your slideshow(s) anywhere that static files can be served.
-    - Locally
-    - On a webserver
-    - Deploy through CI/CD with GitHub/GitLab (like this repo!)
-- Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
-- Use custom favicons, CSS themes, templates, ... if desired.
-- Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
-- Depends heavily on integration/unit tests to prevent regressions.
-- And more!
+-   Build static HTML slideshow files from Markdown files.
+    -   Turn a single Markdown file into a HTML slideshow.
+    -   Turn a folder with Markdown files into a collection of HTML slideshows.
+-   Publish your slideshow(s) anywhere that static files can be served.
+    -   Locally
+    -   On a webserver
+    -   Deploy through CI/CD with GitHub/GitLab (like this repo!)
+-   Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
+-   Use custom favicons, CSS themes, templates, ... if desired.
+-   Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
+-   Depends heavily on integration/unit tests to prevent regressions.
+-   And more!
 
 ## Example
 
@@ -76,6 +76,7 @@ mkslides serve -h
 ## Configuration
 
 Just create a `mkslides.yml`. All options are optional, you only have to add what you want to change to `mkslides.yml`.
+Relative file paths are considered relative to the directory containing Markdown files (`PATH`).
 
 Here's an example showcasing all possible options in the config file:
 
@@ -84,10 +85,10 @@ Here's an example showcasing all possible options in the config file:
 index:
     # Favicon of the generated index page: file path or public url to favicon
     # file
-    favicon: ./example-index-favicon.ico
+    favicon: example-index-favicon.ico
 
     # Jinja 2 template to generate index HTML: file path to Jinja2 file
-    template: ./example.jinja
+    template: example.jinja
 
     # Theme of the generated index page: file path or public url to CSS file
     theme: example-index-theme.css
@@ -100,9 +101,9 @@ index:
         - example3.md
         - somewhere/example4.md
         - "More examples":
-            - example5.md
-            - "Much more examples":
-                - "Last example": somewhere/much/more/examples/example6.md
+              - example5.md
+              - "Much more examples":
+                    - "Last example": somewhere/much/more/examples/example6.md
 
     # Title of the generated index page: string
     title: example-title
@@ -114,7 +115,7 @@ slides:
     charset: utf-8
 
     # Favicon of the slides: file path or public url to favicon file
-    favicon: ./example-slides-favicon.ico
+    favicon: example-slides-favicon.ico
 
     # Theme for syntax highlighting of code fragments on the slides: file path
     # to CSS file, public url to CSS file, or one of the highlight.js built-in
@@ -123,9 +124,12 @@ slides:
     highlight_theme: example-slides-highlight-theme.css
 
     # Relative path to a python script containing a function
-    # Callable[[str], str] named `preprocess`. For each Markdown file, the whole
-    # file content is given to the function as a str. The returned string is
-    # then further processed as the markdown to give to Reveal.js
+    # Callable[[str], str] named `preprocess`. Important: a relative file path
+    # here is considered relative to the configuration file, as you probably
+    # don't want to serve the python scripts.
+    # For each Markdown file, the whole file content is given to the function as
+    # a str. The returned string is then further processed as the Markdown to
+    # give to Reveal.js
     preprocess_script: tests/test_preprocessors/replace_ats.py
 
     # Separator to determine notes of the slide: regexp
@@ -199,7 +203,7 @@ revealjs:
     slideNumber: c/t
 ```
 
-It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter:
+It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter. Here, relative file paths are considered relative to the Markdown file itself.
 
 ```md
 ---
@@ -227,12 +231,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Notes:
 
-- `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
-- The precedence is frontmatter > `mkslides.yml` > defaults.
+-   `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
+-   The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Full help
 
 <!-- output-no-command -->
+
 ```text
 Usage: mkslides [OPTIONS] COMMAND [ARGS]...
 
@@ -248,9 +253,11 @@ Commands:
   serve  Run the builtin development server.
 
 ```
+
 <!-- /output-no-command -->
 
 <!-- output-build -->
+
 ```text
 Usage: mkslides build [OPTIONS] PATH
 
@@ -268,9 +275,11 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-build -->
 
 <!-- output-serve -->
+
 ```text
 Usage: mkslides serve [OPTIONS] PATH
 
@@ -288,4 +297,5 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-serve -->

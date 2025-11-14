@@ -1,3 +1,8 @@
+---
+slides:
+    favicon: ../assets-2/favicon-2.ico
+---
+
 # Some slides
 
 ---

@@ -35,6 +35,32 @@ def test_local_slideshow_theme_path(setup_paths: Any) -> None:
         '<link rel="stylesheet" href="../assets/highlight-theme.css" />',
     )
 
+    assert_html_contains(
+        output_path / "somefolder/someslides-3.html",
+        '<link rel="stylesheet" href="../mkslides-assets/reveal-js/dist/reveal.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder/someslides-3.html",
+        '<link rel="stylesheet" href="theme-3.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder/someslides-3.html",
+        '<link rel="stylesheet" href="highlight-theme-3.css" />',
+    )
+
+    assert_html_contains(
+        output_path / "somefolder/someslides-4.html",
+        '<link rel="stylesheet" href="../mkslides-assets/reveal-js/dist/reveal.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder/someslides-4.html",
+        '<link rel="stylesheet" href="../assets-2/theme-2.css" />',
+    )
+    assert_html_contains(
+        output_path / "somefolder/someslides-4.html",
+        '<link rel="stylesheet" href="../assets-2/highlight-theme-2.css" />',
+    )
+
 
 def test_absolute_url_slideshow_theme_path(setup_paths: Any) -> None:
     cwd, output_path = setup_paths

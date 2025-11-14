@@ -62,12 +62,6 @@ class MarkupGenerator:
 
         self.strict = strict
 
-        self.preprocess_script_func = (
-            load_preprocessing_function(self.global_config.slides.preprocess_script)
-            if self.global_config.slides.preprocess_script
-            else None
-        )
-
     def process_markdown(self) -> None:
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
@@ -140,6 +134,7 @@ class MarkupGenerator:
         frontmatter_metadata, markdown_content = frontmatter.parse(content)
 
         slide_config = self.__generate_slide_config(
+            source_path,
             destination_path,
             frontmatter_metadata,
         )
@@ -148,15 +143,16 @@ class MarkupGenerator:
         markdown_content = emojize(markdown_content, language="alias")
 
         if preprocess_script := slide_config.slides.preprocess_script:
-            if preprocess_script_func := load_preprocessing_function(preprocess_script):
-                markdown_content = preprocess_script_func(markdown_content)
-                logger.debug(
-                    f"Preprocessed markdown content with '{preprocess_script}'",
+            preprocess_function = load_preprocessing_function(preprocess_script)
+            if not preprocess_function:
+                msg = (
+                    f"Preprocessing function '{preprocess_script}' could not be loaded"
                 )
-            else:
-                logger.error(
-                    f"Failed to load preprocessing function from '{preprocess_script}'",
-                )
+                raise ImportError(msg)
+            markdown_content = preprocess_function(markdown_content)
+            logger.debug(
+                f"Applied preprocessing function '{preprocess_script}' to markdown content of '{source_path}'",
+            )
 
         return MdFileToProcess(
             source_path=source_path,
@@ -175,7 +171,6 @@ class MarkupGenerator:
         )
 
         templates = self.__load_templates([md_file_data])
-        self.__handle_relative_slideshow_links([md_file_data])
         self.__render_slideshows([md_file_data], templates)
 
     def __process_markdown_directory(self) -> None:
@@ -192,7 +187,6 @@ class MarkupGenerator:
             )
 
         templates = self.__load_templates(md_files)
-        self.__handle_relative_slideshow_links(md_files)
         self.__render_slideshows(md_files, templates)
         self.__generate_index(md_files)
 
@@ -202,6 +196,8 @@ class MarkupGenerator:
         templates: dict[str, Template],
     ) -> None:
         """Render all markdown files to HTML slideshows."""
+        self.__handle_relative_slideshow_links(md_files)
+
         for md_file_data in md_files:
             slide_config = md_file_data.slide_config
 
@@ -348,8 +344,37 @@ class MarkupGenerator:
             ),
         )
 
+    def __generate_preprocess_script_absolute_path(
+        self,
+        source_path: Path,
+        slide_config: DictConfig,
+        frontmatter_metadata: dict[str, object],
+    ) -> str | None:
+        preprocess_script = slide_config.slides.preprocess_script
+
+        if slide_config.slides.preprocess_script is None:
+            return None
+
+        if get_url_type(preprocess_script) == URLType.RELATIVE:
+            if (
+                "slides" in frontmatter_metadata
+                and isinstance(frontmatter_metadata["slides"], dict)
+                and frontmatter_metadata["slides"].get("preprocess_script")
+            ):
+                return str(
+                    (source_path.parent / preprocess_script).resolve(strict=True),
+                )
+            return str(
+                (
+                    self.global_config.internal.config_path.parent / preprocess_script
+                ).resolve(strict=True),
+            )
+
+        return preprocess_script
+
     def __generate_slide_config(
         self,
+        source_path: Path,
         destination_path: Path,
         frontmatter_metadata: dict[str, object],
     ) -> DictConfig:
@@ -377,6 +402,14 @@ class MarkupGenerator:
             destination_path,
             slide_config,
             frontmatter_metadata,
+        )
+
+        slide_config.slides.preprocess_script = (
+            self.__generate_preprocess_script_absolute_path(
+                source_path,
+                slide_config,
+                frontmatter_metadata,
+            )
         )
 
         return slide_config
