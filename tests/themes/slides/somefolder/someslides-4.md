@@ -1,8 +1,9 @@
 ---
 slides:
-  theme: ../assets-2/theme-2.css
-  highlight_theme: ../assets-2/highlight-theme-2.css
+    theme: ../assets-2/theme-2.css
+    highlight_theme: ../assets-2/highlight-theme-2.css
 ---
+
 # Some slides
 
 ---

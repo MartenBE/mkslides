@@ -1,7 +1,7 @@
 ---
 slides:
-  theme: theme-3.css
-  highlight_theme: highlight-theme-3.css
+    theme: theme-3.css
+    highlight_theme: highlight-theme-3.css
 ---
 
 # Some slides
