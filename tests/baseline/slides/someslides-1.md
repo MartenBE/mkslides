@@ -11,26 +11,26 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 ## Files - local
 
 [](randomfile-1.txt)
-[](<randomfile-1.txt>)
-
 [](./randomfile-1.txt)
-[](<./randomfile-1.txt>)
-
 [](somefolder/randomfile-2.txt)
-[](<somefolder/randomfile-2.txt>)
-
 [](./somefolder/randomfile-2.txt)
-[](<./somefolder/randomfile-2.txt>)
-
 [](extra/randomfile-3.txt)
-[](<extra/randomfile-3.txt>)
-
 [](./extra/randomfile-3.txt)
+
+<!-- prettier-ignore-start -->
+[](<randomfile-1.txt>)
+[](<./randomfile-1.txt>)
+[](<somefolder/randomfile-2.txt>)
+[](<./somefolder/randomfile-2.txt>)
+[](<extra/randomfile-3.txt>)
 [](<./extra/randomfile-3.txt>)
+<!-- prettier-ignore-end -->
 
 ---
 
 ## Files - public URL
 
 [](https://example.org/example.html)
+
+<!-- prettier-ignore -->
 [](<https://example.org/example.html>)

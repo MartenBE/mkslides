@@ -5,30 +5,32 @@
 ## Markdown images - local
 
 ![](img/example-1.png)
-![](<img/example-1.png>)
 ![](./img/example-1.png)
-![](<./img/example-1.png>)
-
 ![](somefolder/example-2.png)
-![](<somefolder/example-2.png>)
 ![](./somefolder/example-2.png)
-![](<./somefolder/example-2.png>)
-
 ![](img/somefolder/example-3.png)
-![](<img/somefolder/example-3.png>)
 ![](./img/somefolder/example-3.png)
-![](<./img/somefolder/example-3.png>)
-
 ![](example-4.png)
-![](<example-4.png>)
 ![](./example-4.png)
+
+<!-- prettier-ignore-start -->
+![](<img/example-1.png>)
+![](<./img/example-1.png>)
+![](<somefolder/example-2.png>)
+![](<./somefolder/example-2.png>)
+![](<img/somefolder/example-3.png>)
+![](<./img/somefolder/example-3.png>)
+![](<example-4.png>)
 ![](<./example-4.png>)
+<!-- prettier-ignore-end -->
 
 ---
 
 ## Markdown images - public URL
 
 ![](https://example.org/example-1.png)
+
+<!-- prettier-ignore -->
 ![](<https://example.org/example-1.png>)
 
 ---
