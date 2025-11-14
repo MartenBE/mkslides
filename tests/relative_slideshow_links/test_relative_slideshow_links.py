@@ -1,3 +1,5 @@
+import re
+import subprocess
 from typing import Any
 
 from tests.utils import (
@@ -6,7 +8,7 @@ from tests.utils import (
 )
 
 
-def test_process_directory_without_config(setup_paths: Any) -> None:
+def test_relative_slideshow_links(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     input_path = cwd / "relative_slideshow_links" / "slides"
     run_build_strict(cwd, input_path, output_path, None)
@@ -106,35 +108,91 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     )
 
 
-# import subprocess
-# from typing import Any
+def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    expected_returncode = 0
+
+    input_path = cwd / "relative_slideshow_links" / "slides-fail-1"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            # "-s",
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+
+    input_path = cwd / "relative_slideshow_links" / "slides-fail-2"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            # "-s",
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
 
 
-# def test_process_file_without_config(setup_paths: Any) -> None:
-#     cwd, output_path = setup_paths
-#     input_path = cwd / "strict" / "slides"
+def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    expected_returncode = 1
 
-#     result = subprocess.run(
-#         [
-#             "mkslides",
-#             "-v",
-#             "build",
-#             "-s",
-#             "-d",
-#             output_path,
-#             input_path,
-#         ],
-#         cwd=cwd,
-#         capture_output=True,
-#         text=True,
-#         check=False,
-#     )
+    input_path = cwd / "relative_slideshow_links" / "slides-fail-1"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-s",
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+    assert re.search(
+        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file .*/someslides-1\.md",
+        result.stderr,
+    )
 
-#     print(result.stdout)
-
-#     assert result.returncode == 1
-
-#     assert (
-#         "Local file './some-random-md-link' mentioned in '/home/martijn/git/mkslides/tests/test_files_crash/strict.md' not found."
-#         in result.stderr
-#     )
+    input_path = cwd / "relative_slideshow_links" / "slides-fail-2"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-s",
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+    assert re.search(
+        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file .*/someslides-1\.md",
+        result.stderr,
+    )

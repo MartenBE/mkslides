@@ -5,6 +5,7 @@ import re
 import shutil
 import time
 from copy import deepcopy
+from functools import partial
 from importlib import resources
 from pathlib import Path
 from typing import Any
@@ -455,46 +456,39 @@ class MarkupGenerator:
     def __handle_relative_slideshow_links(
         self,
         md_file_data: list[MdFileToProcess],
-    ) -> dict[MdFileToProcess, list[tuple[str, str]]]:
-        """Update relative .md links to .html and return all converted (old, new) links."""
-        all_relative_slideshow_links = {}
+    ) -> None:
+        """Update relative .md links to .html links."""
+
+        def _replacer(
+            match: re.Match,
+            *,
+            md_file: MdFileToProcess,
+            strict: bool,
+        ) -> str:
+            location = match.group("location")
+
+            if not self.__is_relative(location):
+                return match.group(0)
+
+            location_path = md_file.source_path.parent / location
+            if not location_path.exists():
+                msg = f"Relative slideshow link '{location}' in file '{md_file.source_path}' does not exist"
+                if strict:
+                    raise FileNotFoundError(msg)
+                logger.warning(msg)
+
+            new_location = MD_EXTENSION_REGEX.sub(".html", location)
+
+            return match.group(0).replace(location, new_location)
 
         for md_file in md_file_data:
             content = md_file.markdown_content
-            relative_slideshow_links_in_md_file = []
+            bound_replacer = partial(_replacer, md_file=md_file, strict=self.strict)
 
-            def __md_replacer(match: re.Match) -> str:
-                location = match.group("location")
+            for regex in (
+                MD_RELATIVE_SLIDESHOW_LINK_REGEX,
+                HTML_RELATIVE_SLIDESHOW_LINK_REGEX,
+            ):
+                content = regex.sub(bound_replacer, content)
 
-                if not self.__is_relative(location):
-                    return match.group(0)
-
-                new_location = MD_EXTENSION_REGEX.sub(".html", location)
-
-                relative_slideshow_links_in_md_file.append(  # noqa: B023
-                    (location, new_location),
-                )
-
-                return match.group(0).replace(location, new_location)
-
-            def __html_replacer(match: re.Match) -> str:
-                location = match.group("location")
-
-                if not self.__is_relative(location):
-                    return match.group(0)
-
-                new_location = MD_EXTENSION_REGEX.sub(".html", location)
-
-                relative_slideshow_links_in_md_file.append(  # noqa: B023
-                    (location, new_location),
-                )
-
-                return match.group(0).replace(location, new_location)
-
-            content = MD_RELATIVE_SLIDESHOW_LINK_REGEX.sub(__md_replacer, content)
-            content = HTML_RELATIVE_SLIDESHOW_LINK_REGEX.sub(__html_replacer, content)
-
-            all_relative_slideshow_links[md_file] = relative_slideshow_links_in_md_file
             md_file.markdown_content = content
-
-        return all_relative_slideshow_links
