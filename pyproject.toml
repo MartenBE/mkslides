@@ -89,7 +89,6 @@ ignore = [
     "TD002",    # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
     "TD003",    # Missing issue link on the line following this TODO
     "TRY003",   # Avoid specifying long messages outside the exception class
-    "T201",     # REMOVE ME (print found)
 ]
 select = ["ALL"]
 

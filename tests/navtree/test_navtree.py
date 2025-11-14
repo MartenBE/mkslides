@@ -187,15 +187,16 @@ def test_files_not_in_folder_without_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stdout)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"WARNING\s*A reference to 'file-not-in-folder-1.md' is included in the 'nav' configuration, which is not found in the slideshow files.",
+        r"WARNING\s+A\s+reference\s+to\s+'file-not-in-folder-1.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files.",
         result.stdout,
+        flags=re.DOTALL,
     )
     assert re.search(
-        r"WARNING\s*A reference to 'file-not-in-folder-2.md' is included in the 'nav' configuration, which is not found in the slideshow files.",
+        r"WARNING\s+A\s+reference\s+to\s+'file-not-in-folder-2.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files.",
         result.stdout,
+        flags=re.DOTALL,
     )
 
 
@@ -222,11 +223,11 @@ def test_files_not_in_folder_with_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stderr)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"FileNotFoundError: A reference to 'file-not-in-folder-1\.md' is included in the 'nav' configuration, which is not found in the slideshow files\.",
+        r"FileNotFoundError:\s+A\s+reference\s+to\s+'file-not-in-folder-1\.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files\.",
         result.stderr,
+        flags=re.DOTALL,
     )
 
 
@@ -253,17 +254,19 @@ def test_files_not_in_nav(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stdout)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"INFO\s*The following pages exist in the slides directory, but are not included in the 'nav' configuration:",
+        r"INFO\s+The\s+following\s+pages\s+exist\s+in\s+the\s+slides\s+directory,\s+but\s+are\s+not\s+included\s+in\s+the\s+'nav'\s+configuration:",
         result.stdout,
+        flags=re.DOTALL,
     )
     assert re.search(
-        r"INFO\s*- someslides-1\.md",
+        r"INFO\s+-\s+someslides-1\.md",
         result.stdout,
+        flags=re.DOTALL,
     )
     assert re.search(
-        r"INFO\s*- category-2/category-3/someslides-7\.md",
+        r"INFO\s+-\s+category-2/category-3/someslides-7\.md",
         result.stdout,
+        flags=re.DOTALL,
     )

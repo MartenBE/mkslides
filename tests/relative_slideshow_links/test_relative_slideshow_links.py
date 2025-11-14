@@ -127,7 +127,6 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stdout)
     assert result.returncode == expected_returncode
     assert re.search(
         r"WARNING\s*Relative\s*slideshow\s*link\s*'non-existing-file\.md'\s*in\s*file\s*'.*/someslides-1.md'\s*does\s*not\s*exist",
@@ -150,10 +149,9 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stdout)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"WARNING\s*Relative slideshow link 'non-existing-file\.md' in file\s*'.*/someslides-1.md' does not exist",
+        r"WARNING\s+Relative\s+slideshow\s+link\s+'non-existing-file\.md'\s+in\s+file\s+'.*/someslides-1.md'\s+does\s+not\s+exist",
         result.stdout,
         flags=re.DOTALL,
     )
@@ -179,10 +177,9 @@ def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stderr)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file '.*/someslides-1\.md' does not exist",
+        r"FileNotFoundError:\s+Relative\s+slideshow\s+link\s+'non-existing-file\.md'\s+in\s+file\s+'.*/someslides-1\.md'\s+does\s+not\s+exist",
         result.stderr,
     )
 
@@ -202,9 +199,8 @@ def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
         text=True,
         check=False,
     )
-    print(result.stderr)
     assert result.returncode == expected_returncode
     assert re.search(
-        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file '.*/someslides-1\.md' does not exist",
+        r"FileNotFoundError:\s+Relative\s+slideshow\s+link\s+'non-existing-file\.md'\s+in\s+file\s+'.*/someslides-1\.md'\s+does\s+not\s+exist",
         result.stderr,
     )
