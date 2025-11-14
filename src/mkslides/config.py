@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from omegaconf import MISSING, DictConfig, OmegaConf
 
@@ -20,36 +20,38 @@ FRONTMATTER_ALLOWED_KEYS = ["slides", "revealjs", "plugins"]
 
 @dataclass
 class Index:
-    favicon: Optional[str] = None
-    template: Optional[str] = None
-    theme: Optional[str] = None
+    favicon: str | None = None
+    template: str | None = None
+    theme: str | None = None
     title: str = "Index"
+    nav: list[Any] | None = None
 
 
 @dataclass
 class Slides:
-    charset: Optional[str] = None
-    favicon: Optional[str] = None
+    charset: str | None = None
+    favicon: str | None = None
     highlight_theme: str = "monokai"
-    preprocess_script: Optional[str] = None
-    separator_notes: Optional[str] = None
-    separator_vertical: Optional[str] = None
-    separator: Optional[str] = None
-    template: Optional[str] = None
+    preprocess_script: str | None = None
+    separator_notes: str | None = None
+    separator_vertical: str | None = None
+    separator: str | None = None
+    template: str | None = None
     theme: str = "black"
+    title: str | None = None
 
 
 @dataclass
 class Plugin:
-    name: Optional[str] = None
-    extra_css: Optional[list[str]] = None
-    extra_javascript: Optional[list[str]] = None
+    name: str | None = None
+    extra_css: list[str] | None = None
+    extra_javascript: list[str] | None = None
 
 
 # For internal use only
 @dataclass
 class Internal:
-    config_path: Optional[Path] = MISSING
+    config_path: Path | None = MISSING
 
 
 @dataclass
@@ -132,7 +134,6 @@ def get_config(config_file: Path | None = None) -> DictConfig:
 
     assert OmegaConf.is_dict(config)
 
-    logger.debug("Used config:")
-    logger.debug(OmegaConf.to_yaml(config, resolve=True))
+    logger.debug(f"Used config:\n\n{OmegaConf.to_yaml(config, resolve=True)}")
 
     return config

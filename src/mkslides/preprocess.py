@@ -1,13 +1,13 @@
 import importlib
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
 PREPROCESS_FUNCTION_NAME = "preprocess"
 
 
-def load_preprocessing_function(script: str) -> Optional[Callable[[str], str]]:
+def load_preprocessing_function(script: str) -> Callable[[str], str] | None:
     spec = importlib.util.spec_from_file_location("preprocess_module", script)
     if spec is None:
         message = f"Could not create module spec from '{script}'"

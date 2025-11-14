@@ -10,31 +10,32 @@ readme = "README.md"
 packages = [{ include = "mkslides", from = "src" }]
 
 [tool.poetry.dependencies]
-python = ">=3.12"
-Jinja2 = ">=3.1.4"
-python-frontmatter = ">=1.1.0"
-PyYAML = ">=6.0.2"
-rich = ">=13.8.0"
-click = ">=8.1.7"
-jsonschema = ">=4.23.0"
-natsort = ">=8.4.0"
-emoji = ">=2.12.1"
-livereload = ">=2.7.1"
-markdown = ">=3.7"
-beautifulsoup4 = ">=4.12.3"
-types-markdown = ">=3.7.0.20240822"
-types-beautifulsoup4 = ">=4.12.0.20241020"
-omegaconf = ">=2.3.0"
+python = "^3.12"
+Jinja2 = "^3.1.4"
+python-frontmatter = "^1.1.0"
+PyYAML = "^6.0.2"
+rich = "^13.8.0"
+click = "^8.1.7"
+jsonschema = "^4.23.0"
+natsort = "^8.4.0"
+emoji = "^2.12.1"
+livereload = "^2.7.1"
+markdown = "^3.7"
+beautifulsoup4 = "^4.12.3"
+types-markdown = "^3.7.0.20240822"
+types-beautifulsoup4 = "^4.12.0.20241020"
+omegaconf = "^2.3.0"
+treelib = "^1.8.0"
 
 [tool.poetry.group.dev.dependencies]
-bumpver = ">=2023.1129"
-mypy = ">=1.11.2"
-types-pyyaml = ">=6.0.12.20240808"
-ruff = ">=0.6.4"
-
+bumpver = "^2023.1129"
+mypy = "^1.11.2"
+types-pyyaml = "^6.0.12.20240808"
+ruff = "^0.6.4"
 
 [tool.poetry.group.test.dependencies]
-pytest = ">=8.3.3"
+pytest = "^8.3.3"
+deepdiff = "^8.6.1"
 
 [tool.poetry.scripts]
 mkslides = "mkslides.__main__:cli"
@@ -64,29 +65,30 @@ pythonpath = ["assets"]
 
 [tool.ruff.lint]
 ignore = [
-    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed
-    "D100",   # Missing docstring in public module
-    "D101",   # Missing docstring in public class
-    "D103",   # Missing docstring in public function
-    "D102",   # Missing docstring in public method
-    "D104",   # Missing docstring in public package"
-    "D107",   # Missing docstring in `__init__`
-    "D203",   # one-blank-line-before-class
-    "D212",   # multi-line-summary-first-line
-    "E501",   # Line too long
-    "FA100",  # Add `from __future__ import annotations` to simplify `typing.Optional`
-    "FA102",  # Missing `from __future__ import annotations`, but uses PEP 585 collection
-    "FBT001", # Boolean-typed positional argument in function definition
-    "G004",   # Logging statement uses f-string"
-    #
-    "PLR0913", # Too many arguments in function definition
-    "RET504",  # Unnecessary assignment to `...` before `return` statement
-    "S101",    # Use of `assert` detected
-    "S603",    # `subprocess` call: check for execution of untrusted input
-    "S607",    # Starting a process with a partial executable path
-    "TD002",   # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
-    "TD003",   # Missing issue link on the line following this TODO
-    "TRY003",  # Avoid specifying long messages outside the exception class
+    "ANN401",   # Dynamically typed expressions (typing.Any) are disallowed
+    "D100",     # Missing docstring in public module
+    "D101",     # Missing docstring in public class
+    "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
+    "D104",     # Missing docstring in public package"
+    "D107",     # Missing docstring in `__init__`
+    "D203",     # one-blank-line-before-class
+    "D212",     # multi-line-summary-first-line
+    "E501",     # Line too long
+    "ERA001",   # Found commented-out code
+    "FA100",    # Add `from __future__ import annotations` to simplify `typing.Optional`
+    "FA102",    # Missing `from __future__ import annotations`, but uses PEP 585 collection
+    "FBT001",   # Boolean-typed positional argument in function definition
+    "FIX002",   # Line contains TODO, consider resolving the issue
+    "G004",     # Logging statement uses f-string"
+    "PLR0913",  # Too many arguments in function definition
+    "RET504",   # Unnecessary assignment to `...` before `return` statement
+    "S101",     # Use of `assert` detected
+    "S603",     # `subprocess` call: check for execution of untrusted input
+    "S607",     # Starting a process with a partial executable path
+    "TD002",    # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+    "TD003",    # Missing issue link on the line following this TODO
+    "TRY003",   # Avoid specifying long messages outside the exception class
 ]
 select = ["ALL"]
 

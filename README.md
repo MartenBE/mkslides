@@ -1,6 +1,6 @@
 # MkSlides
 
-> Use `mkslides` to easily turn markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
+> Use `mkslides` to easily turn Markdown files into beautiful slides using the power of [Reveal.js](https://revealjs.com/)!
 
 [![PyPI](https://img.shields.io/pypi/v/mkslides)](https://pypi.org/project/mkslides/)
 [![test-deploy.yml](https://github.com/MartenBE/mkslides/actions/workflows/test-deploy.yml/badge.svg?branch=main)](https://github.com/MartenBE/mkslides/actions)
@@ -38,10 +38,10 @@ pip install mkslides
 
 ## Create static site
 
-E.g. when your Markdown files are located in the `docs/` folder:
+E.g. when your Markdown files are located in the `slides/` folder:
 
 ```bash
-mkslides build docs/
+mkslides build slides/
 ```
 
 E.g. when you have a single Markdown file called `test.md`:
@@ -52,9 +52,13 @@ mkslides build test.md
 
 ## Live preview
 
+E.g. when your Markdown files are located in the `slides/` folder:
+
 ```bash
-mkslides serve docs/
+mkslides serve slides/
 ```
+
+E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
 
 ```bash
 mkslides serve test.md
@@ -72,6 +76,7 @@ mkslides serve -h
 ## Configuration
 
 Just create a `mkslides.yml`. All options are optional, you only have to add what you want to change to `mkslides.yml`.
+Relative file paths are considered relative to the directory containing Markdown files (`PATH`).
 
 Here's an example showcasing all possible options in the config file:
 
@@ -80,13 +85,25 @@ Here's an example showcasing all possible options in the config file:
 index:
     # Favicon of the generated index page: file path or public url to favicon
     # file
-    favicon: ./example-index-favicon.ico
+    favicon: example-index-favicon.ico
 
     # Jinja 2 template to generate index HTML: file path to Jinja2 file
-    template: ./example.jinja
+    template: example.jinja
 
     # Theme of the generated index page: file path or public url to CSS file
     theme: example-index-theme.css
+
+    # Navigation section describing how to structure the slides on the index
+    # page. This is similar to the `nav` option from MkDocs: list[any]
+    nav:
+        - Example: example1.md
+        - "Example 2": somewhere/example1.md
+        - example3.md
+        - somewhere/example4.md
+        - "More examples":
+              - example5.md
+              - "Much more examples":
+                    - "Last example": somewhere/much/more/examples/example6.md
 
     # Title of the generated index page: string
     title: example-title
@@ -98,7 +115,7 @@ slides:
     charset: utf-8
 
     # Favicon of the slides: file path or public url to favicon file
-    favicon: ./example-slides-favicon.ico
+    favicon: example-slides-favicon.ico
 
     # Theme for syntax highlighting of code fragments on the slides: file path
     # to CSS file, public url to CSS file, or one of the highlight.js built-in
@@ -107,9 +124,12 @@ slides:
     highlight_theme: example-slides-highlight-theme.css
 
     # Relative path to a python script containing a function
-    # Callable[[str], str] named `preprocess`. For each Markdown file, the whole
-    # file content is given to the function as a str. The returned string is
-    # then further processed as the markdown to give to Reveal.js
+    # Callable[[str], str] named `preprocess`. Important: a relative file path
+    # here is considered relative to the configuration file, as you probably
+    # don't want to serve the python scripts.
+    # For each Markdown file, the whole file content is given to the function as
+    # a str. The returned string is then further processed as the Markdown to
+    # give to Reveal.js
     preprocess_script: tests/test_preprocessors/replace_ats.py
 
     # Separator to determine notes of the slide: regexp
@@ -131,6 +151,10 @@ slides:
     # of the reveal.js themes such as `black`, `white`, `league`, `solarized`,
     # `dracula`, ... (see https://revealjs.com/themes/)
     theme: example-slides-theme.css
+
+    # Title of the slides. If this is set for a slide, it will be used for the
+    # entry in the generated index HTML: string
+    title: example-title
 
 # Options to be passed to reveal.js: options in yaml format, they will be
 # translated to JSON automatically (see https://revealjs.com/config/)
@@ -179,15 +203,15 @@ revealjs:
     slideNumber: c/t
 ```
 
-It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter:
+It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter. Here, relative file paths are considered relative to the Markdown file itself.
 
 ```md
 ---
-title: frontmatter title
 slides:
     theme: solarized
     highlight_theme: vs
     separator: <!--s-->
+    title: Frontmatter title.
 revealjs:
     height: 1080
     width: 1920
@@ -213,6 +237,7 @@ Notes:
 ## Full help
 
 <!-- output-no-command -->
+
 ```text
 Usage: mkslides [OPTIONS] COMMAND [ARGS]...
 
@@ -224,20 +249,23 @@ Options:
   -h, --help     Show this message and exit.
 
 Commands:
-  build  Build the MkDocs documentation.
+  build  Build the MkSlides documentation.
   serve  Run the builtin development server.
 
 ```
+
 <!-- /output-no-command -->
 
 <!-- output-build -->
+
 ```text
-Usage: mkslides build [OPTIONS] FILENAME|PATH
+Usage: mkslides build [OPTIONS] [PATH]
 
-  Build the MkDocs documentation.
+  Build the MkSlides documentation.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files. This argument
+  is optional and will default to 'slides', or 'docs' if the first directory
+  doesn't exist.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -249,16 +277,19 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-build -->
 
 <!-- output-serve -->
+
 ```text
-Usage: mkslides serve [OPTIONS] FILENAME|PATH
+Usage: mkslides serve [OPTIONS] [PATH]
 
   Run the builtin development server.
 
-  FILENAME|PATH is the path to the Markdown file, or the directory containing
-  Markdown files.
+  PATH is the path to the directory containing Markdown files. This argument
+  is optional and will default to 'slides', or 'docs' if the first directory
+  doesn't exist.
 
 Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
@@ -270,4 +301,5 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
+
 <!-- /output-serve -->

@@ -3,13 +3,32 @@ from pathlib import Path
 from re import Pattern
 
 
-def run_build_with_custom_input(
+def __run_build_generic(
     cwd: Path,
+    input_path: Path,
     output_path: Path,
-    input_filename: str,
+    config_path: Path | None,
+    *,
+    strict: bool = False,
 ) -> subprocess.CompletedProcess[str]:
+    command = [
+        "mkslides",
+        "-v",
+        "build",
+        "-d",
+        str(output_path),
+    ]
+
+    if strict:
+        command.insert(3, "-s")  # Insert -s after "build"
+
+    if config_path:
+        command.extend(["-f", str(config_path)])
+
+    command.append(str(input_path))
+
     result = subprocess.run(
-        ["mkslides", "-v", "build", "-s", "-d", output_path, input_filename],
+        command,
         cwd=cwd,
         capture_output=True,
         text=True,
@@ -19,48 +38,35 @@ def run_build_with_custom_input(
     return result
 
 
-def run_build(cwd: Path, output_path: Path) -> subprocess.CompletedProcess[str]:
-    return run_build_with_custom_input(cwd, output_path, "test_files")
-
-
-def run_build_with_config(
+def run_build_strict(
     cwd: Path,
+    input_path: Path,
     output_path: Path,
-    config_filename: str,
+    config_path: Path | None,
 ) -> subprocess.CompletedProcess[str]:
-    config_path = (cwd / "test_configs" / config_filename).resolve(strict=True)
-    result = subprocess.run(
-        [
-            "mkslides",
-            "-v",
-            "build",
-            "-s",
-            "-d",
-            output_path,
-            "-f",
-            config_path,
-            "test_files",
-        ],
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    return result
+    return __run_build_generic(cwd, input_path, output_path, config_path, strict=True)
 
 
-def assert_files_exist(output_path: Path, files: list[str]) -> None:
-    for file in files:
-        file_path = (output_path / file).absolute()
-        assert file_path.exists(), f"{file_path} does not exist"
+def run_build(
+    cwd: Path,
+    input_path: Path,
+    output_path: Path,
+    config_path: Path | None,
+) -> subprocess.CompletedProcess[str]:
+    return __run_build_generic(cwd, input_path, output_path, config_path, strict=False)
 
 
-def assert_html_contains(file_path: Path, expected_content: list[str]) -> None:
+def assert_files_exist(file: Path) -> None:
+    absolute_file = file.absolute()
+    assert absolute_file.exists(), f"{absolute_file} does not exist"
+
+
+def assert_html_contains(file_path: Path, expected_content: str) -> None:
     with file_path.open() as file:
         content = file.read()
-        for substring in expected_content:
-            assert substring in content, f"{substring} not found in {file_path}"
+        assert expected_content in content, (
+            f"{expected_content} not found in {file_path}"
+        )
 
 
 def assert_html_contains_regexp(file_path: Path, regexp: Pattern[str]) -> None:

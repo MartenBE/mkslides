@@ -2,7 +2,6 @@ import logging
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import livereload  # type: ignore[import-untyped]
 from livereload.handlers import LiveReloadHandler  # type: ignore[import-untyped]
@@ -23,16 +22,16 @@ LiveReloadHandler.DEFAULT_RELOAD_TIME = (
 
 @dataclass
 class ServeConfig:
-    dev_ip: Optional[str] = None
-    dev_port: Optional[str] = None
+    dev_ip: str | None = None
+    dev_port: str | None = None
     open_in_browser: bool = False
 
 
 def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]:
     def should_watch(
-        path: Optional[str],
-        unwatchable_values: Optional[list[str]] = None,
-    ) -> Optional[Path]:
+        path: str | None,
+        unwatchable_values: list[str] | None = None,
+    ) -> Path | None:
         # https://docs.astral.sh/ruff/rules/mutable-argument-default/
         if unwatchable_values is None:
             unwatchable_values = []

@@ -6,7 +6,7 @@ from pathlib import Path
 
 ################################################################################
 
-files = ["README.md", "docs/index.md"]
+files = ["README.md", "slides/index.md"]
 no_command_start = "<!-- output-no-command -->"
 no_command_end = "<!-- /output-no-command -->"
 build_start = "<!-- output-build -->"

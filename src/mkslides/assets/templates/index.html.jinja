@@ -1,3 +1,22 @@
+{% macro render_node(node) %}
+<li>
+    {% if navtree.is_node_leaf(node.identifier) %}
+        <span class="node-title">{{ node.data }}</span>:
+        <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a> |
+        <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a> |
+        <a href="{{ node.identifier }}?print-pdf" target="_blank" title="Download as PDF">PDF</a> |
+        <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF with notes</a>
+    {% else %}
+        {{ node.data }}
+        <ul>
+            {% for child in navtree.get_node_children(node.identifier) %}
+                {{ render_node(child) }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
+{% endmacro %}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -13,47 +32,15 @@
         {% endif %}
 
         <title>{{ title }}</title>
-        <style>
-            table {
-                border-collapse: collapse;
-            }
-
-            th, td {
-                border: 1px solid lightgrey;
-                padding: 0.5em 1em 0.5em 1em;
-            }
-        </style>
     </head>
     <body>
         <h1>{{ title }}</h1>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th colspan="4">Links</th>
-                </tr>
-            </thead>
-            <tbody>
-            {%+ for s in slideshows %}
-                <tr>
-                    <td>{{ s.title }}</td>
-                    <td>
-                        <a href="{{ s.location }}" target="_blank" title="View slides">slides</a>
-                    </td>
-                    <td>
-                        <a href="{{ s.location }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a>
-                    </td>
-                    <td>
-                        <a href="{{ s.location }}?print-pdf" target="_blank" title="Download as PDF">PDF</a>
-                    </td>
-                    <td>
-                        <a href="{{ s.location }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF with notes</a>
-                    </td>
-                </tr>
+        <ul>
+            {% for node in navtree.get_node_children(navtree.tree.root) %}
+                {{ render_node(node) }}
             {% endfor %}
-            </tbody>
-        </table>
+        </ul>
 
         <p>
             Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
@@ -61,3 +48,4 @@
         </p>
     </body>
 </html>
+

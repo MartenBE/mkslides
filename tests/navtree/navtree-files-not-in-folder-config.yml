@@ -1,0 +1,15 @@
+index:
+  nav:
+    - someslides-1.md
+    - custom-file-name-1: someslides-2.md
+    - category-1:
+        - someslides-3.md
+        - someslides-4.md
+    - category-2:
+        - someslides-5.md
+        - custom-file-name-2: someslides-6.md
+        - category-3:
+            - someslides-7.md
+            - custom-file-name-3: someslides-8.md
+            - file-not-in-folder-1.md
+    - file-not-in-folder-2.md
