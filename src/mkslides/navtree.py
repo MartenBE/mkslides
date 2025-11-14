@@ -143,3 +143,26 @@ class NavTree:
             return "{}"
 
         return self.tree.to_json(with_data=True)
+
+    def validate_with_md_files(
+        self,
+        md_files: list[MdFileToProcess],
+        strict: bool,
+    ) -> None:
+        md_file_relative_destination_paths = [
+            str(md_file.destination_path.relative_to(self.output_root_path))
+            for md_file in md_files
+        ]
+
+        for node_id in self.tree.expand_tree():
+            node = self.tree.get_node(node_id)
+            assert node
+            if (
+                node.is_leaf(self.tree.identifier)
+                and node.identifier not in md_file_relative_destination_paths
+            ):
+                source_file_name = Path(node.identifier).with_suffix(".md").name
+                msg = f"A reference to '{source_file_name}' is included in the 'nav' configuration, which is not found in the slideshow files."
+                if strict:
+                    raise FileNotFoundError(msg)
+                logger.warning(msg)

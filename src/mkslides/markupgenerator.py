@@ -390,6 +390,7 @@ class MarkupGenerator:
             assert isinstance(nav_from_config, list), "nav must be a list"
             logger.debug("Generating navigation tree from config")
             navtree.from_config_json(nav_from_config)
+            navtree.validate_with_md_files(md_files, strict=self.strict)
         else:
             logger.debug("Generating navigation tree from markdown files")
             navtree.from_md_files(md_files)

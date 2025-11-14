@@ -118,7 +118,6 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
             "mkslides",
             "-v",
             "build",
-            # "-s",
             "-d",
             output_path,
             input_path,
@@ -129,6 +128,11 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
         check=False,
     )
     assert result.returncode == expected_returncode
+    assert re.search(
+        r"WARNING\s*Relative slideshow link 'non-existing-file\.md' in file\s*'.*/someslides-1.md' does not exist",
+        result.stdout,
+        flags=re.DOTALL,
+    )
 
     input_path = cwd / "relative_slideshow_links" / "slides-fail-2"
     result = subprocess.run(
@@ -136,7 +140,6 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
             "mkslides",
             "-v",
             "build",
-            # "-s",
             "-d",
             output_path,
             input_path,
@@ -147,6 +150,11 @@ def test_relative_slideshow_links_without_strict(setup_paths: Any) -> None:
         check=False,
     )
     assert result.returncode == expected_returncode
+    assert re.search(
+        r"WARNING\s*Relative slideshow link 'non-existing-file\.md' in file\s*'.*/someslides-1.md' does not exist",
+        result.stdout,
+        flags=re.DOTALL,
+    )
 
 
 def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
@@ -171,7 +179,7 @@ def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
     )
     assert result.returncode == expected_returncode
     assert re.search(
-        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file .*/someslides-1\.md",
+        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file '.*/someslides-1\.md' does not exist",
         result.stderr,
     )
 
@@ -193,6 +201,6 @@ def test_relative_slideshow_links_with_strict(setup_paths: Any) -> None:
     )
     assert result.returncode == expected_returncode
     assert re.search(
-        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file .*/someslides-1\.md",
+        r"FileNotFoundError: Relative slideshow link 'non-existing-file\.md' in file '.*/someslides-1\.md' does not exist",
         result.stderr,
     )

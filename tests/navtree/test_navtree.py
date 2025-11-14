@@ -1,9 +1,9 @@
 import json
+import re
+import subprocess
 from typing import Any
 
 from deepdiff import DeepDiff
-
-# from mkslides.mdfiletoprocess import MdFileToProcess
 from omegaconf import OmegaConf
 
 from mkslides.config import get_config
@@ -165,16 +165,106 @@ def test_navtree_from_config(setup_paths: Any) -> None:
     assert DeepDiff(navtree.to_json(), expected_tree_json, ignore_order=True) == {}
 
 
-# TODO: simulate following warnings:
-#
-# INFO    -  Cleaning site directory
-# INFO    -  Building documentation to directory: /tmp/test/site
+def test_files_not_in_folder_without_strict(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    expected_returncode = 0
+
+    input_path = cwd / "navtree" / "slides"
+    config_path = cwd / "navtree" / "navtree-files-not-in-folder-config.yml"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-f",
+            config_path,
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+    assert re.search(
+        r"WARNING\s*A reference to 'file-not-in-folder-1\.md' is included in the 'nav' configuration, which is not found in the slideshow files\.",
+        result.stdout,
+    )
+    assert re.search(
+        r"WARNING\s*A reference to 'file-not-in-folder-2\.md' is included in the 'nav' configuration, which is not found in the slideshow files\.",
+        result.stdout,
+    )
+
+
+def test_files_not_in_folder_with_strict(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    expected_returncode = 1
+
+    input_path = cwd / "navtree" / "slides"
+    config_path = cwd / "navtree" / "navtree-files-not-in-folder-config.yml"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-s",
+            "-f",
+            config_path,
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+    assert re.search(
+        r"FileNotFoundError: A reference to 'file-not-in-folder-1\.md' is included in the 'nav' configuration, which is not found in the slideshow files\.",
+        result.stderr,
+    )
+
+
 # INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
 #              - 1.md
 #              - 2.md
 #              - 3.md
 #              - some/4.md
 #              - some/5.md
-# WARNING -  A reference to 'index.md' is included in the 'nav' configuration, which is not found in the documentation files.
-# WARNING -  A reference to 'about.md' is included in the 'nav' configuration, which is not found in the documentation files.
-# INFO    -  Documentation built in 0.06 seconds
+
+# def test_files_not_in_nav(setup_paths: Any) -> None:
+#     cwd, output_path = setup_paths
+#     expected_returncode = 0
+
+#     input_path = cwd / "navtree" / "slides"
+#     config_path = cwd / "navtree" / "navtree-files-not-in-nav-config.yml"
+#     result = subprocess.run(
+#         [
+#             "mkslides",
+#             "-v",
+#             "build",
+#             "-s",
+#             "-f",
+#             config_path,
+#             "-d",
+#             output_path,
+#             input_path,
+#         ],
+#         cwd=cwd,
+#         capture_output=True,
+#         text=True,
+#         check=False,
+#     )
+#     assert result.returncode == expected_returncode
+#     assert re.search(
+#         r"""
+#         INFO\s*The following pages exist in the slides directory, but are not included in the 'nav' configuration:
+#         \s*- someslides-1\.md
+#         \s*- category-1/category-2/category-3/someslides-7\.md
+#         """,
+#         result.stderr,
+#         flags=re.DOTALL | re.VERBOSE,
+#     )
