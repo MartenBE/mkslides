@@ -37,7 +37,7 @@ jobs:
       # - run: poetry run ruff format --check
       - run: poetry run ruff check
       - run: poetry run mypy src/ tests/
-      - run: poetry run pytest
+      - run: poetry run pytest --capture=no
 
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
