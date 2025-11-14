@@ -154,6 +154,22 @@ class NavTree:
             for md_file in md_files
         ]
 
+        files_not_in_navtree = []
+        for md_file_relative_destination_path in md_file_relative_destination_paths:
+            if md_file_relative_destination_path not in self.tree:
+                source_file_name = str(
+                    Path(md_file_relative_destination_path).with_suffix(".md"),
+                )
+                files_not_in_navtree.append(source_file_name)
+
+        if files_not_in_navtree:
+            logger.info(
+                "The following pages exist in the slides directory, but are not included in the 'nav' configuration:",
+            )
+
+            for file_name in files_not_in_navtree:
+                logger.info(f"\t- {file_name}")
+
         for node_id in self.tree.expand_tree():
             node = self.tree.get_node(node_id)
             assert node

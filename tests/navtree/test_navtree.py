@@ -228,43 +228,39 @@ def test_files_not_in_folder_with_strict(setup_paths: Any) -> None:
     )
 
 
-# INFO    -  The following pages exist in the docs directory, but are not included in the "nav" configuration:
-#              - 1.md
-#              - 2.md
-#              - 3.md
-#              - some/4.md
-#              - some/5.md
+def test_files_not_in_nav(setup_paths: Any) -> None:
+    cwd, output_path = setup_paths
+    expected_returncode = 0
 
-# def test_files_not_in_nav(setup_paths: Any) -> None:
-#     cwd, output_path = setup_paths
-#     expected_returncode = 0
-
-#     input_path = cwd / "navtree" / "slides"
-#     config_path = cwd / "navtree" / "navtree-files-not-in-nav-config.yml"
-#     result = subprocess.run(
-#         [
-#             "mkslides",
-#             "-v",
-#             "build",
-#             "-s",
-#             "-f",
-#             config_path,
-#             "-d",
-#             output_path,
-#             input_path,
-#         ],
-#         cwd=cwd,
-#         capture_output=True,
-#         text=True,
-#         check=False,
-#     )
-#     assert result.returncode == expected_returncode
-#     assert re.search(
-#         r"""
-#         INFO\s*The following pages exist in the slides directory, but are not included in the 'nav' configuration:
-#         \s*- someslides-1\.md
-#         \s*- category-1/category-2/category-3/someslides-7\.md
-#         """,
-#         result.stderr,
-#         flags=re.DOTALL | re.VERBOSE,
-#     )
+    input_path = cwd / "navtree" / "slides"
+    config_path = cwd / "navtree" / "navtree-files-not-in-nav-config.yml"
+    result = subprocess.run(
+        [
+            "mkslides",
+            "-v",
+            "build",
+            "-s",
+            "-f",
+            config_path,
+            "-d",
+            output_path,
+            input_path,
+        ],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == expected_returncode
+    assert re.search(
+        r"INFO\s*The following pages exist in the slides directory, but are not included in the 'nav' configuration:",
+        result.stdout,
+    )
+    assert re.search(
+        r"INFO\s*- someslides-1\.md",
+        result.stdout,
+    )
+    assert re.search(
+        r"INFO\s*- category-2/category-3/someslides-7\.md",
+        result.stdout,
+    )
