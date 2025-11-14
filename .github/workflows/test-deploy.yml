@@ -26,12 +26,12 @@ jobs:
           submodules: true
       - uses: actions/setup-node@v6
         with:
-          node-version: "22.x"
+          node-version: "22.20.0"
       - run: npm install --global prettier
       - run: prettier --check .
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.x"
+          python-version: "3.13.8"
       - run: pip install poetry
       - run: poetry install --with dev
       # - run: poetry run ruff format --check
