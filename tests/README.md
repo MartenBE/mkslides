@@ -3,19 +3,13 @@
 Run in the root folder of the repo:
 
 ```bash
-poetry run pytest
-```
-
-If you want to see the CLI output:
-
-```bash
-poetry run pytest --log-cli-level=INFO
+uv run pytest
 ```
 
 Executing a single test:
 
 ```bash
-poetry run pytest tests/navtree/test_navtree.py
+uv run pytest tests/navtree/test_navtree.py
 ```
 
 ## Simulate what a test does
@@ -25,5 +19,5 @@ The tests use a temporary directory (e.g. `/tmp` on Linux) to build the destinat
 However, sometimes you want to see what a test outputs. In that case, you can simulate the test by running following command from the root folder:
 
 ```bash
-poetry run mkslides -s -d site -v build tests/navtree/slides -f tests/navtree/navtree-config.yml
+uv run mkslides -v build -s -d site -f tests/navtree/navtree-config.yml tests/navtree/slides
 ```

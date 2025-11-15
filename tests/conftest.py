@@ -7,7 +7,7 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def setup_paths() -> Generator[tuple[Path, Path], None, None]:
+def setup_paths() -> Generator[tuple[Path, Path]]:
     cwd = Path("tests").resolve(strict=True)
     output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
 

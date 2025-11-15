@@ -3,14 +3,8 @@
 {
     languages.python = {
         enable = true;
-        poetry = {
+        uv = {
             enable = true;
-            install = {
-                enable = true;
-                installRootPackage = true;
-            };
-            activate.enable = true;
-            package = pkgs.poetry;
         };
     };
 

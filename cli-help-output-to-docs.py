@@ -31,16 +31,16 @@ def replace_content(
 ################################################################################
 
 no_command_output = subprocess.check_output(
-    ["poetry", "run", "mkslides", "-h"],
+    ["uv", "run", "mkslides", "-h"],
     universal_newlines=True,
 )
 
 build_output = subprocess.check_output(
-    ["poetry", "run", "mkslides", "build", "-h"],
+    ["uv", "run", "mkslides", "build", "-h"],
     universal_newlines=True,
 )
 serve_output = subprocess.check_output(
-    ["poetry", "run", "mkslides", "serve", "-h"],
+    ["uv", "run", "mkslides", "serve", "-h"],
     universal_newlines=True,
 )
 
