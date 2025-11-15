@@ -32,12 +32,12 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13.8"
-      - run: pip install poetry
-      - run: poetry install --with dev
-      # - run: poetry run ruff format --check
-      - run: poetry run ruff check
-      - run: poetry run mypy src/ tests/
-      - run: poetry run pytest
+      - run: pip install uv
+      - run: uv sync
+      - run: uv run ruff format --check
+      - run: uv run ruff check
+      - run: uv run mypy src/ tests/
+      - run: uv run pytest
 
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
@@ -54,9 +54,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
-      - run: pip install poetry
-      - run: poetry install --with dev
-      - run: poetry run mkslides build
+      - run: pip install uv
+      - run: uv sync
+      - run: uv run mkslides build
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ./site

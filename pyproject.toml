@@ -1,48 +1,57 @@
-[tool.poetry]
+# https://packaging.python.org/en/latest/guides/writing-pyproject-toml
+
+[project]
 name = "mkslides"
 version = "2.0.0"
 description = "MkSlides - Slides with Markdown using the power of Reveal.js."
-authors = ["MartenBE"]
-homepage = "https://martenbe.github.io/mkslides"
-repository = "https://github.com/MartenBE/mkslides"
-license = "MIT"
 readme = "README.md"
-packages = [{ include = "mkslides", from = "src" }]
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "click>=8.3.1",
+    "emoji>=2.15.0",
+    "jinja2>=3.1.6",
+    "jsonschema>=4.25.1",
+    "livereload>=2.7.1",
+    "markdown>=3.10",
+    "natsort>=8.4.0",
+    "omegaconf>=2.3.0",
+    "python-frontmatter>=1.1.0",
+    "pyyaml>=6.0.3",
+    "rich>=14.2.0",
+    "treelib>=1.8.0",
+    "types-beautifulsoup4>=4.12.0.20250516",
+    "types-markdown>=3.10.0.20251106",
+]
+license = "MIT"
+license-files = [
+    "LICENSE"
+]
 
-[tool.poetry.dependencies]
-python = "^3.12"
-Jinja2 = "^3.1.4"
-python-frontmatter = "^1.1.0"
-PyYAML = "^6.0.2"
-rich = "^13.8.0"
-click = "^8.1.7"
-jsonschema = "^4.23.0"
-natsort = "^8.4.0"
-emoji = "^2.12.1"
-livereload = "^2.7.1"
-markdown = "^3.7"
-beautifulsoup4 = "^4.12.3"
-types-markdown = "^3.7.0.20240822"
-types-beautifulsoup4 = "^4.12.0.20241020"
-omegaconf = "^2.3.0"
-treelib = "^1.8.0"
+authors = [
+  { name = "MartenBE" },
+]
 
-[tool.poetry.group.dev.dependencies]
-bumpver = "^2023.1129"
-mypy = "^1.11.2"
-types-pyyaml = "^6.0.12.20240808"
-ruff = "^0.6.4"
+[project.urls]
+Homepage = "https://martenbe.github.io/mkslides"
+Repository = "https://github.com/MartenBE/mkslides"
 
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.3"
-deepdiff = "^8.6.1"
-
-[tool.poetry.scripts]
-mkslides = "mkslides.__main__:cli"
+[dependency-groups]
+dev = [
+    "bumpver>=2025.1131",
+    "deepdiff>=8.6.1",
+    "mypy>=1.18.2",
+    "pytest>=9.0.1",
+    "ruff>=0.14.5",
+    "types-pyyaml>=6.0.12.20250915",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.8.23,<0.9.0"]
+build-backend = "uv_build"
+
+[project.scripts]
+mkslides = "mkslides.__main__:cli"
 
 [tool.bumpver]
 current_version = "2.0.0"
@@ -99,4 +108,9 @@ select = ["ALL"]
 ]
 "cli-help-output-to-docs.py" = [
     "T201", # `print` found
+]
+
+[tool.uv.workspace]
+members = [
+    "mkslides",
 ]

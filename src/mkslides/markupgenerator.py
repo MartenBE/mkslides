@@ -460,7 +460,7 @@ class MarkupGenerator:
             title=self.global_config.index.title,
             theme=self.global_config.index.theme,
             navtree=navtree,
-            build_datetime=datetime.datetime.now(tz=datetime.timezone.utc),
+            build_datetime=datetime.datetime.now(tz=datetime.UTC),
         )
         self.__create_or_overwrite_file(
             self.output_directory_path / "index.html",
