@@ -44,12 +44,6 @@ jobs:
       - run: uv run mypy src/ tests/
       - run: uv run pytest
 
-  release:
-
-    needs: test
-    runs-on: ubuntu-latest
-
-
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
     needs: test
