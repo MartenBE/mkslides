@@ -17,9 +17,10 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
-  pages: write
+  contents: write
+  discussions: write
   id-token: write
+  pages: write
 
 jobs:
   test:
@@ -44,6 +45,13 @@ jobs:
       - run: uv run mypy src/ tests/
       - run: uv run pytest
 
+  release:
+    if: github.ref_type == 'tag'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: softprops/action-gh-release@v2
+
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
     needs: test
@@ -67,5 +75,3 @@ jobs:
           path: ./site
       - id: deployment
         uses: actions/deploy-pages@v4
-      - uses: softprops/action-gh-release@v2 # Release on GitHub if tagged
-        if: github.ref_type == 'tag'
