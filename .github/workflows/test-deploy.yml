@@ -38,10 +38,18 @@ jobs:
           python-version: "3.13.8"
       - run: pip install uv
       - run: uv sync
+      - run: uv run reuse lint
       - run: uv run ruff format --check
       - run: uv run ruff check
       - run: uv run mypy src/ tests/
       - run: uv run pytest
+
+  release:
+    if: github.ref_type == 'tag'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: softprops/action-gh-release@v2
 
   deploy:
     if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
