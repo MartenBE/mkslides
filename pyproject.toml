@@ -6,7 +6,7 @@
 
 [project]
 name = "mkslides"
-version = "2.0.6"
+version = "2.0.7"
 description = "MkSlides - Slides with Markdown using the power of Reveal.js."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -59,7 +59,7 @@ build-backend = "uv_build"
 mkslides = "mkslides.__main__:cli"
 
 [tool.bumpver]
-current_version = "2.0.6"
+current_version = "2.0.7"
 version_pattern = "MAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "Bump version {old_version} to {new_version}"
 tag_message = "{new_version}"
