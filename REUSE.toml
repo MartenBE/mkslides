@@ -6,6 +6,11 @@ version = 1
 path = [
     ".python-version",
     "devenv.lock",
+    "docs/img/example-build.png",
+    "docs/img/example-index.png",
+    "docs/img/example-serve.png",
+    "docs/img/example-slide.png",
+    "docs/img/youtube-demo.png",
     "tests/baseline/slides/extra/randomfile-3.txt",
     "tests/baseline/slides/randomfile-1.txt",
     "tests/baseline/slides/somefolder/randomfile-2.txt",

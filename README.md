@@ -31,11 +31,15 @@ SPDX-License-Identifier: MIT
 
 ## Example
 
-Example slide from https://martenbe.github.io/mkslides with [Dracule theme](https://revealjs.com/themes/) :
-![](./docs/img/example-slide.png)
+Example slide from with [Dracule theme](https://revealjs.com/themes/):
+<a href="https://martenbe.github.io/mkslides" target="_blank">
+<img src="docs/img/example-slide.png" />
+</a>
 
 Example index page from https://hogenttin.github.io/hogent-markdown-slides with [HOGENT theme](https://github.com/HoGentTIN/cdn/tree/main/styles/reveal-js) and custom background logo:
-![](./docs/img/example-index.png)
+<a href="https://hogenttin.github.io/hogent-markdown-slides" target="_blank">
+<img src="docs/img/example-index.png" />
+</a>
 
 Example output when building the website:
 ![](./docs/img/example-build.png)
@@ -44,7 +48,7 @@ Example output when using [python-livereload](https://pypi.org/project/livereloa
 ![](./docs/img/example-serve.png)
 
 Longer video:
-<a href="youtube-demo.png" target="_blank">
+<a href="https://www.youtube.com/watch?v=RdyRe3JZC7Q" target="_blank">
 <img src="docs/img/youtube-demo.png" />
 </a>
 
