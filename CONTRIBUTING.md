@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing guidelines
 
 Thank you very much for contributing! Every help is welcome :slightly_smiling_face:.
@@ -25,5 +31,7 @@ Here are some guidelines we ask to follow:
     --copyright-prefix spdx-string-c \
     --license MIT \
     --year "<year-of-file-creation>" \
+    --skip-unrecognised \
+    --skip-existing \
     "<file-or-folder>"
     ```

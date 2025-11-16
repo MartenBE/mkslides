@@ -1,4 +1,8 @@
 ---
+# SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+#
+# SPDX-License-Identifier: MIT
+
 slides:
     theme: ../assets-2/theme-2.css
     highlight_theme: ../assets-2/highlight-theme-2.css
