@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+#
+# SPDX-License-Identifier: MIT
+
 # https://packaging.python.org/en/latest/guides/writing-pyproject-toml
 
 [project]
@@ -25,7 +29,7 @@ dependencies = [
 ]
 license = "MIT"
 license-files = [
-    "LICENSE"
+    "LICENSES/*.txt"
 ]
 
 authors = [
@@ -42,6 +46,7 @@ dev = [
     "deepdiff>=8.6.1",
     "mypy>=1.18.2",
     "pytest>=9.0.1",
+    "reuse>=6.2.0",
     "ruff>=0.14.5",
     "types-pyyaml>=6.0.12.20250915",
 ]

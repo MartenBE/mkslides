@@ -1,4 +1,8 @@
 ---
+# SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+#
+# SPDX-License-Identifier: MIT
+
 title: "Would you like to know more?"
 ---
 
@@ -14,7 +18,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
 
 ## What does it do?
 
-<img src="./img/markdown-logo.png" height="100px" style="margin-right: 50px;"/>
+<img src="./img/markdown-logo.svg" height="100px" style="background-color: white; margin-right: 50px;"/>
 <img src="./img/reveal-js-logo.svg" height="100px"/>
 
 - Build static HTML slideshow files from Markdown files.

@@ -1,0 +1,63 @@
+version = 1
+
+### Files unrecognized by reuse ################################################
+
+[[annotations]]
+path = [
+    ".python-version",
+    "devenv.lock",
+    "tests/baseline/slides/extra/randomfile-3.txt",
+    "tests/baseline/slides/randomfile-1.txt",
+    "tests/baseline/slides/somefolder/randomfile-2.txt",
+    "uv.lock",
+]
+SPDX-FileCopyrightText = "Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)"
+SPDX-License-Identifier = "MIT"
+
+### Imported/copied files from other projects ##################################
+
+# https://reuse.software/faq/#copy-work
+
+[[annotations]]
+# https://github.com/hakimel/reveal.js/blob/master/LICENSE
+# https://github.com/hakimel/reveal.js/blob/master/README.md
+path = [
+    "slides/img/reveal-js-logo.svg",
+]
+SPDX-FileCopyrightText = "Copyright (C) 2011-2024 Hakim El Hattab, http://hakim.se, and reveal.js contributors"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+# https://github.com/dcurtis/markdown-mark/blob/master/LICENSE
+# https://github.com/dcurtis/markdown-mark/blob/master/svg/markdown-mark.svg
+path = [
+    "slides/img/markdown-logo.svg",
+]
+SPDX-FileCopyrightText = "DEDICATED TO THE PUBLIC DOMAIN BY DUSTIN CURTIS"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+# https://commons.wikimedia.org/wiki/File:SMPTE_Color_Bars.svg
+# This image of simple geometry is ineligible for copyright and therefore in the public domain, because it consists entirely of information that is common property and contains no original authorship.
+# https://reuse.software/faq/#uncopyrightable
+path = [
+    "tests/images/slides/example-4.png",
+    "tests/images/slides/img/example-1.png",
+    "tests/images/slides/img/somefolder/example-3.png",
+    "tests/images/slides/somefolder/example-2.png",
+]
+SPDX-FileCopyrightText = "2006 Denelson83"
+SPDX-License-Identifier = "CC0-1.0" # or WTFPL
+
+[[annotations]]
+# https://github.com/microsoft/vscode/blob/main/LICENSE.txt
+# https://github.com/microsoft/vscode/blob/main/resources/win32/html.ico
+path = [
+    "tests/favicons/slides/assets-2/favicon-2.ico",
+    "tests/favicons/slides/assets/favicon.ico",
+    "tests/favicons/slides/somefolder/favicon-3.ico",
+    "tests/frontmatter/slides/assets/favicon.ico",
+]
+SPDX-FileCopyrightText = "Copyright (c) 2015 - present Microsoft Corporation"
+SPDX-License-Identifier = "MIT"
+
