@@ -45,7 +45,7 @@ Example output when using [python-livereload](https://pypi.org/project/livereloa
 
 Longer video:
 <a href="youtube-demo.png" target="_blank">
-    <img src="docs/img/youtube-demo.png" />
+<img src="docs/img/youtube-demo.png" />
 </a>
 
 Want more examples? An [example repo](https://github.com/HoGentTIN/hogent-markdown-slides) with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
@@ -251,8 +251,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Notes:
 
--   `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
--   The precedence is frontmatter > `mkslides.yml` > defaults.
+- `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
+- The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Full help
 
