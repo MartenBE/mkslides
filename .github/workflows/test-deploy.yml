@@ -55,7 +55,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
 
   deploy:
-    if: github.event_name == 'push' # Ensure deploy only runs on push, not pull_request
+    if: github.ref_type == 'branch' && github.event_name == 'push' # Ensure deploy only runs on push to a branch, not pull_request or tag
     needs: test
     environment:
       name: github-pages
