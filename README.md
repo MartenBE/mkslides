@@ -31,26 +31,20 @@ SPDX-License-Identifier: MIT
 
 ## Example
 
-Example slide from with [Dracule theme](https://revealjs.com/themes/):
-<a href="https://martenbe.github.io/mkslides" target="_blank">
-<img src="docs/img/example-slide.png" />
-</a>
+Example slide from https://martenbe.github.io/mkslides with [dracula theme](https://revealjs.com/themes/):
+[![Example slide](docs/img/example-slide.png)](https://martenbe.github.io/mkslides)
 
 Example index page from https://hogenttin.github.io/hogent-markdown-slides with [HOGENT theme](https://github.com/HoGentTIN/cdn/tree/main/styles/reveal-js) and custom background logo:
-<a href="https://hogenttin.github.io/hogent-markdown-slides" target="_blank">
-<img src="docs/img/example-index.png" />
-</a>
+[![Example index](docs/img/example-index.png)](https://hogenttin.github.io/hogent-markdown-slides)
 
 Example output when building the website:
-![](./docs/img/example-build.png)
+![Build output](docs/img/example-build.png)
 
-Example output when using [python-livereload](https://pypi.org/project/livereload/) to preview the website live during editing:
-![](./docs/img/example-serve.png)
+Example output when using live preview during editing:
+![Live preview](docs/img/example-serve.png)
 
 Longer video:
-<a href="https://www.youtube.com/watch?v=RdyRe3JZC7Q" target="_blank">
-<img src="docs/img/youtube-demo.png" />
-</a>
+[![YouTube demo](docs/img/youtube-demo.png)](https://www.youtube.com/watch?v=RdyRe3JZC7Q)
 
 Want more examples? An [example repo](https://github.com/HoGentTIN/hogent-markdown-slides) with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
 
