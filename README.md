@@ -21,7 +21,7 @@ SPDX-License-Identifier: MIT
     - Turn a folder with Markdown files into a collection of HTML slideshows.
 - Publish your slideshow(s) anywhere that static files can be served.
     - Locally
-    - On a webserver
+    - On a web server
     - Deploy through CI/CD with GitHub/GitLab (like this repo!)
 - Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 - Use custom favicons, CSS themes, templates, ... if desired.
@@ -35,7 +35,7 @@ SPDX-License-Identifier: MIT
 
 [Youtube link](https://youtu.be/RdyRe3JZC7Q) in case you want to look at 2x speed.
 
-Want more examples? An example repo with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
+Want more examples? An [example repo](https://github.com/HoGentTIN/hogent-markdown-slides) with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
 
 ## Installation
 
