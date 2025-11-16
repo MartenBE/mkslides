@@ -65,7 +65,7 @@ E.g. when your Markdown files are located in the `slides/` folder:
 mkslides serve slides/
 ```
 
-E.g. when you have a single Markdown file called `test.md`: :warning: Deprecated since 1.1.0.
+E.g. when you have a single Markdown file called `test.md`:
 
 ```bash
 mkslides serve test.md
