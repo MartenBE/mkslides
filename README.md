@@ -20,9 +20,9 @@ SPDX-License-Identifier: MIT
     - Turn a single Markdown file into a HTML slideshow.
     - Turn a folder with Markdown files into a collection of HTML slideshows.
 - Publish your slideshow(s) anywhere that static files can be served.
-    - Locally
-    - On a web server
-    - Deploy through CI/CD with GitHub/GitLab (like this repo!)
+    - Locally on your own device.
+    - On a web server.
+    - Deploy through CI/CD with GitHub/GitLab (like this repo!).
 - Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 - Use custom favicons, CSS themes, templates, ... if desired.
 - Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
@@ -31,9 +31,22 @@ SPDX-License-Identifier: MIT
 
 ## Example
 
-[demo.webm](https://github.com/user-attachments/assets/b594170e-a103-4643-88db-b32437426e77)
+Example slide from https://martenbe.github.io/mkslides with [Dracule theme](https://revealjs.com/themes/) :
+![](./docs/img/example-slide.png)
 
-[Youtube link](https://youtu.be/RdyRe3JZC7Q) in case you want to look at 2x speed.
+Example index page from https://hogenttin.github.io/hogent-markdown-slides with [HOGENT theme](https://github.com/HoGentTIN/cdn/tree/main/styles/reveal-js) and custom background logo:
+![](./docs/img/example-index.png)
+
+Example output when building the website:
+![](./docs/img/example-build.png)
+
+Example output when using [python-livereload](https://pypi.org/project/livereload/) to preview the website live during editing:
+![](./docs/img/example-serve.png)
+
+Longer video:
+<a href="youtube-demo.png" target="_blank">
+    <img src="docs/img/youtube-demo.png" />
+</a>
 
 Want more examples? An [example repo](https://github.com/HoGentTIN/hogent-markdown-slides) with [slides](https://hogenttin.github.io/hogent-markdown-slides/) demonstrating all possibilities ([Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, image resizing, ...) using Reveal.js with the [HOGENT](https://hogent.be/) theme can be found at https://github.com/HoGentTIN/hogent-markdown-slides .
 
@@ -238,8 +251,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Notes:
 
-- `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
-- The precedence is frontmatter > `mkslides.yml` > defaults.
+-   `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
+-   The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Full help
 
