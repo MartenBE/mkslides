@@ -237,7 +237,6 @@ Notes:
 ## Full help
 
 <!-- output-no-command -->
-
 ```text
 Usage: mkslides [OPTIONS] COMMAND [ARGS]...
 
@@ -253,11 +252,9 @@ Commands:
   serve  Run the builtin development server.
 
 ```
-
 <!-- /output-no-command -->
 
 <!-- output-build -->
-
 ```text
 Usage: mkslides build [OPTIONS] [PATH]
 
@@ -279,11 +276,9 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-build -->
 
 <!-- output-serve -->
-
 ```text
 Usage: mkslides serve [OPTIONS] [PATH]
 
@@ -305,5 +300,4 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-serve -->

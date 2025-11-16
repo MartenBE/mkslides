@@ -106,7 +106,6 @@ mkslides serve -h
 ## Full help for build
 
 <!-- output-build -->
-
 ```text
 Usage: mkslides build [OPTIONS] [PATH]
 
@@ -128,7 +127,6 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-build -->
 
 ---
@@ -136,7 +134,6 @@ Options:
 ## Full help for serve
 
 <!-- output-serve -->
-
 ```text
 Usage: mkslides serve [OPTIONS] [PATH]
 
@@ -158,7 +155,6 @@ Options:
   -h, --help                  Show this message and exit.
 
 ```
-
 <!-- /output-serve -->
 
 ---
