@@ -166,7 +166,11 @@ class MarkupGenerator:
         )
 
     def __process_markdown_file(self) -> None:
-        logger.debug(f"Processing markdown file at '{self.md_root_path.absolute()}'")
+        absolute_input_path = self.md_root_path.absolute()
+        logger.debug(f"Processing markdown file at '{absolute_input_path}'")
+        logger.warning(
+            f"When you use a single file like '{absolute_input_path}' as `PATH`, only default static assets will be copied to the output folder. If you want to include images or other files, create a folder instead and pass that as `PATH`. Using a file as `PATH` is more meant for a quick slideshow in a pinch using only text.",
+        )
 
         destination_path = self.output_directory_path / "index.html"
         md_file_data = self.__create_md_file_to_process(

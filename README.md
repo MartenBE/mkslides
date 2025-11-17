@@ -59,7 +59,15 @@ pip install mkslides
 E.g. when your Markdown files are located in the `slides/` folder:
 
 ```bash
-mkslides build slides/
+mkslides build
+```
+
+If the `slides` folder doesn't exists, it will fallback to `docs` for backwards compatibility. If `docs` also doesn't exists, it will error.
+
+E.g. when your Markdown files are located in the `somefolder/` folder:
+
+```bash
+mkslides build somefolder/
 ```
 
 E.g. when you have a single Markdown file called `test.md`:
@@ -68,19 +76,19 @@ E.g. when you have a single Markdown file called `test.md`:
 mkslides build test.md
 ```
 
+:warning: When you use a single file as `PATH`, only default static assets will be copied to the output folder. If you want to include images or other files, create a folder instead and pass that as `PATH`. Using a file as `PATH` is more meant for a quick slideshow in a pinch using only text.
+
 ## Live preview
 
-E.g. when your Markdown files are located in the `slides/` folder:
+The commands for live preview are very similar to [creating a static website](#create-static-site).
 
 ```bash
-mkslides serve slides/
-```
-
-E.g. when you have a single Markdown file called `test.md`:
-
-```bash
+mkslides serve
+mkslides serve somefolder/
 mkslides serve test.md
 ```
+
+:warning: Also see the same remarks as with [creating a static website](#create-static-site).
 
 # Need help or want to know more?
 
