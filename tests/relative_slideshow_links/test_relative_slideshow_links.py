@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import re
-import subprocess
 from typing import Any
 
 from tests.utils import (

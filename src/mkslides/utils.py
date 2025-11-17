@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: MIT
 
 from pathlib import Path
-
 from urllib.parse import urlparse
 
 from mkslides.urltype import URLType

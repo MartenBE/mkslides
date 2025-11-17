@@ -3,13 +3,13 @@
 # SPDX-License-Identifier: MIT
 
 import datetime
-from functools import partial
 import json
 import logging
 import re
 import shutil
 import time
 from copy import deepcopy
+from functools import partial
 from importlib import resources
 from pathlib import Path
 from typing import Any
@@ -34,13 +34,13 @@ from .constants import (
     HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
     HTML_BACKGROUND_IMAGE_REGEX,
+    HTML_RELATIVE_LINK_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
     MD_EXTENSION_REGEX,
+    MD_RELATIVE_LINK_REGEX,
     OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_LIST,
-    MD_RELATIVE_LINK_REGEX,
-    HTML_RELATIVE_LINK_REGEX,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,9 +76,9 @@ class MarkupGenerator:
         self.__create_or_clear_output_directory()
 
         if self.md_root_path.is_file():
-            assert (
-                self.md_root_path.suffix == ".md"
-            ), "md_root_path must be a markdown file"
+            assert self.md_root_path.suffix == ".md", (
+                "md_root_path must be a markdown file"
+            )
             self.__process_markdown_file()
         else:
             self.__process_markdown_directory()
@@ -221,7 +221,6 @@ class MarkupGenerator:
         templates: dict[str, Template],
     ) -> None:
         """Render all markdown files to HTML slideshows."""
-
         for md_file_data in md_files:
             slide_config = md_file_data.slide_config
 
@@ -512,7 +511,6 @@ class MarkupGenerator:
         md_file_data: list[MdFileToProcess],
     ) -> None:
         """Check if all relative link targets are present and normalize .md links."""
-
         for md_file in md_file_data:
             content = md_file.markdown_content
 
@@ -570,9 +568,8 @@ class MarkupGenerator:
             if match := HTML_BACKGROUND_IMAGE_REGEX.search(comment):
                 found_links.add(match.group("location"))
 
-        found_links = filter(
-            lambda link: get_url_type(link) == URLType.RELATIVE,
-            found_links,
-        )
+        relative_links = {
+            link for link in found_links if get_url_type(link) == URLType.RELATIVE
+        }
 
-        return found_links
+        return relative_links

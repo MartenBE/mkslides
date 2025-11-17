@@ -2,14 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
-import re
 import subprocess
 from typing import Any
 
-from tests.utils import (
-    assert_html_contains,
-    run_build_strict,
-)
 
 def test_relative_links_without_strict(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
