@@ -70,6 +70,7 @@ class MarkupGenerator:
         self.strict = strict
 
     def process_markdown(self) -> None:
+        """Process the markdown files and generate HTML slideshows."""
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
 
@@ -169,6 +170,7 @@ class MarkupGenerator:
         )
 
     def __process_markdown_file(self) -> None:
+        """Process the detected markdown file."""
         absolute_input_path = self.md_root_path.absolute()
         logger.debug(f"Processing markdown file at '{absolute_input_path}'")
         logger.warning(
@@ -184,6 +186,7 @@ class MarkupGenerator:
         self.__process_detected_markdown_files([md_file_data])
 
     def __process_markdown_directory(self) -> None:
+        """Process the detected markdown files in a directory."""
         logger.debug(
             f"Processing markdown directory at '{self.md_root_path.absolute()}'",
         )
@@ -197,6 +200,7 @@ class MarkupGenerator:
         md_files: list,
         non_md_files: list | None = None,
     ) -> None:
+        """Process the detected markdown files and copy non-markdown files."""
         if non_md_files:
             for file in non_md_files:
                 destination_path = self.output_directory_path / file.relative_to(
@@ -284,6 +288,7 @@ class MarkupGenerator:
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
     ) -> str | None:
+        """Generate the reveal.js theme URL."""
         theme = slide_config.slides.theme
 
         if theme is None:
@@ -316,6 +321,7 @@ class MarkupGenerator:
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
     ) -> str | None:
+        """Generate the highlight.js theme URL."""
         highlight_theme = slide_config.slides.highlight_theme
 
         if highlight_theme is None:
@@ -373,27 +379,29 @@ class MarkupGenerator:
         slide_config: DictConfig,
         frontmatter_metadata: dict[str, object],
     ) -> str | None:
+        """Generate the absolute path for the preprocess script if it is a relative URL."""
         preprocess_script = slide_config.slides.preprocess_script
 
         if slide_config.slides.preprocess_script is None:
             return None
 
-        if get_url_type(preprocess_script) == URLType.RELATIVE:
-            if (
-                "slides" in frontmatter_metadata
-                and isinstance(frontmatter_metadata["slides"], dict)
-                and frontmatter_metadata["slides"].get("preprocess_script")
-            ):
-                return str(
-                    (source_path.parent / preprocess_script).resolve(strict=True),
-                )
+        if get_url_type(preprocess_script) != URLType.RELATIVE:
+            return preprocess_script
+
+        if (
+            "slides" in frontmatter_metadata
+            and isinstance(frontmatter_metadata["slides"], dict)
+            and frontmatter_metadata["slides"].get("preprocess_script")
+        ):
             return str(
-                (
-                    self.global_config.internal.config_path.parent / preprocess_script
-                ).resolve(strict=True),
+                (source_path.parent / preprocess_script).resolve(strict=True),
             )
 
-        return preprocess_script
+        return str(
+            (
+                self.global_config.internal.config_path.parent / preprocess_script
+            ).resolve(strict=True),
+        )
 
     def __generate_slide_config(
         self,
@@ -438,6 +446,7 @@ class MarkupGenerator:
         return slide_config
 
     def __generate_index(self, md_files: list[MdFileToProcess]) -> None:
+        """Generate an index.html file in the output directory."""
         logger.debug("Generating index")
 
         navtree = NavTree(self.md_root_path, self.output_directory_path)
@@ -527,26 +536,8 @@ class MarkupGenerator:
 
             md_file.markdown_content = content
 
-    def __replace_md_link_target(self, content: str, link: str) -> str:
-        """Replace a specific .md link target with .html in markdown and HTML links."""
-
-        def _replacer(match: re.Match, *, link: str) -> str:
-            matched_location = match.group("location")
-
-            # Only touch matches that correspond exactly to this link
-            if matched_location != link:
-                return match.group(0)
-
-            new_location = MD_EXTENSION_REGEX.sub(".html", matched_location)
-            return match.group(0).replace(matched_location, new_location)
-
-        for regex in (MD_RELATIVE_LINK_REGEX, HTML_RELATIVE_LINK_REGEX):
-            bound_replacer = partial(_replacer, link=link)
-            content = regex.sub(bound_replacer, content)
-
-        return content
-
     def __find_all_relative_links(self, markdown_content: str) -> set[str]:
+        """Find all relative links in the given markdown content."""
         html_content = markdown.markdown(markdown_content, extensions=["extra"])
         soup = BeautifulSoup(html_content, "html.parser")
 
@@ -573,3 +564,22 @@ class MarkupGenerator:
         }
 
         return relative_links
+
+    def __replace_md_link_target(self, content: str, link: str) -> str:
+        """Replace a specific .md link target with .html in markdown and HTML links."""
+
+        def _replacer(match: re.Match, *, link: str) -> str:
+            matched_location = match.group("location")
+
+            # Only touch matches that correspond exactly to this link
+            if matched_location != link:
+                return match.group(0)
+
+            new_location = MD_EXTENSION_REGEX.sub(".html", matched_location)
+            return match.group(0).replace(matched_location, new_location)
+
+        for regex in (MD_RELATIVE_LINK_REGEX, HTML_RELATIVE_LINK_REGEX):
+            bound_replacer = partial(_replacer, link=link)
+            content = regex.sub(bound_replacer, content)
+
+        return content
