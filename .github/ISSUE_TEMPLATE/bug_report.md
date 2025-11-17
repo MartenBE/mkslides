@@ -13,7 +13,7 @@ assignees: ""
 <details>
 
 <summary>
-    :warning: First, test if the bug isn't related to reveal.js upstream at https://github.com/hakimel/reveal.js/. See if you can reproduce the bug in the snippet below:
+    :warning: First, test if the bug isn't related to reveal.js upstream at https://github.com/hakimel/reveal.js/. See if you can reproduce the bug by inserting the bug producing Markdown in the snippet below:
 </summary>
 
 ```html
@@ -40,7 +40,7 @@ assignees: ""
             <div class="slides">
                 <section data-markdown>
                     <textarea data-template>
-
+                        <!-- INSERT YOUR MARKDOWN HERE -->
                         # Title page
 
                         ---
@@ -84,7 +84,7 @@ If the bug is already present here, then it has nothing to do with mkslides. Ple
 Otherwise, leave the proof here for review in the code block above and continue filling in this issue.
 Check the following item:
 
-- [ ] I could not reproduce the bug using the minimal snippet.
+- [ ] I could not reproduce the bug using the minimal Reveal.js snippet.
 
 </details>
 
