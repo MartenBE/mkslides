@@ -64,3 +64,8 @@ for file_path in files:
     file.write_text(content)
 
     print(f"Updated {file}")
+
+try:
+    subprocess.run(["prettier", "--write", *files])
+except OSError:
+    print("Prettier not found, skipping formatting step.")
