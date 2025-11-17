@@ -3,18 +3,20 @@
 # SPDX-License-Identifier: MIT
 
 import datetime
+from functools import partial
 import json
 import logging
 import re
 import shutil
 import time
 from copy import deepcopy
-from functools import partial
 from importlib import resources
 from pathlib import Path
 from typing import Any
 
 import frontmatter  # type: ignore[import-untyped]
+import markdown
+from bs4 import BeautifulSoup, Comment
 from emoji import emojize
 from jinja2 import Template
 from omegaconf import DictConfig, OmegaConf
@@ -31,13 +33,14 @@ from .constants import (
     DEFAULT_SLIDESHOW_TEMPLATE,
     HIGHLIGHTJS_THEMES_LIST,
     HIGHLIGHTJS_THEMES_RESOURCE,
-    HTML_RELATIVE_SLIDESHOW_LINK_REGEX,
+    HTML_BACKGROUND_IMAGE_REGEX,
     LOCAL_JINJA2_ENVIRONMENT,
     MD_EXTENSION_REGEX,
-    MD_RELATIVE_SLIDESHOW_LINK_REGEX,
     OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_LIST,
+    MD_RELATIVE_LINK_REGEX,
+    HTML_RELATIVE_LINK_REGEX,
 )
 
 logger = logging.getLogger(__name__)
@@ -73,9 +76,9 @@ class MarkupGenerator:
         self.__create_or_clear_output_directory()
 
         if self.md_root_path.is_file():
-            assert self.md_root_path.suffix == ".md", (
-                "md_root_path must be a markdown file"
-            )
+            assert (
+                self.md_root_path.suffix == ".md"
+            ), "md_root_path must be a markdown file"
             self.__process_markdown_file()
         else:
             self.__process_markdown_directory()
@@ -201,6 +204,8 @@ class MarkupGenerator:
                 )
                 self.__copy(file, destination_path)
 
+        self.__handle_relative_links(md_files)
+
         templates = self.__load_templates(md_files)
 
         if len(md_files) == 1:
@@ -216,7 +221,6 @@ class MarkupGenerator:
         templates: dict[str, Template],
     ) -> None:
         """Render all markdown files to HTML slideshows."""
-        self.__handle_relative_slideshow_links(md_files)
 
         for md_file_data in md_files:
             slide_config = md_file_data.slide_config
@@ -503,46 +507,72 @@ class MarkupGenerator:
             f"{action} {file_or_directory} '{source_path.absolute()}' to '{destination_path.absolute()}'",
         )
 
-    def __is_relative(self, path: str) -> bool:
-        """Detect if a path is relative."""
-        return not path.startswith(("http://", "https://", "/"))
-
-    def __handle_relative_slideshow_links(
+    def __handle_relative_links(
         self,
         md_file_data: list[MdFileToProcess],
     ) -> None:
-        """Update relative .md links to .html links."""
-
-        def _replacer(
-            match: re.Match,
-            *,
-            md_file: MdFileToProcess,
-            strict: bool,
-        ) -> str:
-            location = match.group("location")
-
-            if not self.__is_relative(location):
-                return match.group(0)
-
-            location_path = md_file.source_path.parent / location
-            if not location_path.exists():
-                msg = f"Relative slideshow link '{location}' in file '{md_file.source_path}' does not exist"
-                if strict:
-                    raise FileNotFoundError(msg)
-                logger.warning(msg)
-
-            new_location = MD_EXTENSION_REGEX.sub(".html", location)
-
-            return match.group(0).replace(location, new_location)
+        """Check if all relative link targets are present and normalize .md links."""
 
         for md_file in md_file_data:
             content = md_file.markdown_content
-            bound_replacer = partial(_replacer, md_file=md_file, strict=self.strict)
 
-            for regex in (
-                MD_RELATIVE_SLIDESHOW_LINK_REGEX,
-                HTML_RELATIVE_SLIDESHOW_LINK_REGEX,
-            ):
-                content = regex.sub(bound_replacer, content)
+            for link in self.__find_all_relative_links(content):
+                link_path = md_file.source_path.parent / link
+
+                if not link_path.exists():
+                    msg = f"File '{md_file.source_path}' contains a link '{link}', but the target is not found among slide files."
+                    if self.strict:
+                        raise FileNotFoundError(msg)
+                    logger.warning(msg)
+                elif link.lower().endswith(".md"):
+                    content = self.__replace_md_link_target(content, link)
 
             md_file.markdown_content = content
+
+    def __replace_md_link_target(self, content: str, link: str) -> str:
+        """Replace a specific .md link target with .html in markdown and HTML links."""
+
+        def _replacer(match: re.Match, *, link: str) -> str:
+            matched_location = match.group("location")
+
+            # Only touch matches that correspond exactly to this link
+            if matched_location != link:
+                return match.group(0)
+
+            new_location = MD_EXTENSION_REGEX.sub(".html", matched_location)
+            return match.group(0).replace(matched_location, new_location)
+
+        for regex in (MD_RELATIVE_LINK_REGEX, HTML_RELATIVE_LINK_REGEX):
+            bound_replacer = partial(_replacer, link=link)
+            content = regex.sub(bound_replacer, content)
+
+        return content
+
+    def __find_all_relative_links(self, markdown_content: str) -> set[str]:
+        html_content = markdown.markdown(markdown_content, extensions=["extra"])
+        soup = BeautifulSoup(html_content, "html.parser")
+
+        found_links = set()
+
+        for link in soup.find_all("a", href=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["href"])
+
+        for link in soup.find_all("img", src=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["src"])
+
+        for link in soup.find_all("source", src=True):
+            if not link.find_parents(["code", "pre"]):
+                found_links.add(link["src"])
+
+        for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
+            if match := HTML_BACKGROUND_IMAGE_REGEX.search(comment):
+                found_links.add(match.group("location"))
+
+        found_links = filter(
+            lambda link: get_url_type(link) == URLType.RELATIVE,
+            found_links,
+        )
+
+        return found_links
