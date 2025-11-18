@@ -14,6 +14,12 @@ path = [
     "tests/baseline/slides/extra/randomfile-3.txt",
     "tests/baseline/slides/randomfile-1.txt",
     "tests/baseline/slides/somefolder/randomfile-2.txt",
+    "tests/relative_links/slides/some-folder/test-4",
+    "tests/relative_links/slides/some-folder/test-5.txt",
+    "tests/relative_links/slides/some-folder/test-6.png",
+    "tests/relative_links/slides/test-1",
+    "tests/relative_links/slides/test-2.txt",
+    "tests/relative_links/slides/test-3.png",
     "uv.lock",
 ]
 SPDX-FileCopyrightText = "Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)"
