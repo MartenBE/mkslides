@@ -525,9 +525,10 @@ class MarkupGenerator:
 
             for link in self.__find_all_relative_links(content):
                 link_path = md_file.source_path.parent / link
+                relative_source_path = md_file.source_path.relative_to(self.md_root_path)
 
                 if not link_path.exists():
-                    msg = f"File '{md_file.source_path}' contains a link '{link}', but the target is not found among slide files."
+                    msg = f"File '{relative_source_path}' contains a link '{link}', but the target is not found among slide files."
                     if self.strict:
                         raise FileNotFoundError(msg)
                     logger.warning(msg)
