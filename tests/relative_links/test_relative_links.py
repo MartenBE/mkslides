@@ -45,7 +45,7 @@ def test_non_existing_relative_links_without_strict(setup_paths: Any) -> None:
             rf"WARNING\s+File\s+'.*/someslides-1.md'\s+contains\s+a\s+link\s+'{missing_file}',\s+but\s+the\s+target\s+is\s+not\s+found\s+among\s+slide\s+files.",
             result.stdout,
             flags=re.DOTALL,
-        )
+        ), result.stdout
 
 
 def test_non_existing_relative_links_with_strict(setup_paths: Any) -> None:
@@ -78,4 +78,4 @@ def test_non_existing_relative_links_with_strict(setup_paths: Any) -> None:
             rf"FileNotFoundError:\s+File\s+'.*/someslides-1.md'\s+contains\s+a\s+link\s+'{missing_file}',\s+but\s+the\s+target\s+is\s+not\s+found\s+among\s+slide\s+files.",
             result.stderr,
             flags=re.DOTALL,
-        )
+        ), result.stderr
