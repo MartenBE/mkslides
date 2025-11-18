@@ -34,7 +34,7 @@ SPDX-License-Identifier: MIT
 Example slide from https://martenbe.github.io/mkslides with [dracula theme](https://revealjs.com/themes/):
 [![Example slide](docs/img/example-slide.png)](https://martenbe.github.io/mkslides)
 
-Example index page from https://hogenttin.github.io/hogent-markdown-slides with [HOGENT theme](https://github.com/HoGentTIN/cdn/tree/main/styles/reveal-js) and custom background logo:
+Example index page from https://hogenttin.github.io/hogent-markdown-slides with [HOGENT theme](https://github.com/HoGentTIN/cdn/tree/main/styles/reveal-js), custom title, and custom background logo:
 [![Example index](docs/img/example-index.png)](https://hogenttin.github.io/hogent-markdown-slides)
 
 Example output when building the website:
