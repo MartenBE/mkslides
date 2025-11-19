@@ -54,6 +54,7 @@ def test_non_existing_relative_links_with_strict(setup_paths: Any) -> None:
 
     for slides_folder, missing_file in [
         ("slides-non-existing-relative-md-link", "non-existing-file.md"),
+        ("slides-non-existing-relative-md-image-link", "non-existing-file.png"),
         ("slides-non-existing-relative-img-link", "non-existing-file.png"),
         ("slides-non-existing-relative-a-link", "non-existing-file.txt"),
     ]:
