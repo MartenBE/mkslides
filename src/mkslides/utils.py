@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+from pathlib import Path
 from urllib.parse import urlparse
 
 from mkslides.urltype import URLType
@@ -20,11 +21,20 @@ def parse_ip_port(
     return ip, port
 
 
+# TODO: unittests
 def get_url_type(url: str) -> URLType:
     if url.startswith("#"):
         return URLType.ANCHOR
 
-    if bool(urlparse(url).scheme):
+    if url.startswith("/"):
+        return URLType.ABSOLUTE
+
+    parsed = urlparse(url)
+    if parsed.scheme and parsed.scheme != "file":
+        return URLType.ABSOLUTE
+
+    p = Path(url)
+    if p.is_absolute():
         return URLType.ABSOLUTE
 
     return URLType.RELATIVE

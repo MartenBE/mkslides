@@ -196,12 +196,12 @@ def test_files_not_in_folder_without_strict(setup_paths: Any) -> None:
         r"WARNING\s+A\s+reference\s+to\s+'file-not-in-folder-1.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files.",
         result.stdout,
         flags=re.DOTALL,
-    )
+    ), result.stdout
     assert re.search(
         r"WARNING\s+A\s+reference\s+to\s+'file-not-in-folder-2.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files.",
         result.stdout,
         flags=re.DOTALL,
-    )
+    ), result.stdout
 
 
 def test_files_not_in_folder_with_strict(setup_paths: Any) -> None:
@@ -232,7 +232,7 @@ def test_files_not_in_folder_with_strict(setup_paths: Any) -> None:
         r"FileNotFoundError:\s+A\s+reference\s+to\s+'file-not-in-folder-1\.md'\s+is\s+included\s+in\s+the\s+'nav'\s+configuration,\s+which\s+is\s+not\s+found\s+in\s+the\s+slideshow\s+files\.",
         result.stderr,
         flags=re.DOTALL,
-    )
+    ), result.stderr
 
 
 def test_files_not_in_nav(setup_paths: Any) -> None:
@@ -263,14 +263,14 @@ def test_files_not_in_nav(setup_paths: Any) -> None:
         r"INFO\s+The\s+following\s+pages\s+exist\s+in\s+the\s+slides\s+directory,\s+but\s+are\s+not\s+included\s+in\s+the\s+'nav'\s+configuration:",
         result.stdout,
         flags=re.DOTALL,
-    )
+    ), result.stdout
     assert re.search(
         r"INFO\s+-\s+someslides-1\.md",
         result.stdout,
         flags=re.DOTALL,
-    )
+    ), result.stdout
     assert re.search(
         r"INFO\s+-\s+category-2/category-3/someslides-7\.md",
         result.stdout,
         flags=re.DOTALL,
-    )
+    ), result.stdout

@@ -10,4 +10,4 @@ SPDX-License-Identifier: MIT
 
 ## Non existing relative link
 
-<a href="non-existing-file.md">test</a>
+![](non-existing-file.png)
