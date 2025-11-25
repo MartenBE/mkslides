@@ -12,11 +12,11 @@ Created by [MartenBE](https://github.com/MartenBE/)
 
 Hosted on
 <a href="https://github.com/MartenBE/mkslides/" target="_blank">
-    <img src="./img/github-logo.svg" style="height: 0.75em; vertical-align: middle;" /> GitHub
+<img src="./img/github-logo.svg" style="height: 0.75em; vertical-align: middle;" /> GitHub
 </a>
 and
 <a href="https://pypi.org/project/mkslides/" target="_blank">
-    <img src="./img/pypi-logo.svg" style="height: 0.75em; vertical-align: middle;" /> PyPI
+<img src="./img/pypi-logo.svg" style="height: 0.75em; vertical-align: middle;" /> PyPI
 </a>
 
 Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md/)
