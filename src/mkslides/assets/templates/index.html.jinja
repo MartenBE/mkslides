@@ -1,5 +1,6 @@
 {#
-SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project
+(https://github.com/MartenBE/mkslides/graphs/contributors)
 
 SPDX-License-Identifier: MIT
 #}
@@ -7,51 +8,64 @@ SPDX-License-Identifier: MIT
 {% macro render_node(node) %}
 <li>
     {% if navtree.is_node_leaf(node.identifier) %}
-        <span class="node-title">{{ node.data }}</span>:
-        <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a> |
-        <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with notes</a> |
-        <a href="{{ node.identifier }}?print-pdf" target="_blank" title="Download as PDF">PDF</a> |
-        <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank" title="Download as PDF with speaker notes for printing">PDF with notes</a>
+    <span class="node-title">{{ node.data }}</span>:
+    <a href="{{ node.identifier }}" target="_blank" title="View slides">slides</a> |
+    <a href="{{ node.identifier }}?showNotes=true" target="_blank" title="View slides with speaker notes">slides with
+        notes</a> |
+    <a href="{{ node.identifier }}?print-pdf" target="_blank" title="Download as PDF">PDF</a> |
+    <a href="{{ node.identifier }}?print-pdf&showNotes=separate-page" target="_blank"
+        title="Download as PDF with speaker notes for printing">PDF with notes</a>
     {% else %}
-        {{ node.data }}
-        <ul>
-            {% for child in navtree.get_node_children(node.identifier) %}
-                {{ render_node(child) }}
-            {% endfor %}
-        </ul>
+    {{ node.data }}
+    <ul>
+        {% for child in navtree.get_node_children(node.identifier) %}
+        {{ render_node(child) }}
+        {% endfor %}
+    </ul>
     {% endif %}
 </li>
 {% endmacro %}
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-        {% if favicon %}
-            <link rel="icon" href="{{ favicon }}">
-        {% endif %}
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-        {% if theme %}
-            <link rel="stylesheet" href="{{ theme }}" />
-        {% endif %}
+    {% if favicon %}
+    <link rel="icon" href="{{ favicon }}">
+    {% endif %}
 
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <h1>{{ title }}</h1>
+    {% if theme %}
+    <link rel="stylesheet" href="{{ theme }}" />
+    {% endif %}
 
-        <ul>
-            {% for node in navtree.get_node_children(navtree.tree.root) %}
-                {{ render_node(node) }}
-            {% endfor %}
-        </ul>
+    <title>{{ title }}</title>
+</head>
 
-        <p>
-            Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
-            The PDF links generate a single-page document suitable for <a href="https://revealjs.com/pdf-export/" target="_blank">saving as a PDF for printing</a>.
-        </p>
-    </body>
+<body>
+    <h1>{{ title }}</h1>
+
+    <ul>
+        {% for node in navtree.get_node_children(navtree.tree.root) %}
+        {{ render_node(node) }}
+        {% endfor %}
+    </ul>
+
+    <p>
+        Slides last build at <code>{{ build_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</code>.<br />
+        The PDF links generate a single-page document suitable for <a href="https://revealjs.com/pdf-export/"
+            target="_blank">saving as a PDF for printing</a>.
+    </p>
+</body>
+
+{% if enable_footer %}
+<footer>
+    <p style="font-size: small;opacity: 0.5;margin-top: 3em;">
+        Documentation built with <a href="https://martenbe.github.io/mkslides/" target="_blank">MkSlides</a>.
+    </p>
+</footer>
+{% endif %}
+
 </html>
-

@@ -29,6 +29,7 @@ class Index:
     theme: str | None = None
     title: str = "Index"
     nav: list[Any] | None = None
+    enable_footer: bool = True
 
 
 @dataclass
