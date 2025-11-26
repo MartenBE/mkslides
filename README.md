@@ -10,6 +10,7 @@ SPDX-License-Identifier: MIT
 
 [![PyPI](https://img.shields.io/pypi/v/mkslides)](https://pypi.org/project/mkslides/)
 [![test-deploy.yml](https://github.com/MartenBE/mkslides/actions/workflows/test-deploy.yml/badge.svg?branch=main)](https://github.com/MartenBE/mkslides/actions)
+![GitHub License](https://img.shields.io/github/license/MartenBE/mkslides)
 [![REUSE status](https://api.reuse.software/badge/github.com/MartenBE/mkslides)](https://api.reuse.software/info/github.com/MartenBE/mkslides)
 
 [MkSlides](https://pypi.org/project/mkslides/) is a static site generator that's geared towards building slideshows. Slideshow source files are written in Markdown, and configured with a single YAML configuration file. The workflow and commands are heavily inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md).
