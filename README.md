@@ -19,7 +19,7 @@ SPDX-License-Identifier: MIT
 
 - Build static HTML slideshow files from Markdown files.
     - Turn a single Markdown file into a HTML slideshow.
-    - Turn a folder with Markdown files into a collection of HTML slideshows.
+    - Turn a folder with Markdown files into a collection of HTML slideshows with an index landing page.
 - Publish your slideshow(s) anywhere that static files can be served.
     - Locally on your own device.
     - On a web server.
