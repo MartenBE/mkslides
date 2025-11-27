@@ -78,6 +78,14 @@ def assert_html_contains(file_path: Path, expected_content: str) -> None:
         )
 
 
+def assert_html_does_not_contain(file_path: Path, expected_content: str) -> None:
+    with file_path.open() as file:
+        content = file.read()
+        assert expected_content not in content, (
+            f"{expected_content} found in {file_path} but should not be"
+        )
+
+
 def assert_html_contains_regexp(file_path: Path, regexp: Pattern[str]) -> None:
     with file_path.open() as file:
         content = file.read()

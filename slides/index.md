@@ -8,18 +8,29 @@ title: "Would you like to know more?"
 
 # MkSlides
 
-Created by [MartenBE](https://github.com/MartenBE)
+Created by [MartenBE](https://github.com/MartenBE/)
 
-Hosted on [GitHub](https://github.com/MartenBE/mkslides) and [PyPI](https://pypi.org/project/mkslides/)
+Hosted on
+<a href="https://github.com/MartenBE/mkslides/" target="_blank">
+<img src="./img/github-logo.svg" style="height: 0.75em; vertical-align: middle;" /> GitHub
+</a>
+and
+<a href="https://pypi.org/project/mkslides/" target="_blank">
+<img src="./img/pypi-logo.svg" style="height: 0.75em; vertical-align: middle;" /> PyPI
+</a>
 
-Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md)
+Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://github.com/webpro/reveal-md/)
 
 ---
 
 ## What does it do?
 
-<img src="./img/markdown-logo.svg" height="100px" style="background-color: white; margin-right: 50px;"/>
-<img src="./img/reveal-js-logo.svg" height="100px"/>
+<a href="https://www.markdownguide.org/" target="_blank">
+    <img src="./img/markdown-logo.svg" style="height: 100px; background-color: white; margin-right: 50px;" />
+</a>
+<a href="https://revealjs.com/" target="_blank">
+    <img src="./img/reveal-js-logo.svg" style="height: 100px;" />
+</a>
 
 - Build static HTML slideshow files from Markdown files.
     - Turn a single Markdown file into a HTML slideshow.
@@ -31,7 +42,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
 
 - Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
 - Use custom favicons, CSS themes, templates, ... if desired.
-- Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://github.com/carpedm20/emoji/)
+- Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://pypi.org/project/emoji/)
 - Depends heavily on integration/unit tests to prevent regressions.
 - And more!
 
@@ -63,7 +74,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
         - Template for the output HTML page
     - Slides
         - Theme (local file, [Reveal.js theme](https://revealjs.com/themes/), or by public URL)
-        - Highlight.js Theme (local file, [highlight.js theme](https://highlightjs.org/examples), or by public URL)
+        - Highlight.js Theme (local file, [highlight.js theme](https://highlightjs.org/examples/), or by public URL)
         - Favicon (local file or by public URL)
         - Title
         - Template for the output HTML page
@@ -174,14 +185,14 @@ Options:
 - Contributions are very welcome!
     - Open an issue and/or PR
     - We only ask that you try real hard to include **tests**!
-        - Almost everything is [tested automatically](https://github.com/MartenBE/mkslides/tree/main/tests)
+        - Almost everything is [tested automatically](https://github.com/MartenBE/mkslides/tree/main/tests/)
 
 ---
 
 ## Examples
 
 - The [MkSlides repo](https://github.com/MartenBE/mkslides/) itself generates the slideshow you are currently watching.
-- https://github.com/HoGentTIN/hogent-markdown-slides: an example repo demonstrating all possibilities using Reveal.js with the custom [HOGENT](https://hogent.be/) theme, including ...
+- https://github.com/HoGentTIN/hogent-markdown-slides/: an example repo demonstrating all possibilities using Reveal.js with the custom [HOGENT](https://hogent.be/) theme, including ...
     - an example of the automatically generated index page
     - a [slideshow](https://hogenttin.github.io/hogent-markdown-slides/) with a lot of advanced examples such as [Mermaid.js](https://mermaid.js.org/) and [PlantUML](https://plantuml.com/) support, multicolumn slides, ...
     - an example of GitHub CI/CD pipelines

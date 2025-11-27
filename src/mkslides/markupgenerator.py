@@ -481,6 +481,7 @@ class MarkupGenerator:
             theme=self.global_config.index.theme,
             navtree=navtree,
             build_datetime=datetime.datetime.now(tz=datetime.UTC),
+            enable_footer=self.global_config.index.enable_footer,
         )
         self.__create_or_overwrite_file(
             self.output_directory_path / "index.html",

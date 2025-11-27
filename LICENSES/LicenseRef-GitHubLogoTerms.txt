@@ -1,0 +1,33 @@
+https://github.com/logos
+
+GitHub Logos and Usage
+
+We’ve put together some guidelines for those times when you want to use our logos to show off your GitHub integration or link back to us. Happy coding!
+
+Do these awesome things
+
+- Use a permitted GitHub logo to link to GitHub.
+- Use the Invertocat logo as a social button to link to your GitHub profile or project.
+- Use a permitted GitHub logo to inform others that your project integrates with GitHub.
+- Use the GitHub logo in a blog post or news article about GitHub.
+- Use the permitted GitHub logos less prominently than your own company or product name or logo.
+
+Please don’t do these things
+
+- Do not use the GitHub name or any GitHub logo in a way that suggests you are GitHub, your offering or project is by GitHub, or that GitHub is endorsing you or your offering or project.
+- Do not use any GitHub logo as the icon or logo for your business/organization, offering, project, domain name, social media account, or website.
+- Do not modify the permitted GitHub logos, including changing the color, dimensions, or combining with other words or design elements.
+- Do not use GitHub trademarks, logos, or artwork without GitHub’s prior written permission.
+
+Legal
+
+In short, the GitHub logos represent only GitHub and should not be used to represent you or your projects, products, or company. You may read the official legal terms,
+if you’re into that:
+
+GITHUB®, the GITHUB® logo design, the INVERTOCAT logo design, OCTOCAT®, and the OCTOCAT® logo design are trademarks of GitHub, Inc., registered in the United States and other countries.
+
+The OCTOCAT design is the exclusive property of GitHub, Inc and has been federally registered with the United States Copyright Office. All rights reserved.
+
+No adaptation or use of any kind of any of our registered trademarks or copyrights, or any other contents of this website, is allowed without the express written permission of GitHub, Inc.
+
+For more information regarding the authorized uses of these items, please contact us at https://github.com/contact.

@@ -72,3 +72,19 @@ path = [
 SPDX-FileCopyrightText = "Copyright (c) 2015 - present Microsoft Corporation"
 SPDX-License-Identifier = "MIT"
 
+[[annotations]]
+# https://github.com/logos
+path = [
+    "slides/img/github-logo.svg",
+]
+SPDX-License-Identifier = "LicenseRef-GitHubLogoTerms"
+SPDX-FileCopyrightText = "(c) GitHub, Inc."
+
+[[annotations]]
+# https://pypi.org/trademarks/
+# https://www.python.org/psf/trademarks-faq/
+path = [
+    "slides/img/pypi-logo.svg",
+]
+SPDX-FileCopyrightText = "'Python' and the Python Logo are trademarks of the Python Software Foundation."
+SPDX-License-Identifier = "LicenseRef-PythonSoftwareFoundationLogoTerms"

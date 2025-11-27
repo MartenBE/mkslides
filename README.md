@@ -110,15 +110,13 @@ Here's an example showcasing all possible options in the config file:
 ```yml
 # Configuration for the generated index page
 index:
+    # Enables or disables the "Documentation built with MkSlides." footer:
+    # boolean
+    enable_footer: true
+
     # Favicon of the generated index page: file path or public url to favicon
     # file
     favicon: example-index-favicon.ico
-
-    # Jinja 2 template to generate index HTML: file path to Jinja2 file
-    template: example.jinja
-
-    # Theme of the generated index page: file path or public url to CSS file
-    theme: example-index-theme.css
 
     # Navigation section describing how to structure the slides on the index
     # page. This is similar to the `nav` option from MkDocs: list[any]
@@ -134,6 +132,12 @@ index:
 
     # Title of the generated index page: string
     title: example-title
+
+    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    template: example.jinja
+
+    # Theme of the generated index page: file path or public url to CSS file
+    theme: example-index-theme.css
 
 # Configuration for the slides
 slides:
@@ -219,12 +223,13 @@ Default config (also used if no config file is present):
 
 ```yml
 index:
-    title: Index
+    enable_footer: true
     template: assets/templates/index.html.jinja # Comes with the pip package
+    title: Index
 slides:
-    theme: black
     highlight_theme: monokai
     template: assets/templates/slideshow.html.jinja # Comes with the pip package
+    theme: black
 revealjs:
     history: true
     slideNumber: c/t
