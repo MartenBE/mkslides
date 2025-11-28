@@ -41,7 +41,7 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
 ---
 
 - Preview your site as you work, thanks to [python-livereload](https://pypi.org/project/livereload/).
-- Use custom favicons, CSS themes, templates, ... if desired.
+- Use existing [Reveal.js themes](https://revealjs.com/themes/) and [Highlight.js themes](https://highlightjs.org/examples), or define custom CSS themes, favicons, templates, ... for more control if desired.
 - Support for emojis :smile: :tada: :rocket: :sparkles: thanks to [emoji](https://pypi.org/project/emoji/)
 - Depends heavily on integration/unit tests to prevent regressions.
 - And more!
@@ -73,8 +73,8 @@ Inspired by [MkDocs](https://pypi.org/project/mkdocs/) and [reveal-md](https://g
         - Title
         - Template for the output HTML page
     - Slides
-        - Theme (local file, [Reveal.js theme](https://revealjs.com/themes/), or by public URL)
-        - Highlight.js Theme (local file, [highlight.js theme](https://highlightjs.org/examples/), or by public URL)
+        - Theme ([Reveal.js theme](https://revealjs.com/themes/), local file, or by public URL)
+        - Highlight.js Theme ([highlight.js theme](https://highlightjs.org/examples/), local file, or by public URL)
         - Favicon (local file or by public URL)
         - Title
         - Template for the output HTML page
