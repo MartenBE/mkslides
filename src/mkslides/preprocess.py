@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-import importlib
+import importlib.util
 import logging
 from collections.abc import Callable
 
