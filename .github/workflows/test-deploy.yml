@@ -35,17 +35,10 @@ jobs:
         with:
           node-version: "22.20.0"
       - run: npm install --global prettier
-      - run: prettier --check .
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13.8"
-      - run: pip install uv
-      - run: uv sync
-      - run: uv run reuse lint
-      - run: uv run ruff format --check
-      - run: uv run ruff check
-      - run: uv run mypy src/ tests/
-      - run: uv run pytest
+      - run: ./lint.sh .
 
   release:
     if: github.ref_type == 'tag'
