@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
 #
 # SPDX-License-Identifier: MIT
-
+---
 # yaml-language-server: $schema=https://devenv.sh/devenv.schema.json
 inputs:
   nixpkgs:
@@ -14,5 +14,5 @@ inputs:
 #  - "openssl-1.1.1w"
 
 # If you have more than one devenv you can merge them
-#imports:
-# - ./backend
+# imports:
+#   - ./backend
