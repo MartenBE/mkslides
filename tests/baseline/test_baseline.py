@@ -19,12 +19,12 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     assert_file_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.css")
     assert_file_exist(output_path / "mkslides-assets/reveal-js/dist/reveal.js")
     assert_file_exist(
-        output_path / "mkslides-assets/reveal-js/plugin/markdown/markdown.js",
+        output_path / "mkslides-assets/reveal-js/dist/plugin/markdown.js",
     )
     assert_file_exist(
-        output_path / "mkslides-assets/reveal-js/plugin/highlight/highlight.js",
+        output_path / "mkslides-assets/reveal-js/dist/plugin/highlight.js",
     )
-    assert_file_exist(output_path / "mkslides-assets/reveal-js/plugin/zoom/zoom.js")
+    assert_file_exist(output_path / "mkslides-assets/reveal-js/dist/plugin/zoom.js")
     assert_file_exist(output_path / "mkslides-assets/reveal-js/dist/theme/black.css")
     assert_file_exist(output_path / "mkslides-assets/highlight-js-themes/monokai.css")
 
