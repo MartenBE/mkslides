@@ -109,6 +109,7 @@ Here's an example showcasing all possible options in the config file:
 
 ```yml
 # Configuration for the generated index page
+---
 index:
     # Enables or disables the "Documentation built with MkSlides." footer:
     # boolean
@@ -222,6 +223,7 @@ plugins:
 Default config (also used if no config file is present):
 
 ```yml
+---
 index:
     enable_footer: true
     template: assets/templates/index.html.jinja # Comes with the pip package

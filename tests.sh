@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # SPDX-FileCopyrightText: Copyright (C) 2026 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
 #
@@ -6,59 +6,55 @@
 
 set -o errexit
 set -o nounset
-set -o pipefail
 
 assert_is_installed () {
-  if ! command -v "${1}" &> /dev/null
+  if ! command -v "${1}"  1>/dev/null 2>&1
   then
     echo "${1} is not installed. Please install it to run the tests."
     exit 1
   fi
 }
 
-if [[ "$#" -ne 1 ]]
+if [ -n "${1:-}" ]
 then
-    echo "Usage: ${0} <git_repo_root>"
-    exit 1
+    BASE_DIR="${1}"
+else
+    BASE_DIR="."
 fi
 
-git_repo_root="$(realpath "${1}")"
-cd "${git_repo_root}"
-echo "Running tests in ${git_repo_root} ..."
+BASE_DIR="$(realpath "${BASE_DIR}")"
+echo "Starting linting checks using base directory: ${BASE_DIR}"
+cd "${BASE_DIR}" || exit 1
 echo
-
-assert_is_installed "prettier"
-
-echo "Linting with prettier ..."
-prettier --check .
-echo "OK."
-echo
-
-assert_is_installed "uv"
-
-uv sync
 
 echo "Checking licenses ..."
 uv run reuse lint
 echo "OK."
 echo
 
-echo "Linting python code ..."
-uv run ruff format --check
+echo "Checking shell scripts."
+git ls-files -z '*.sh' | xargs -0 shellcheck
 echo "OK."
 echo
 
-echo "Checking python code ..."
-uv run ruff check
+echo "Checking yaml files."
+git ls-files -z '*.yml' '*.yaml' | xargs -0 uv run yamllint --strict
 echo "OK."
 echo
 
-echo "Checking python types ..."
+echo "Checking json and markdown files."
+git ls-files -z '*.json' '*.md' | xargs -0 npx prettier --check
+echo "OK."
+echo
+
+uv sync
+
+echo "Checking python scripts."
+git ls-files -z '*.py' | xargs -0 uv run ruff check
+git ls-files -z '*.py' | xargs -0 uv run ruff format --check
 uv run mypy src/ tests/
-echo "OK."
-echo
-
-echo "Running python tests ..."
 uv run pytest
 echo "OK."
 echo
+
+echo "OK: All checks passed."

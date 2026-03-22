@@ -21,19 +21,19 @@ assignees: ""
     <head>
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reset.min.css"
+            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reset.css"
         />
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.css "
+            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.css "
         />
         <link
             rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/theme/white.min.css"
+            href="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/theme/white.css"
         />
 
-        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/plugin/markdown/markdown.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/reveal.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/reveal.js@latest/dist/plugin/markdown.js"></script>
     </head>
     <body>
         <div class="reveal">
