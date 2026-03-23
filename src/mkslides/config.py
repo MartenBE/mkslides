@@ -81,7 +81,9 @@ def validate(md_input_path: Path, config: DictConfig) -> None:
         config.index.template
         and get_url_type(config.index.template) == URLType.RELATIVE
     ):
-        (md_input_path / config.index.template).resolve(strict=True)
+        (config.internal.config_path.parent / config.index.template).resolve(
+            strict=True,
+        )
 
     if (
         config.index.theme
@@ -112,7 +114,9 @@ def validate(md_input_path: Path, config: DictConfig) -> None:
         config.slides.template
         and get_url_type(config.slides.template) == URLType.RELATIVE
     ):
-        (md_input_path / config.slides.template).resolve(strict=True)
+        (config.internal.config_path.parent / config.slides.template).resolve(
+            strict=True,
+        )
 
     if (
         config.slides.theme
