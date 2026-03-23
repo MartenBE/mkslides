@@ -38,9 +38,9 @@ from .constants import (
     LOCAL_JINJA2_ENVIRONMENT,
     MD_EXTENSION_REGEX,
     MD_RELATIVE_LINK_REGEX,
-    OUTPUT_ASSETS_DIRNAME,
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_LIST,
+    SLIDES_OUTPUT_ASSETS_DIRNAME,
 )
 
 logger = logging.getLogger(__name__)
@@ -51,20 +51,24 @@ class MarkupGenerator:
         self,
         global_config: DictConfig,
         md_root_path: Path,
-        output_directory_path: Path,
+        slides_output_directory_path: Path,
         strict: bool,
     ) -> None:
         self.global_config = global_config
         self.md_root_path = md_root_path.resolve(strict=True)
-        self.output_directory_path = output_directory_path.resolve(strict=False)
+        self.slides_output_directory_path = slides_output_directory_path.resolve(
+            strict=False,
+        )
         logger.info(
-            f"Output directory: '{self.output_directory_path.absolute()}'",
+            f"Output directory: '{self.slides_output_directory_path.absolute()}'",
         )
 
-        self.output_assets_path = self.output_directory_path / OUTPUT_ASSETS_DIRNAME
-        self.output_revealjs_path = self.output_assets_path / "reveal-js"
-        self.output_highlightjs_themes_path = (
-            self.output_assets_path / "highlight-js-themes"
+        self.slides_output_assets_path = (
+            self.slides_output_directory_path / SLIDES_OUTPUT_ASSETS_DIRNAME
+        )
+        self.slides_output_revealjs_path = self.slides_output_assets_path / "reveal-js"
+        self.slides_output_highlightjs_themes_path = (
+            self.slides_output_assets_path / "highlight-js-themes"
         )
 
         self.strict = strict
@@ -74,7 +78,7 @@ class MarkupGenerator:
         logger.debug("Processing markdown")
         start_time = time.perf_counter()
 
-        self.__create_or_clear_output_directory()
+        self.__create_or_clear_slides_output_directory()
 
         if self.md_root_path.is_file():
             assert self.md_root_path.suffix == ".md", (
@@ -89,20 +93,23 @@ class MarkupGenerator:
             f"Finished processing markdown in {end_time - start_time:.2f} seconds",
         )
 
-    def __create_or_clear_output_directory(self) -> None:
+    def __create_or_clear_slides_output_directory(self) -> None:
         """Clear or create the output directory and copy reveal.js."""
-        if self.output_directory_path.exists():
-            shutil.rmtree(self.output_directory_path)
+        if self.slides_output_directory_path.exists():
+            shutil.rmtree(self.slides_output_directory_path)
             logger.debug("Output directory already exists, deleted")
 
-        self.output_directory_path.mkdir(parents=True, exist_ok=True)
+        self.slides_output_directory_path.mkdir(parents=True, exist_ok=True)
         logger.debug("Output directory created")
 
         with resources.as_file(REVEALJS_RESOURCE) as revealjs_path:
-            self.__copy(revealjs_path, self.output_revealjs_path)
+            self.__copy(revealjs_path, self.slides_output_revealjs_path)
 
         with resources.as_file(HIGHLIGHTJS_THEMES_RESOURCE) as highlightjs_themes_path:
-            self.__copy(highlightjs_themes_path, self.output_highlightjs_themes_path)
+            self.__copy(
+                highlightjs_themes_path,
+                self.slides_output_highlightjs_themes_path,
+            )
 
     def scan_files(self) -> tuple[list[MdFileToProcess], list[Path]]:
         """Scan the markdown directory for markdown files and other files."""
@@ -114,7 +121,7 @@ class MarkupGenerator:
                 resolved_file = file.resolve(strict=True)
                 if resolved_file.suffix.lower() == ".md":
                     destination_path = (
-                        self.output_directory_path
+                        self.slides_output_directory_path
                         / resolved_file.relative_to(self.md_root_path).with_suffix(
                             ".html",
                         )
@@ -177,7 +184,7 @@ class MarkupGenerator:
             f"When you use a single file like '{absolute_input_path}' as `PATH`, only default static assets will be copied to the output folder. If you want to include images or other files, create a folder instead and pass that as `PATH`. Using a file as `PATH` is more meant for a quick slideshow in a pinch using only text.",
         )
 
-        destination_path = self.output_directory_path / "index.html"
+        destination_path = self.slides_output_directory_path / "index.html"
         md_file_data = self.__create_md_file_to_process(
             self.md_root_path,
             destination_path,
@@ -203,7 +210,7 @@ class MarkupGenerator:
         """Process the detected markdown files and copy non-markdown files."""
         if non_md_files:
             for file in non_md_files:
-                destination_path = self.output_directory_path / file.relative_to(
+                destination_path = self.slides_output_directory_path / file.relative_to(
                     self.md_root_path,
                 )
                 self.__copy(file, destination_path)
@@ -213,7 +220,9 @@ class MarkupGenerator:
         templates = self.__load_templates(md_files)
 
         if len(md_files) == 1:
-            md_files[0].destination_path = self.output_directory_path / "index.html"
+            md_files[0].destination_path = (
+                self.slides_output_directory_path / "index.html"
+            )
         else:
             self.__generate_index(md_files)
 
@@ -234,7 +243,7 @@ class MarkupGenerator:
             else:
                 slideshow_template = DEFAULT_SLIDESHOW_TEMPLATE
 
-            revealjs_path = self.output_revealjs_path.relative_to(
+            revealjs_path = self.slides_output_revealjs_path.relative_to(
                 md_file_data.destination_path.parent,
                 walk_up=True,
             )
@@ -297,7 +306,7 @@ class MarkupGenerator:
         if theme in REVEALJS_THEMES_LIST:
             return str(
                 (
-                    self.output_revealjs_path / "dist" / "theme" / f"{theme}.css"
+                    self.slides_output_revealjs_path / "dist" / "theme" / f"{theme}.css"
                 ).relative_to(destination_path.parent, walk_up=True),
             )
 
@@ -309,7 +318,7 @@ class MarkupGenerator:
             return theme
 
         return str(
-            (self.output_directory_path / theme).relative_to(
+            (self.slides_output_directory_path / theme).relative_to(
                 destination_path.parent,
                 walk_up=True,
             ),
@@ -330,7 +339,8 @@ class MarkupGenerator:
         if highlight_theme in HIGHLIGHTJS_THEMES_LIST:
             return str(
                 (
-                    self.output_highlightjs_themes_path / f"{highlight_theme}.css"
+                    self.slides_output_highlightjs_themes_path
+                    / f"{highlight_theme}.css"
                 ).relative_to(destination_path.parent, walk_up=True),
             )
 
@@ -342,7 +352,7 @@ class MarkupGenerator:
             return highlight_theme
 
         return str(
-            (self.output_directory_path / highlight_theme).relative_to(
+            (self.slides_output_directory_path / highlight_theme).relative_to(
                 destination_path.parent,
                 walk_up=True,
             ),
@@ -367,7 +377,7 @@ class MarkupGenerator:
             return favicon
 
         return str(
-            (self.output_directory_path / favicon).relative_to(
+            (self.slides_output_directory_path / favicon).relative_to(
                 destination_path.parent,
                 walk_up=True,
             ),
@@ -449,7 +459,7 @@ class MarkupGenerator:
         """Generate an index.html file in the output directory."""
         logger.debug("Generating index")
 
-        navtree = NavTree(self.md_root_path, self.output_directory_path)
+        navtree = NavTree(self.md_root_path, self.slides_output_directory_path)
         if self.global_config.index.nav:
             nav_from_config = OmegaConf.to_container(self.global_config.index.nav)
             assert isinstance(nav_from_config, list), "nav must be a list"
@@ -484,7 +494,7 @@ class MarkupGenerator:
             enable_footer=self.global_config.index.enable_footer,
         )
         self.__create_or_overwrite_file(
-            self.output_directory_path / "index.html",
+            self.slides_output_directory_path / "index.html",
             content,
         )
 

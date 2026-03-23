@@ -104,4 +104,4 @@ DEFAULT_SLIDESHOW_TEMPLATE = DEFAULT_JINJA2_ENVIRONMENT.get_template(
 )
 LOCAL_JINJA2_ENVIRONMENT = Environment(loader=FileSystemLoader("."), autoescape=True)
 
-OUTPUT_ASSETS_DIRNAME: str = "mkslides-assets"
+SLIDES_OUTPUT_ASSETS_DIRNAME: str = "mkslides-assets"
