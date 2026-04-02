@@ -31,7 +31,7 @@ class ServeConfig:
     open_in_browser: bool = False
 
 
-def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]:
+def determine_paths_to_watch(md_input_path: Path, config: DictConfig) -> list[Path]:
     def should_watch(
         path: str | None,
         unwatchable_values: list[str] | None = None,
@@ -40,16 +40,17 @@ def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]
         if unwatchable_values is None:
             unwatchable_values = []
 
-        return (
-            Path(path).resolve(strict=True).absolute()
-            if path
+        if (
+            path
             and get_url_type(path) == URLType.RELATIVE
             and path not in unwatchable_values
-            else None
-        )
+        ):
+            return Path(path).resolve(strict=True).absolute()
+
+        return None
 
     paths_to_watch = [
-        input_path,
+        md_input_path,
         config.internal.config_path,
         should_watch(config.index.theme),
         should_watch(config.index.template),
@@ -62,8 +63,8 @@ def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]
 
 def serve(
     config: DictConfig,
-    input_path: Path,
-    output_path: Path,
+    md_input_path: Path,
+    slides_output_path: Path,
     serve_config: DictConfig,
 ) -> None:
     config_path = config.internal.config_path
@@ -71,16 +72,16 @@ def serve(
     def reload() -> None:
         logger.info("Reloading...")
         new_config = get_config(config_path)
-        build(new_config, input_path, output_path, serve_config.strict)
+        build(new_config, md_input_path, slides_output_path, serve_config.strict)
 
-        new_paths_to_watch = determine_paths_to_watch(input_path, new_config)
+        new_paths_to_watch = determine_paths_to_watch(md_input_path, new_config)
         diff_paths_to_watch = set(new_paths_to_watch) - set(paths_to_watch)
         for path in diff_paths_to_watch:
             logger.debug(f"Adding new watched path: '{path}'")
             server.watch(filepath=path.as_posix(), func=reload, delay=1)
 
-    build(config, input_path, output_path, serve_config.strict)
-    paths_to_watch = determine_paths_to_watch(input_path, config)
+    build(config, md_input_path, slides_output_path, serve_config.strict)
+    paths_to_watch = determine_paths_to_watch(md_input_path, config)
 
     try:
         server = livereload.Server()
@@ -95,11 +96,11 @@ def serve(
         server.serve(
             host=serve_config.dev_ip,
             port=serve_config.dev_port,
-            root=output_path,
+            root=slides_output_path,
             open_url_delay=0 if serve_config.open_in_browser else None,
         )
 
     finally:
-        if output_path.exists():
-            shutil.rmtree(output_path)
-            logger.debug(f"Removed '{output_path}'")
+        if slides_output_path.exists():
+            shutil.rmtree(slides_output_path)
+            logger.debug(f"Removed '{slides_output_path}'")

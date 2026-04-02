@@ -31,9 +31,9 @@ logger.addHandler(RichHandler(show_path=False))
 ################################################################################
 
 
-def get_input_path(input_path: Path) -> Path:
-    if input_path is not None:
-        return input_path.resolve(strict=True)
+def get_md_input_path(md_input_path: Path | None) -> Path:
+    if md_input_path is not None:
+        return md_input_path.resolve(strict=True)
 
     if Path(DEFAULT_INPUT_DIR).is_dir():
         return Path(DEFAULT_INPUT_DIR).resolve(strict=True)
@@ -131,15 +131,15 @@ def build_command(
     """
     logger.debug("Command: build")
 
-    config = get_config(config_file)
-    input_path = get_input_path(files)
-    output_path = Path(site_dir).resolve(strict=False)
+    md_input_path = get_md_input_path(files)
+    slides_output_path = Path(site_dir).resolve(strict=False)
+    config = get_config(md_input_path, config_file)
 
-    if input_path.is_relative_to(output_path):
-        msg = f'Files "{input_path}" should not be within the site dir "{site_dir}" as this can mean the source files are overwritten by the output.'
+    if md_input_path.is_relative_to(slides_output_path):
+        msg = f'Files "{md_input_path}" should not be within the site dir "{site_dir}" as this can mean the source files are overwritten by the output.'
         raise ValueError(msg)
 
-    build(config, input_path, output_path, strict)
+    build(config, md_input_path, slides_output_path, strict)
 
 
 # Serve Command ################################################################
@@ -182,9 +182,11 @@ def serve_command(
     """
     logger.debug("Command: serve")
 
-    config = get_config(config_file)
-    input_path = get_input_path(files)
-    output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(strict=False)
+    md_input_path = get_md_input_path(files)
+    slides_output_path = Path(tempfile.mkdtemp(prefix="mkslides_")).resolve(
+        strict=False,
+    )
+    config = get_config(md_input_path, config_file)
     dev_ip, dev_port = parse_ip_port(dev_addr)
     serve_config = OmegaConf.structured(
         {
@@ -197,8 +199,8 @@ def serve_command(
 
     serve(
         config,
-        input_path,
-        output_path,
+        md_input_path,
+        slides_output_path,
         serve_config,
     )
 

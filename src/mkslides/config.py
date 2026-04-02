@@ -73,60 +73,68 @@ class Config:
     internal: Internal = field(default_factory=Internal)
 
 
-def validate(config: DictConfig) -> None:
+def validate(md_input_path: Path, config: DictConfig) -> None:
     if config.index.favicon and get_url_type(config.index.favicon) == URLType.RELATIVE:
-        Path(config.index.favicon).resolve(strict=True)
+        (md_input_path / config.index.favicon).resolve(strict=True)
 
     if (
         config.index.template
         and get_url_type(config.index.template) == URLType.RELATIVE
     ):
-        Path(config.index.template).resolve(strict=True)
+        (config.internal.config_path.parent / config.index.template).resolve(
+            strict=True,
+        )
 
     if (
         config.index.theme
         and get_url_type(config.index.theme) == URLType.RELATIVE
         and config.index.theme not in REVEALJS_THEMES_LIST
     ):
-        Path(config.index.theme).resolve(strict=True)
+        (md_input_path / config.index.theme).resolve(strict=True)
 
     if (
         config.slides.favicon
         and get_url_type(config.slides.favicon) == URLType.RELATIVE
     ):
-        Path(config.slides.favicon).resolve(strict=True)
+        (md_input_path / config.slides.favicon).resolve(strict=True)
 
     if (
         config.slides.highlight_theme
         and get_url_type(config.slides.highlight_theme) == URLType.RELATIVE
         and config.slides.highlight_theme not in HIGHLIGHTJS_THEMES_LIST
     ):
-        Path(config.slides.highlight_theme).resolve(strict=True)
+        (md_input_path / config.slides.highlight_theme).resolve(strict=True)
 
-    if config.slides.preprocess_script:
-        Path(config.slides.preprocess_script).resolve(strict=True)
+    if config.slides.preprocess_script and config.internal.config_path:
+        (config.internal.config_path.parent / config.slides.preprocess_script).resolve(
+            strict=True,
+        )
 
     if (
         config.slides.template
         and get_url_type(config.slides.template) == URLType.RELATIVE
     ):
-        Path(config.slides.template).resolve(strict=True)
+        (config.internal.config_path.parent / config.slides.template).resolve(
+            strict=True,
+        )
 
     if (
         config.slides.theme
         and get_url_type(config.slides.theme) == URLType.RELATIVE
         and config.slides.theme not in REVEALJS_THEMES_LIST
     ):
-        Path(config.slides.theme).resolve(strict=True)
+        (md_input_path / config.slides.theme).resolve(strict=True)
 
 
-def get_config(config_file: Path | None = None) -> DictConfig:
+def get_config(md_input_path: Path, config_file: Path | None = None) -> DictConfig:
     config = OmegaConf.structured(Config)
 
     if not config_file and DEFAULT_CONFIG_LOCATION.exists():
+        logger.debug(f"Used config at default location: '{DEFAULT_CONFIG_LOCATION}'")
         config_file = DEFAULT_CONFIG_LOCATION.resolve(strict=True).absolute()
 
     config.internal.config_path = config_file
+
     if config_file:
         try:
             loaded_config = OmegaConf.load(config_file)
@@ -136,8 +144,12 @@ def get_config(config_file: Path | None = None) -> DictConfig:
         except Exception:
             logger.exception(f"Failed to load config from {config_file}")
             raise
+    else:
+        logger.info("No config file found, using default config")
 
     assert OmegaConf.is_dict(config)
+
+    validate(md_input_path, config)
 
     logger.debug(f"Used config:\n\n{OmegaConf.to_yaml(config, resolve=True)}")
 

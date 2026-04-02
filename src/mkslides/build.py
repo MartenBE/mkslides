@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 def build(
     config: DictConfig,
-    input_path: Path,
-    output_path: Path,
+    md_root_path: Path,
+    slides_output_path: Path,
     strict: bool,
 ) -> None:
-    markup_generator = MarkupGenerator(config, input_path, output_path, strict)
+    markup_generator = MarkupGenerator(config, md_root_path, slides_output_path, strict)
     markup_generator.process_markdown()

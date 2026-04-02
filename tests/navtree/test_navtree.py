@@ -17,8 +17,8 @@ from mkslides.navtree import NavTree
 
 def test_navtree_from_md_files(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = (cwd / "navtree" / "slides").resolve(strict=True)
-    config = get_config(None)
+    md_input_path = (cwd / "navtree" / "slides").resolve(strict=True)
+    config = get_config(md_input_path, None)
 
     expected_tree_json = json.dumps(
         {
@@ -83,9 +83,9 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
         },
     )
 
-    markup_generator = MarkupGenerator(config, input_path, output_path, strict=True)
+    markup_generator = MarkupGenerator(config, md_input_path, output_path, strict=True)
     md_files, _ = markup_generator.scan_files()
-    navtree = NavTree(input_path, output_path)
+    navtree = NavTree(md_input_path, output_path)
     navtree.from_md_files(md_files)
 
     assert DeepDiff(navtree.to_json(), expected_tree_json, ignore_order=True) == {}
@@ -93,9 +93,9 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
 
 def test_navtree_from_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
-    input_path = (cwd / "navtree" / "slides").resolve(strict=True)
+    md_input_path = (cwd / "navtree" / "slides").resolve(strict=True)
     config_path = (cwd / "navtree" / "navtree-config.yml").resolve(strict=True)
-    config = get_config(config_path)
+    config = get_config(md_input_path, config_path)
 
     expected_tree_json = json.dumps(
         {
@@ -160,7 +160,7 @@ def test_navtree_from_config(setup_paths: Any) -> None:
         },
     )
 
-    navtree = NavTree(input_path, output_path)
+    navtree = NavTree(md_input_path, output_path)
     assert config.index.nav
     nav_from_config = OmegaConf.to_container(config.index.nav)
     assert isinstance(nav_from_config, list), "nav must be a list"
