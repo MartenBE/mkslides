@@ -201,7 +201,7 @@ def serve_command(
             "dev_port": dev_port,
             "open_in_browser": open_in_browser,
             "strict": strict,
-        }
+        },
     )
 
     serve(

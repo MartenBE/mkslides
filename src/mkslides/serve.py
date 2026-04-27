@@ -5,8 +5,6 @@
 import logging
 import shutil
 import threading
-
-from dataclasses import dataclass
 from pathlib import Path
 
 import livereload  # type: ignore[import-untyped]
@@ -25,6 +23,7 @@ logging.getLogger("livereload").setLevel(logging.INFO)
 LiveReloadHandler.DEFAULT_RELOAD_TIME = (
     0  # https://github.com/lepture/python-livereload/pull/244
 )
+
 
 def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]:
     def should_watch(
