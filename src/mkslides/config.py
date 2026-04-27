@@ -11,11 +11,7 @@ from omegaconf import MISSING, DictConfig, OmegaConf
 
 from mkslides.constants import (
     DEFAULT_CONFIG_LOCATION,
-    HIGHLIGHTJS_THEMES_LIST,
-    REVEALJS_THEMES_LIST,
 )
-from mkslides.urltype import URLType
-from mkslides.utils import get_url_type
 
 logger = logging.getLogger(__name__)
 
@@ -73,51 +69,51 @@ class Config:
     internal: Internal = field(default_factory=Internal)
 
 
-def validate(config: DictConfig) -> None:
-    if config.index.favicon and get_url_type(config.index.favicon) == URLType.RELATIVE:
-        Path(config.index.favicon).resolve(strict=True)
+# def validate(config: DictConfig) -> None:
+#     if config.index.favicon and get_url_type(config.index.favicon) == URLType.RELATIVE:
+#         Path(config.index.favicon).resolve(strict=True)
 
-    if (
-        config.index.template
-        and get_url_type(config.index.template) == URLType.RELATIVE
-    ):
-        Path(config.index.template).resolve(strict=True)
+#     if (
+#         config.index.template
+#         and get_url_type(config.index.template) == URLType.RELATIVE
+#     ):
+#         Path(config.index.template).resolve(strict=True)
 
-    if (
-        config.index.theme
-        and get_url_type(config.index.theme) == URLType.RELATIVE
-        and config.index.theme not in REVEALJS_THEMES_LIST
-    ):
-        Path(config.index.theme).resolve(strict=True)
+#     if (
+#         config.index.theme
+#         and get_url_type(config.index.theme) == URLType.RELATIVE
+#         and config.index.theme not in REVEALJS_THEMES_LIST
+#     ):
+#         Path(config.index.theme).resolve(strict=True)
 
-    if (
-        config.slides.favicon
-        and get_url_type(config.slides.favicon) == URLType.RELATIVE
-    ):
-        Path(config.slides.favicon).resolve(strict=True)
+#     if (
+#         config.slides.favicon
+#         and get_url_type(config.slides.favicon) == URLType.RELATIVE
+#     ):
+#         Path(config.slides.favicon).resolve(strict=True)
 
-    if (
-        config.slides.highlight_theme
-        and get_url_type(config.slides.highlight_theme) == URLType.RELATIVE
-        and config.slides.highlight_theme not in HIGHLIGHTJS_THEMES_LIST
-    ):
-        Path(config.slides.highlight_theme).resolve(strict=True)
+#     if (
+#         config.slides.highlight_theme
+#         and get_url_type(config.slides.highlight_theme) == URLType.RELATIVE
+#         and config.slides.highlight_theme not in HIGHLIGHTJS_THEMES_LIST
+#     ):
+#         Path(config.slides.highlight_theme).resolve(strict=True)
 
-    if config.slides.preprocess_script:
-        Path(config.slides.preprocess_script).resolve(strict=True)
+#     if config.slides.preprocess_script:
+#         Path(config.slides.preprocess_script).resolve(strict=True)
 
-    if (
-        config.slides.template
-        and get_url_type(config.slides.template) == URLType.RELATIVE
-    ):
-        Path(config.slides.template).resolve(strict=True)
+#     if (
+#         config.slides.template
+#         and get_url_type(config.slides.template) == URLType.RELATIVE
+#     ):
+#         Path(config.slides.template).resolve(strict=True)
 
-    if (
-        config.slides.theme
-        and get_url_type(config.slides.theme) == URLType.RELATIVE
-        and config.slides.theme not in REVEALJS_THEMES_LIST
-    ):
-        Path(config.slides.theme).resolve(strict=True)
+#     if (
+#         config.slides.theme
+#         and get_url_type(config.slides.theme) == URLType.RELATIVE
+#         and config.slides.theme not in REVEALJS_THEMES_LIST
+#     ):
+#         Path(config.slides.theme).resolve(strict=True)
 
 
 def get_config(config_file: Path | None = None) -> DictConfig:
@@ -136,6 +132,13 @@ def get_config(config_file: Path | None = None) -> DictConfig:
         except Exception:
             logger.exception(f"Failed to load config from {config_file}")
             raise
+
+    # try:
+    #     validate(config)
+    # except Exception as e:
+    #     error_message = f"Invalid config: {e!s}"
+    #     logger.exception(error_message)
+    #     raise ValueError(error_message) from e
 
     assert OmegaConf.is_dict(config)
 
