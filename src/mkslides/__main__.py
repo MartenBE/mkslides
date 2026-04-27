@@ -73,6 +73,7 @@ strict_argument_data = {
 
 @click.group(
     context_settings={
+        "show_default": True,
         "help_option_names": ["-h", "--help"],
         "max_content_width": 120,
     },
@@ -166,7 +167,7 @@ def build_command(
 @click.option(
     "--debounce-interval",
     "debounce_interval",
-    help="Interval in seconds to debounce file changes.",
+    help="Interval in seconds to debounce file changes. After an initial file change, the browser will only be reloaded after this interval has passed without any new file changes. This helps to prevent multiple reloads when multiple file changes happen in quick succession.",
     default=1.0,
     type=float,
 )

@@ -137,7 +137,7 @@ Options:
   -f, --config-file FILENAME  Provide a specific MkSlides-Reveal config file.
   -d, --site-dir PATH         The directory to output the result of the slides
                               build. All files are removed from the site dir
-                              before building.
+                              before building.  [default: site]
   -s, --strict                Fail if a relative link cannot be resolved,
                               otherwise just print a warning.
   -h, --help                  Show this message and exit.
@@ -168,9 +168,16 @@ Options:
   -s, --strict                Fail if a relative link cannot be resolved,
                               otherwise just print a warning.
   -a, --dev-addr <IP:PORT>    IP address and port to serve slides locally.
+                              [default: localhost:8000]
   -o, --open                  Open the website in a Web browser after the
                               initial build finishes.
   --debounce-interval FLOAT   Interval in seconds to debounce file changes.
+                              After an initial file change, the browser will
+                              only be reloaded after this interval has passed
+                              without any new file changes. This helps to
+                              prevent multiple reloads when multiple file
+                              changes happen in quick succession.  [default:
+                              1.0]
   -h, --help                  Show this message and exit.
 
 ```
