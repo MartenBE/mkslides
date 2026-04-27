@@ -170,6 +170,7 @@ Options:
   -a, --dev-addr <IP:PORT>    IP address and port to serve slides locally.
   -o, --open                  Open the website in a Web browser after the
                               initial build finishes.
+  --debounce-interval FLOAT   Interval in seconds to debounce file changes.
   -h, --help                  Show this message and exit.
 
 ```

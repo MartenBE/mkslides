@@ -163,12 +163,20 @@ def build_command(
     help="Open the website in a Web browser after the initial build finishes.",
     is_flag=True,
 )
+@click.option(
+    "--debounce-interval",
+    "debounce_interval",
+    help="Interval in seconds to debounce file changes.",
+    default=1.0,
+    type=float,
+)
 def serve_command(
     files: Path,
     config_file: Path | None,
     strict: bool,
     dev_addr: str,
     open_in_browser: bool,
+    debounce_interval: float,
 ) -> None:
     """
     Run the builtin development server.
@@ -188,11 +196,12 @@ def serve_command(
     dev_ip, dev_port = parse_ip_port(dev_addr)
     serve_config = OmegaConf.structured(
         {
+            "debounce_interval": debounce_interval,
             "dev_ip": dev_ip,
             "dev_port": dev_port,
             "open_in_browser": open_in_browser,
             "strict": strict,
-        },
+        }
     )
 
     serve(

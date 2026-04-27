@@ -4,6 +4,8 @@
 
 import logging
 import shutil
+import threading
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,18 +20,11 @@ from mkslides.urltype import URLType
 from mkslides.utils import get_url_type
 
 logger = logging.getLogger(__name__)
+logging.getLogger("livereload").setLevel(logging.INFO)
 
 LiveReloadHandler.DEFAULT_RELOAD_TIME = (
     0  # https://github.com/lepture/python-livereload/pull/244
 )
-
-
-@dataclass
-class ServeConfig:
-    dev_ip: str | None = None
-    dev_port: str | None = None
-    open_in_browser: bool = False
-
 
 def determine_paths_to_watch(input_path: Path, config: DictConfig) -> list[Path]:
     def should_watch(
@@ -77,7 +72,22 @@ def serve(
         diff_paths_to_watch = set(new_paths_to_watch) - set(paths_to_watch)
         for path in diff_paths_to_watch:
             logger.debug(f"Adding new watched path: '{path}'")
-            server.watch(filepath=path.as_posix(), func=reload, delay=1)
+            server.watch(filepath=path.as_posix(), func=debounced_reload)
+
+    debounce_timer: threading.Timer | None = None
+
+    def debounced_reload() -> None:
+        nonlocal debounce_timer
+
+        if debounce_timer is not None:
+            logger.info(
+                f"New change detected, resetting debounce timer ({serve_config.debounce_interval}s) ...",
+            )
+            debounce_timer.cancel()
+
+        debounce_timer = threading.Timer(serve_config.debounce_interval, reload)
+        debounce_timer.daemon = True
+        debounce_timer.start()
 
     build(config, input_path, output_path, serve_config.strict)
     paths_to_watch = determine_paths_to_watch(input_path, config)
@@ -89,8 +99,8 @@ def serve(
         server._setup_logging = lambda: None  # noqa: SLF001
 
         for path in paths_to_watch:
-            logger.debug(f"Watching: '{path}'")
-            server.watch(filepath=path.as_posix(), func=reload, delay=1)
+            logger.info(f"Watching: '{path}'")
+            server.watch(filepath=path.as_posix(), func=debounced_reload)
 
         server.serve(
             host=serve_config.dev_ip,
@@ -102,4 +112,4 @@ def serve(
     finally:
         if output_path.exists():
             shutil.rmtree(output_path)
-            logger.debug(f"Removed '{output_path}'")
+            logger.info(f"Removed '{output_path}'")
