@@ -68,7 +68,7 @@ jobs:
       - run: pip install uv
       - run: uv sync
       - run: uv run mkslides build
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ./site
       - id: deployment
