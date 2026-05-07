@@ -115,7 +115,3 @@ select = ["ALL"]
     "T201", # `print` found
 ]
 
-[tool.uv.workspace]
-members = [
-    "mkslides",
-]
