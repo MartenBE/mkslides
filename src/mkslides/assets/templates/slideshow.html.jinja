@@ -16,6 +16,10 @@ SPDX-License-Identifier: MIT
 
         <link rel="stylesheet" href="{{ revealjs_path }}/dist/reveal.css" />
 
+        {% if title %}
+            <title>{{ title }}</title>
+        {% endif %}
+
         {% if theme %}
             <link rel="stylesheet" href="{{ theme }}" />
         {% endif %}

@@ -254,6 +254,7 @@ class MarkupGenerator:
             markup = slideshow_template.render(
                 favicon=slide_config.slides.favicon,
                 theme=slide_config.slides.theme,
+                title=slide_config.slides.title,
                 highlight_theme=slide_config.slides.highlight_theme,
                 revealjs_path=revealjs_path,
                 markdown_data_options=markdown_data_options,
