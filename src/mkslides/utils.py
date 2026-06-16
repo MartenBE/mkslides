@@ -2,6 +2,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+import os
+import stat
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -38,3 +40,11 @@ def get_url_type(url: str) -> URLType:
         return URLType.ABSOLUTE
 
     return URLType.RELATIVE
+
+
+def fix_permissions(path: Path):
+    for root, dirs, files in os.walk(path):
+        for dir in dirs:
+            os.chmod(os.path.join(root, dir), stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
+        for file in files:
+            os.chmod(os.path.join(root, file), stat.S_IRUSR | stat.S_IWUSR)
