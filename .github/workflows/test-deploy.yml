@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: "22.20.0"
       - run: npm install --global prettier
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13.8"
       - run: pip install uv
@@ -62,7 +62,7 @@ jobs:
         with:
           submodules: true
       - uses: actions/configure-pages@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - run: pip install uv
