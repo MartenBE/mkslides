@@ -1,10 +1,10 @@
 ---
-# SPDX-FileCopyrightText: Copyright (C) 2024 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
-
+# SPDX-FileCopyrightText: Copyright (C) 2026 Martijn Saelens and Contributors to the project (https://github.com/MartenBE/mkslides/graphs/contributors)
+#
 # SPDX-License-Identifier: MIT
 
 slides:
-    title: Another slide with a title
+    title: A single slide with a title
 ---
 
 # Some slides

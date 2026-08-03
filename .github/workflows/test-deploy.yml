@@ -37,7 +37,7 @@ jobs:
       - run: npm install --global prettier
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13.8"
+          python-version: "3.x"
       - run: pip install uv
       - run: ./tests.sh .
 

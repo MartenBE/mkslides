@@ -30,6 +30,10 @@ SPDX-License-Identifier: MIT
                 {% endfor %}
             {% endif %}
         {% endfor %}
+
+        {% if title %}
+            <title>{{ title }}</title>
+        {% endif %}
     </head>
     <body>
         <div class="reveal">

@@ -176,7 +176,7 @@ slides:
     # (see https://revealjs.com/markdown/#external-markdown)
     separator: ^\s*---\s*$
 
-    # Jinja 2 template to generate index HTML: file path to Jinja2 file
+    # Jinja 2 template to generate slide HTML: file path to Jinja2 file
     template: ./example.jinja
 
     # Theme of the slides: file path to CSS file, public url to CSS file, or one
@@ -184,8 +184,8 @@ slides:
     # `dracula`, ... (see https://revealjs.com/themes/)
     theme: example-slides-theme.css
 
-    # Title of the slides. If this is set for a slide, it will be used for the
-    # entry in the generated index HTML: string
+    # Title of the slides. If this is set for a slide in the frontmatter, it
+    # will also be used for the entry in the generated index HTML: string
     title: example-title
 
 # Options to be passed to reveal.js: options in yaml format, they will be
@@ -232,6 +232,7 @@ slides:
     highlight_theme: monokai
     template: assets/templates/slideshow.html.jinja # Comes with the pip package
     theme: black
+    title: Slides
 revealjs:
     history: true
     slideNumber: c/t
@@ -265,7 +266,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 Notes:
 
-- `title` here is a frontmatter-only available option to set the title of this slideshow in the generated index page. This option is not available in `mkslides.yml`.
 - The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Full help
