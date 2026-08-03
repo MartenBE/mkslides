@@ -39,7 +39,7 @@ class Slides:
     separator: str | None = None
     template: str | None = None
     theme: str = "black"
-    title: str | None = None
+    title: str = "Slides"
 
 
 @dataclass

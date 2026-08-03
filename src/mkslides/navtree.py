@@ -5,6 +5,7 @@
 import logging
 from pathlib import Path
 
+from omegaconf import DictConfig
 from treelib import Tree
 
 from mkslides.mdfiletoprocess import MdFileToProcess
@@ -21,7 +22,11 @@ class NavTree:
         self.tree = Tree()
         self.tree.create_node(identifier="root")
 
-    def from_md_files(self, md_files: list[MdFileToProcess]) -> None:
+    def from_md_files(
+        self,
+        md_files: list[MdFileToProcess],
+        global_config: DictConfig,
+    ) -> None:
         for md_file in md_files:
             relative_source_path = md_file.source_path.relative_to(
                 self.input_root_path,
@@ -34,16 +39,24 @@ class NavTree:
                 current_relative_source_path /= part
 
                 node_id = None
+                node_data = None
                 if (self.input_root_path / current_relative_source_path).is_dir():
                     node_id = str(current_relative_source_path)
+                    node_data = current_relative_source_path.stem
                 else:
                     node_id = str(current_relative_source_path.with_suffix(".html"))
 
-                node_data = None
-                if md_file.slide_config.slides.title:
-                    node_data = md_file.slide_config.slides.title
-                else:
-                    node_data = current_relative_source_path.stem
+                    # If the slide config has a title, use that as the node
+                    # data. Otherwise, use the file name without extension.
+                    # Do not use the global config title, as otherwise all
+                    # slides without a title in the frontmatter would have the
+                    # same title in the nav tree.
+                    if md_file.slide_config.slides.title and (
+                        md_file.slide_config.slides.title != global_config.slides.title
+                    ):
+                        node_data = md_file.slide_config.slides.title
+                    else:
+                        node_data = current_relative_source_path.stem
 
                 if node_id not in self.tree:
                     self.tree.create_node(

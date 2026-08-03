@@ -255,6 +255,7 @@ class MarkupGenerator:
                 favicon=slide_config.slides.favicon,
                 theme=slide_config.slides.theme,
                 highlight_theme=slide_config.slides.highlight_theme,
+                title=slide_config.slides.title,
                 revealjs_path=revealjs_path,
                 markdown_data_options=markdown_data_options,
                 markdown=md_file_data.markdown_content,
@@ -458,7 +459,7 @@ class MarkupGenerator:
             navtree.validate_with_md_files(md_files, strict=self.strict)
         else:
             logger.debug("Generating navigation tree from markdown files")
-            navtree.from_md_files(md_files)
+            navtree.from_md_files(md_files, self.global_config)
 
         logger.debug(
             f"Generated navigation tree with input root path {navtree.input_root_path.absolute()} and output root path {navtree.output_root_path.absolute()}",

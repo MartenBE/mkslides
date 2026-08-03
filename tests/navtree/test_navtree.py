@@ -54,7 +54,7 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
                                             },
                                             {
                                                 "category-2/category-3/someslides-8.html": {
-                                                    "data": "someslides-8",
+                                                    "data": "Another slide with a title",
                                                 },
                                             },
                                         ],
@@ -76,7 +76,7 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
                         },
                     },
                     {"someslides-1.html": {"data": "someslides-1"}},
-                    {"someslides-2.html": {"data": "someslides-2"}},
+                    {"someslides-2.html": {"data": "Slide with a title"}},
                 ],
                 "data": None,
             },
@@ -86,7 +86,7 @@ def test_navtree_from_md_files(setup_paths: Any) -> None:
     markup_generator = MarkupGenerator(config, input_path, output_path, strict=True)
     md_files, _ = markup_generator.scan_files()
     navtree = NavTree(input_path, output_path)
-    navtree.from_md_files(md_files)
+    navtree.from_md_files(md_files, config)
 
     assert DeepDiff(navtree.to_json(), expected_tree_json, ignore_order=True) == {}
 

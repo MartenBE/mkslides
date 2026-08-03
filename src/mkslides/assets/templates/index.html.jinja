@@ -41,7 +41,9 @@ SPDX-License-Identifier: MIT
     <link rel="stylesheet" href="{{ theme }}" />
     {% endif %}
 
-    <title>{{ title }}</title>
+    {% if title %}
+        <title>{{ title }}</title>
+    {% endif %}
 </head>
 
 <body>
