@@ -238,7 +238,7 @@ revealjs:
     slideNumber: c/t
 ```
 
-It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter. Here, relative file paths are considered relative to the Markdown file itself.
+It is also possible to override `slides`, `revealjs`, and `plugins` options on a per Markdown file base using it's frontmatter. In the frontmatter, relative file paths are considered relative to the Markdown file itself. The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ```md
 ---
@@ -263,10 +263,6 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 <!--s-->
 ```
-
-Notes:
-
-- The precedence is frontmatter > `mkslides.yml` > defaults.
 
 ## Full help
 
