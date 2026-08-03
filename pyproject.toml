@@ -46,7 +46,7 @@ dev = [
     "deepdiff>=8.6.1",
     "mypy>=1.18.2",
     "pytest>=9.0.1",
-    "reuse>=6.2.0",
+    "reuse[charset-normalizer]>=6.2.0",
     "ruff>=0.14.5",
     "types-pyyaml>=6.0.12.20250915",
 ]
@@ -96,6 +96,7 @@ ignore = [
     "FIX002",   # Line contains TODO, consider resolving the issue
     "G004",     # Logging statement uses f-string"
     "PLR0913",  # Too many arguments in function definition
+    "PLR0917",  # Too many Too many positional arguments
     "RET504",   # Unnecessary assignment to `...` before `return` statement
     "S101",     # Use of `assert` detected
     "S603",     # `subprocess` call: check for execution of untrusted input
