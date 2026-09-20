@@ -2,9 +2,9 @@
 #
 # SPDX-License-Identifier: MIT
 
+import asyncio
 import logging
 import shutil
-import threading
 from pathlib import Path
 
 import livereload  # type: ignore[import-untyped]
@@ -39,25 +39,35 @@ def serve(
         config.internal.config_path,
     ]
 
-    def reload() -> None:
+    async def reload() -> None:
+        await asyncio.sleep(serve_config.debounce_interval)
+
         logger.info("Reloading...")
         new_config = get_config(config.internal.config_path)
-        build(new_config, input_path, output_path, serve_config.strict)
 
-    debounce_timer: threading.Timer | None = None
+        await asyncio.get_running_loop().run_in_executor(
+            None,
+            build,
+            new_config,
+            input_path,
+            output_path,
+            serve_config.strict,
+        )
+
+        LiveReloadHandler.reload_waiters()
+
+    pending_reload: asyncio.Task[None] | None = None
 
     def debounced_reload() -> None:
-        nonlocal debounce_timer
+        nonlocal pending_reload
 
-        if debounce_timer is not None:
+        if pending_reload is not None and not pending_reload.done():
             logger.info(
                 f"New change detected, resetting debounce timer ({serve_config.debounce_interval}s) ...",
             )
-            debounce_timer.cancel()
+            pending_reload.cancel()
 
-        debounce_timer = threading.Timer(serve_config.debounce_interval, reload)
-        debounce_timer.daemon = True
-        debounce_timer.start()
+        pending_reload = asyncio.get_running_loop().create_task(reload())
 
     try:
         server = livereload.Server()
@@ -69,7 +79,12 @@ def serve(
             # E.g. if there is no config file present.
             if path is not None:
                 logger.info(f"Watching: '{path}'")
-                server.watch(filepath=path.as_posix(), func=debounced_reload)
+                # "forever" means livereload never sends a reload itself.
+                server.watch(
+                    filepath=path.as_posix(),
+                    func=debounced_reload,
+                    delay="forever",
+                )
 
         server.serve(
             host=serve_config.dev_ip,
