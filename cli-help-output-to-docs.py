@@ -34,6 +34,8 @@ def replace_content(
 
 ################################################################################
 
+print("Synchronizing CLI output in docs ...")
+
 no_command_output = subprocess.check_output(
     ["uv", "run", "mkslides", "-h"],
     universal_newlines=True,
@@ -69,3 +71,5 @@ try:
     subprocess.run(["prettier", "--write", *files], check=False)
 except OSError:
     print("Prettier not found, skipping formatting step.")
+
+print("CLI output in docs is synchronized")
