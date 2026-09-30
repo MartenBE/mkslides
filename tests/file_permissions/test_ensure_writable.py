@@ -9,7 +9,9 @@ from pathlib import Path
 import pytest
 
 from mkslides.utils import ensure_writable
-from tests.utils import read_only
+from tests.utils import SKIP_UNLESS_POSIX_PERMISSIONS, read_only
+
+pytestmark = SKIP_UNLESS_POSIX_PERMISSIONS
 
 
 @pytest.fixture

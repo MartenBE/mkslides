@@ -4,10 +4,24 @@
 
 import os
 import subprocess
+import sys
 from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from re import Pattern
+
+import pytest
+
+SKIP_UNLESS_POSIX_PERMISSIONS = [
+    pytest.mark.skipif(
+        sys.platform == "win32",
+        reason="Relies on POSIX permission bits.",
+    ),
+    pytest.mark.skipif(
+        hasattr(os, "geteuid") and os.geteuid() == 0,
+        reason="Root bypasses permission checks.",
+    ),
+]
 
 
 @contextmanager

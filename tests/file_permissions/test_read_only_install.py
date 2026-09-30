@@ -13,18 +13,14 @@ from typing import Any
 import pytest
 
 import mkslides
-from tests.utils import assert_file_exist, read_only, run_build
+from tests.utils import (
+    SKIP_UNLESS_POSIX_PERMISSIONS,
+    assert_file_exist,
+    read_only,
+    run_build,
+)
 
-pytestmark = [
-    pytest.mark.skipif(
-        sys.platform == "win32",
-        reason="Relies on POSIX permission bits.",
-    ),
-    pytest.mark.skipif(
-        hasattr(os, "geteuid") and os.geteuid() == 0,
-        reason="Root removes read-only directories anyway.",
-    ),
-]
+pytestmark = SKIP_UNLESS_POSIX_PERMISSIONS
 
 PACKAGE_ROOT = Path(mkslides.__file__).parent
 

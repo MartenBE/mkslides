@@ -2,8 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 
-import os
-import sys
 import threading
 from collections.abc import Callable, Generator
 from pathlib import Path
@@ -15,18 +13,9 @@ from omegaconf import DictConfig, OmegaConf
 from mkslides import markupgenerator
 from mkslides import serve as serve_module
 from mkslides.config import get_config
-from tests.utils import read_only
+from tests.utils import SKIP_UNLESS_POSIX_PERMISSIONS, read_only
 
-pytestmark = [
-    pytest.mark.skipif(
-        sys.platform == "win32",
-        reason="Relies on POSIX permission bits.",
-    ),
-    pytest.mark.skipif(
-        hasattr(os, "geteuid") and os.geteuid() == 0,
-        reason="Root removes read-only directories anyway.",
-    ),
-]
+pytestmark = SKIP_UNLESS_POSIX_PERMISSIONS
 
 REBUILD_TIMEOUT_SECONDS = 10
 
