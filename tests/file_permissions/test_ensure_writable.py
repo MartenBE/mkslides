@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from mkslides.utils import ensure_writable
+from tests.utils import read_only
 
 
 @pytest.fixture
@@ -18,13 +19,8 @@ def read_only_tree(tmp_path: Path) -> Generator[Path]:
     (source / "themes").mkdir(parents=True)
     (source / "themes" / "theme.css").write_text("body {}")
 
-    for path in (source / "themes" / "theme.css", source / "themes", source):
-        path.chmod(0o555)
-
-    yield source
-
-    for path in (source, *source.rglob("*")):
-        path.chmod(0o755)
+    with read_only(source) as read_only_source:
+        yield read_only_source
 
 
 def test_copied_tree_can_be_removed_again(
