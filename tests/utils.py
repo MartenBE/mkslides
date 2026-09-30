@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import os
 import subprocess
 from pathlib import Path
 from re import Pattern
@@ -14,6 +15,7 @@ def __run_build_generic(
     config_path: Path | None,
     *,
     strict: bool = False,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
     command = [
         "mkslides",
@@ -37,6 +39,7 @@ def __run_build_generic(
         capture_output=True,
         text=True,
         check=False,
+        env={**os.environ, **env} if env else None,
     )
     assert result.returncode == 0, result.stderr
     return result
@@ -56,8 +59,16 @@ def run_build(
     input_path: Path,
     output_path: Path,
     config_path: Path | None,
+    env: dict[str, str] | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    return __run_build_generic(cwd, input_path, output_path, config_path, strict=False)
+    return __run_build_generic(
+        cwd,
+        input_path,
+        output_path,
+        config_path,
+        strict=False,
+        env=env,
+    )
 
 
 def assert_file_exist(file: Path) -> None:
