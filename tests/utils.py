@@ -4,8 +4,24 @@
 
 import os
 import subprocess
+from collections.abc import Generator
+from contextlib import contextmanager
 from pathlib import Path
 from re import Pattern
+
+
+@contextmanager
+def read_only(root: Path) -> Generator[Path]:
+    """Hold a tree without its write bits, the way a read-only store does."""
+    entries = [root, *root.rglob("*")]
+    for entry in entries:
+        entry.chmod(0o555 if entry.is_dir() else 0o444)
+
+    try:
+        yield root
+    finally:
+        for entry in entries:
+            entry.chmod(0o755)
 
 
 def __run_build_generic(

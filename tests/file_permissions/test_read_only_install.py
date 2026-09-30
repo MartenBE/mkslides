@@ -13,7 +13,7 @@ from typing import Any
 import pytest
 
 import mkslides
-from tests.utils import assert_file_exist, run_build
+from tests.utils import assert_file_exist, read_only, run_build
 
 pytestmark = [
     pytest.mark.skipif(
@@ -35,14 +35,8 @@ def read_only_install(tmp_path_factory: pytest.TempPathFactory) -> Generator[Pat
     prefix = tmp_path_factory.mktemp("site-packages")
     shutil.copytree(PACKAGE_ROOT, prefix / PACKAGE_ROOT.name)
 
-    entries = [prefix, *prefix.rglob("*")]
-    for entry in entries:
-        entry.chmod(0o555 if entry.is_dir() else 0o444)
-
-    yield prefix
-
-    for entry in entries:
-        entry.chmod(0o755)
+    with read_only(prefix) as read_only_prefix:
+        yield read_only_prefix
 
 
 def test_read_only_copy_is_imported(read_only_install: Path) -> None:
