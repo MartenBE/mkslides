@@ -114,5 +114,17 @@ def test_saving_a_slide_rebuilds_over_read_only_assets(
     builds_at_startup = 1
     assert seen["builds"] == builds_at_startup + 1, "the save triggered no rebuild"
     assert seen["crashes"] == [], "the rebuild printed a traceback"
+
+
+def test_serve_removes_its_output(
+    read_only_assets: Path,
+    talk: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output_path = tmp_path / "out"
+
+    seen = serve_and_save(talk, output_path, read_only_assets, monkeypatch)
+
     assert seen["shutdown_error"] is None, "the server could not remove its output"
     assert not output_path.exists()
