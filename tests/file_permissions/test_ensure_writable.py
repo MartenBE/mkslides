@@ -43,10 +43,12 @@ def test_copied_tree_can_be_removed_again(
 def test_copied_file_can_be_overwritten(read_only_tree: Path, tmp_path: Path) -> None:
     destination = tmp_path / "theme.css"
     shutil.copy(read_only_tree / "themes" / "theme.css", destination)
-
+    new_css = "body { color: red; }"
     ensure_writable(destination)
 
-    destination.write_text("body { color: red; }")
+    destination.write_text(new_css)
+
+    assert destination.read_text() == new_css
 
 
 def test_an_already_writable_tree_keeps_its_mode(tmp_path: Path) -> None:
