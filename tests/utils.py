@@ -35,7 +35,7 @@ def read_only(root: Path) -> Generator[Path]:
         yield root
     finally:
         for entry in entries:
-            entry.chmod(0o755)
+            entry.chmod(0o755 if entry.is_dir() else 0o644)
 
 
 def __run_build_generic(
