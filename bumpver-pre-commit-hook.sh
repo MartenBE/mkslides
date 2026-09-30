@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: MIT
 
+uv lock
+uv sync
 ./tests.sh
 echo
 python ./cli-help-output-to-docs.py
