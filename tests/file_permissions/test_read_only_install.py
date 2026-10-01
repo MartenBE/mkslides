@@ -3,36 +3,14 @@
 # SPDX-License-Identifier: MIT
 
 import os
-import shutil
 import subprocess
 import sys
-from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 
-import pytest
-
-import mkslides
-from tests.utils import (
-    SKIP_UNLESS_POSIX_PERMISSIONS,
-    assert_file_exist,
-    read_only,
-    run_build,
-)
+from tests.utils import SKIP_UNLESS_POSIX_PERMISSIONS, assert_file_exist, run_build
 
 pytestmark = SKIP_UNLESS_POSIX_PERMISSIONS
-
-PACKAGE_ROOT = Path(mkslides.__file__).parent
-
-
-@pytest.fixture(scope="module")
-def read_only_install(tmp_path_factory: pytest.TempPathFactory) -> Generator[Path]:
-    """Simulate a read-only install, the way the Nix store provides one."""
-    prefix = tmp_path_factory.mktemp("site-packages")
-    shutil.copytree(PACKAGE_ROOT, prefix / PACKAGE_ROOT.name)
-
-    with read_only(prefix) as read_only_prefix:
-        yield read_only_prefix
 
 
 def test_read_only_copy_is_imported(read_only_install: Path) -> None:
