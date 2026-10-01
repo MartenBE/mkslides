@@ -7,9 +7,10 @@ import signal
 import socket
 import subprocess
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Generator
+from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
-from typing import IO
 
 from tests.utils import SKIP_UNLESS_POSIX_PERMISSIONS
 
@@ -42,32 +43,71 @@ def read_when_rebuilt(rendered: Path) -> str:
     return html if AFTER in html else ""
 
 
-def start_server(
+@dataclass(frozen=True)
+class DevServer:
+    process: "subprocess.Popen[str]"
+    log_path: Path
+    port: int
+
+    def wait_for(self, produce: Callable[[], str], what: str) -> str:
+        deadline = time.monotonic() + WAIT_SECONDS
+        while time.monotonic() < deadline:
+            produced = produce()
+            if produced:
+                return produced
+            if self.process.poll() is not None:
+                break
+            time.sleep(POLL_SECONDS)
+
+        message = f"never saw {what}\n\nServer log:\n{self.log_path.read_text()}"
+        raise AssertionError(message)
+
+    def wait_until_ready(self) -> None:
+        """Wait until the port is open, which is after the watcher has started."""
+        self.wait_for(
+            lambda: "listening" if is_listening(self.port) else "",
+            "the server start listening",
+        )
+
+    def interrupt(self) -> int:
+        self.process.send_signal(signal.SIGINT)
+        return self.process.wait(timeout=WAIT_SECONDS)
+
+
+@contextmanager
+def serving(
     talk: Path,
-    port: int,
     read_only_install: Path,
     server_tmp: Path,
-    log: IO[str],
-) -> "subprocess.Popen[str]":
-    return subprocess.Popen(
-        [
-            "mkslides",
-            "serve",
-            "--debounce-interval",
-            "0.1",
-            "-a",
-            f"localhost:{port}",
-            str(talk),
-        ],
-        env={
-            **os.environ,
-            "PYTHONPATH": str(read_only_install),
-            "TMPDIR": str(server_tmp),
-        },
-        stdout=log,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
+    log_path: Path,
+) -> Generator[DevServer]:
+    """Run a development server on the talk, out of the read-only install."""
+    port = free_port()
+    with log_path.open("w") as log:
+        process = subprocess.Popen(
+            [
+                "mkslides",
+                "serve",
+                "--debounce-interval",
+                "0.1",
+                "-a",
+                f"localhost:{port}",
+                str(talk),
+            ],
+            env={
+                **os.environ,
+                "PYTHONPATH": str(read_only_install),
+                "TMPDIR": str(server_tmp),
+            },
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        try:
+            yield DevServer(process, log_path, port)
+        finally:
+            if process.poll() is None:
+                process.kill()
 
 
 def test_a_read_only_install_serves_rebuilds_and_cleans_up(
@@ -81,39 +121,18 @@ def test_a_read_only_install_serves_rebuilds_and_cleans_up(
     slide = talk / "index.md"
     slide.write_text(f"# Title\n\n{BEFORE}\n")
     log_path = tmp_path / "serve.log"
-    port = free_port()
 
-    with log_path.open("w") as log:
-        server = start_server(talk, port, read_only_install, server_tmp, log)
+    with serving(talk, read_only_install, server_tmp, log_path) as server:
+        server.wait_until_ready()
+        output_path = next(server_tmp.glob("mkslides_*"))
 
-        def wait_for(produce: Callable[[], str], what: str) -> str:
-            deadline = time.monotonic() + WAIT_SECONDS
-            while time.monotonic() < deadline:
-                produced = produce()
-                if produced:
-                    return produced
-                if server.poll() is not None:
-                    break
-                time.sleep(POLL_SECONDS)
-            message = f"never saw {what}\n\nServer log:\n{log_path.read_text()}"
-            raise AssertionError(message)
+        slide.write_text(f"# Title\n\n{AFTER}\n")
 
-        try:
-            wait_for(
-                lambda: str(port) if is_listening(port) else "",
-                "the server start listening",
-            )
-            output_path = next(server_tmp.glob("mkslides_*"))
-            slide.write_text(f"# Title\n\n{AFTER}\n")
-            rendered = wait_for(
-                lambda: read_when_rebuilt(output_path / "index.html"),
-                "the saved slide in the rebuilt deck",
-            )
-            server.send_signal(signal.SIGINT)
-            returncode = server.wait(timeout=WAIT_SECONDS)
-        finally:
-            if server.poll() is None:
-                server.kill()
+        rendered = server.wait_for(
+            lambda: read_when_rebuilt(output_path / "index.html"),
+            "the saved slide in the rebuilt deck",
+        )
+        returncode = server.interrupt()
 
     assert AFTER in rendered
     assert BEFORE not in rendered
