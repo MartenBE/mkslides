@@ -26,7 +26,7 @@ from mkslides.mdfiletoprocess import MdFileToProcess
 from mkslides.navtree import NavTree
 from mkslides.preprocess import load_preprocessing_function
 from mkslides.urltype import URLType
-from mkslides.utils import get_url_type
+from mkslides.utils import ensure_writable, get_url_type
 
 from .constants import (
     DEFAULT_INDEX_TEMPLATE,
@@ -510,6 +510,8 @@ class MarkupGenerator:
             shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
         else:
             shutil.copy(source_path, destination_path)
+
+        ensure_writable(destination_path)
 
         action = "Overwritten" if is_overwrite else "Copied"
         file_or_directory = "directory" if is_directory else "file"

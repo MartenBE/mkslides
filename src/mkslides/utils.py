@@ -2,10 +2,20 @@
 #
 # SPDX-License-Identifier: MIT
 
+import stat
 from pathlib import Path
 from urllib.parse import urlparse
 
 from mkslides.urltype import URLType
+
+
+def ensure_writable(path: Path) -> None:
+    """Give the owner write permission on a path and everything below it."""
+    entries = [path, *path.rglob("*")] if path.is_dir() else [path]
+    for entry in entries:
+        mode = stat.S_IMODE(entry.stat().st_mode)
+        if not mode & stat.S_IWUSR:
+            entry.chmod(mode | stat.S_IWUSR)
 
 
 def parse_ip_port(
