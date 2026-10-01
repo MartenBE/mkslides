@@ -26,7 +26,7 @@ SKIP_UNLESS_POSIX_PERMISSIONS = [
 
 @contextmanager
 def read_only(root: Path) -> Generator[Path]:
-    """Hold a tree without its write bits, the way a read-only store does."""
+    """Remove the write bits from a tree, and restore them afterwards."""
     entries = [root, *root.rglob("*")]
     for entry in entries:
         entry.chmod(0o555 if entry.is_dir() else 0o444)

@@ -16,7 +16,7 @@ pytestmark = SKIP_UNLESS_POSIX_PERMISSIONS
 
 @pytest.fixture
 def read_only_tree(tmp_path: Path) -> Generator[Path]:
-    """Build a directory tree without its write bit, as a read-only store has."""
+    """Build a directory tree with no write bits."""
     source = tmp_path / "source"
     (source / "themes").mkdir(parents=True)
     (source / "themes" / "theme.css").write_text("body {}")
