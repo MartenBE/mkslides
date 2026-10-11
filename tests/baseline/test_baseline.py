@@ -2,7 +2,11 @@
 #
 # SPDX-License-Identifier: MIT
 
+import stat
+from pathlib import Path
 from typing import Any
+
+import pytest
 
 from tests.utils import (
     assert_file_exist,
@@ -12,6 +16,21 @@ from tests.utils import (
 )
 
 
+# Git does not track write permissions, so remove them before the test.
+#
+@pytest.fixture
+def remove_user_write_permission() -> None:
+    folder_path = Path("tests/baseline/slides/no-write-permission").resolve(strict=True)
+    files = [
+        folder_path / "no-write-permission.md",
+        folder_path / "no-write-permission-asset.txt",
+    ]
+
+    for file in files:
+        file.chmod(file.stat().st_mode & ~stat.S_IWUSR)
+
+
+@pytest.mark.usefixtures("remove_user_write_permission")
 def test_process_directory_without_config(setup_paths: Any) -> None:
     cwd, output_path = setup_paths
     input_path = cwd / "baseline" / "slides"
