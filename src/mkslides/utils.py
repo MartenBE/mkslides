@@ -5,6 +5,7 @@
 from pathlib import Path
 from urllib.parse import urlparse
 
+from mkslides.constants import DESTINATION_DIR_MODE, DESTINATION_FILE_MODE
 from mkslides.urltype import URLType
 
 
@@ -21,7 +22,22 @@ def parse_ip_port(
     return ip, port
 
 
-# TODO: unittests
+def normalize_permissions(path: Path) -> None:
+    if not path.is_dir():
+        path.chmod(DESTINATION_FILE_MODE)
+        return
+
+    path.chmod(DESTINATION_DIR_MODE)
+
+    for root, dirs, files in path.walk():
+        for name in dirs:
+            (root / name).chmod(DESTINATION_DIR_MODE)
+        for name in files:
+            file = root / name
+            if not file.is_symlink():
+                file.chmod(DESTINATION_FILE_MODE)
+
+
 def get_url_type(url: str) -> URLType:
     if url.startswith("#"):
         return URLType.ANCHOR

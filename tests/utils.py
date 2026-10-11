@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import stat
 import subprocess
 from pathlib import Path
 from re import Pattern
@@ -63,6 +64,14 @@ def run_build(
 def assert_file_exist(file: Path) -> None:
     absolute_file = file.absolute()
     assert absolute_file.exists(), f"{absolute_file} does not exist"
+
+
+def assert_file_user_writable(file_path: Path) -> None:
+    expected_permissions = stat.S_IWUSR
+    mode = file_path.stat().st_mode
+    assert (mode & expected_permissions) == expected_permissions, (
+        f"{file_path} is {stat.filemode(mode)} but expected at least user writable"
+    )
 
 
 def assert_file_does_not_exist(file: Path) -> None:
