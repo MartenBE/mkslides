@@ -6,6 +6,7 @@ from typing import Any
 
 from tests.utils import (
     assert_file_exist,
+    assert_file_user_writable,
     assert_html_contains,
     run_build_strict,
 )
@@ -35,6 +36,13 @@ def test_process_directory_without_config(setup_paths: Any) -> None:
     assert_file_exist(output_path / "randomfile-1.txt")
     assert_file_exist(output_path / "somefolder/randomfile-2.txt")
     assert_file_exist(output_path / "extra/randomfile-3.txt")
+
+    file_path = output_path / "no-write-permission/no-write-permission.html"
+    assert_file_exist(file_path)
+    assert_file_user_writable(file_path)
+    file_path = output_path / "no-write-permission/no-write-permission-asset.txt"
+    assert_file_exist(file_path)
+    assert_file_user_writable(file_path)
 
     assert_html_contains(
         output_path / "someslides-1.html",

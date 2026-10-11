@@ -22,13 +22,7 @@ from jinja2 import Template
 from omegaconf import DictConfig, OmegaConf
 
 from mkslides.config import FRONTMATTER_ALLOWED_KEYS
-from mkslides.mdfiletoprocess import MdFileToProcess
-from mkslides.navtree import NavTree
-from mkslides.preprocess import load_preprocessing_function
-from mkslides.urltype import URLType
-from mkslides.utils import get_url_type
-
-from .constants import (
+from mkslides.constants import (
     DEFAULT_INDEX_TEMPLATE,
     DEFAULT_SLIDESHOW_TEMPLATE,
     HIGHLIGHTJS_THEMES_LIST,
@@ -42,6 +36,11 @@ from .constants import (
     REVEALJS_RESOURCE,
     REVEALJS_THEMES_LIST,
 )
+from mkslides.mdfiletoprocess import MdFileToProcess
+from mkslides.navtree import NavTree
+from mkslides.preprocess import load_preprocessing_function
+from mkslides.urltype import URLType
+from mkslides.utils import get_url_type, normalize_permissions
 
 logger = logging.getLogger(__name__)
 
@@ -510,6 +509,8 @@ class MarkupGenerator:
             shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
         else:
             shutil.copy(source_path, destination_path)
+
+        normalize_permissions(destination_path)
 
         action = "Overwritten" if is_overwrite else "Copied"
         file_or_directory = "directory" if is_directory else "file"
