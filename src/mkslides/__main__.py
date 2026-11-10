@@ -42,7 +42,7 @@ def get_input_path(input_path: Path) -> Path:
         return Path(DEFAULT_INPUT_DIR2).resolve(strict=True)
 
     msg = f'Neither "{DEFAULT_INPUT_DIR}" nor "{DEFAULT_INPUT_DIR2}" are an existing directory.'
-    raise FileNotFoundError(msg)
+    raise click.ClickException(msg)
 
 
 ################################################################################
