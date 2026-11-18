@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-import datetime
+import datetime as dt
 import json
 import logging
 import re
@@ -480,7 +480,7 @@ class MarkupGenerator:
             title=self.global_config.index.title,
             theme=self.global_config.index.theme,
             navtree=navtree,
-            build_datetime=datetime.datetime.now(tz=datetime.UTC),
+            build_datetime=dt.datetime.now(tz=dt.UTC),
             enable_footer=self.global_config.index.enable_footer,
         )
         self.__create_or_overwrite_file(
